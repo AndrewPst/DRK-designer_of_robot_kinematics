@@ -90,3 +90,52 @@ void Joint_t::setCurrentValue(double val)
     _currentValue = val;
     emit onCurrentValueChanged(val);
 }
+
+
+bool Joint_t::isGrounded()
+{
+    return _isGround;
+}
+
+void Joint_t::setGrounded(bool val)
+{
+    if(val == _isGround) return;
+    _isGround = val;
+    emit onGroundedChanged(val);
+}
+
+int Joint_t::getId()
+{
+    return _id;
+}
+
+void Joint_t::setId(int val)
+{
+    if(val == _id) return;
+    _id = val;
+    emit onIdChanged(val);
+}
+
+QSet<int> Joint_t::getParents()
+{
+    return _parents;
+}
+
+void Joint_t::setParents(QSet<int>& val)
+{
+    if(val == _parents) return;
+    _parents = val;
+    emit onParentsChanged(val);
+}
+
+QSet<int> Joint_t::getChildren()
+{
+    return _children;
+}
+
+void Joint_t::setChildren(QSet<int>& val)
+{
+    if(val == _children) return;
+    _children = val;
+    emit onChildrenChanged(val);
+}

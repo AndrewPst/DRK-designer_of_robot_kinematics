@@ -4,7 +4,8 @@
 #include <QVector3D>
 #include <QList>
 #include <QObject>
-
+#include <QSet>
+#include <QMap>
 
 //-------Joint structure-------------
 
@@ -37,6 +38,10 @@ struct Joint_t : public QObject
     Q_PROPERTY(double minValue READ getMinValue WRITE setMinValue NOTIFY onMinValueChanged)
     Q_PROPERTY(double maxValue READ getMaxValue WRITE setMaxValue NOTIFY onMaxValueChanged)
     Q_PROPERTY(double currentValue READ getCurrentValue WRITE setCurrentValue NOTIFY onCurrentValueChanged)
+    Q_PROPERTY(bool isGrounded READ isGrounded WRITE setGrounded NOTIFY onGroundedChanged)
+    Q_PROPERTY(QSet<int> parents READ getParents WRITE setParents NOTIFY onParentsChanged)
+    Q_PROPERTY(QSet<int> children READ getChildren WRITE setChildren NOTIFY onChildrenChanged)
+    Q_PROPERTY(int id READ getId WRITE setId NOTIFY onIdChanged)
 
     friend class ProjectController;
 
@@ -46,6 +51,17 @@ public:
 
     JointType_t getJointType() const;
     void setJointType(const JointType_t&);
+
+    bool isGrounded();
+    void setGrounded(bool);
+
+    int getId();
+
+    QSet<int> getParents();
+    void setParents(QSet<int>&);
+
+    QSet<int> getChildren();
+    void setChildren(QSet<int>&);
 
     QVector3D getPosition() const;
     void setPosition(const QVector3D&);
@@ -69,18 +85,31 @@ signals:
 
     void onTypeChanged(JointType_t);
     void onIdChanged(int);
-    void onParentIdChanged(int);
     void onPositionChanged(QVector3D);
     void onRotationChanged(QVector3D);
     void onDHParamsChanged(DHParameters_t);
     void onMinValueChanged(double);
     void onMaxValueChanged(double);
     void onCurrentValueChanged(double);
-
+    void onGroundedChanged(bool);
+    void onParentsChanged(QSet<int>);
+    void onChildrenChanged(QSet<int>);
 
 private:
 
+    void setId(int);
+
+
+private:
     JointType_t _type;
+    bool _isGround;
+
+    int _id;
+
+    //using array because the parallel manipulator has many parents and children
+    QSet<int> _parents;
+    QSet<int> _children;
+
     QVector3D _position; //position relative to the parent object
     QVector3D _rotation; //rotation relative to the parent object
     DHParameters_t _dhParameters;
@@ -102,7 +131,7 @@ struct Manipulator_t
 {
     int dof;
     KinematicsType_t kinematicsType;
-    QList<Joint_t*> joints;
+    QMap<int, Joint_t*> joints;
 };
 
 

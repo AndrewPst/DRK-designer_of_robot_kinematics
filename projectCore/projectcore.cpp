@@ -8,32 +8,17 @@ ProjectController::ProjectController(ProjectStructure* structure)
 {
 }
 
-void ProjectController::addJoint(Joint_t* joint)
+Joint_t*  ProjectController::createJoint()
 {
-    if(_structure->manipulator.joints.contains(joint))
-        return;
+    int id = getFirstFreeId();
+    if(id == -1)
+        return nullptr;
 
-    _structure->manipulator.joints.append(joint);
+    Joint_t* joint = new Joint_t();
+    joint->setId(id);
+    _structure->manipulator.joints[id] = joint;
     emit onNewJointAdded(joint);
-}
-
-bool ProjectController::getJoint(int i, Joint_t** out)
-{
-    *out = nullptr;
-    if(i >= _structure->manipulator.joints.size() || i < 0)
-        return false;
-    *out = _structure->manipulator.joints[i];
-    return false;
-}
-
-QList<Joint_t*>::ConstIterator ProjectController::jointsBegin()
-{
-    return _structure->manipulator.joints.constBegin();
-}
-
-QList<Joint_t*>::ConstIterator ProjectController::jointsEnd()
-{
-    return _structure->manipulator.joints.constEnd();
+    return joint;
 }
 
 Joint_t* ProjectController::getJoint(int i, bool* result)
@@ -45,22 +30,68 @@ Joint_t* ProjectController::getJoint(int i, bool* result)
     return vm;
 }
 
+bool ProjectController::changeJointId(int from, int to)
+{
+    if(from == to) return true;
+    if(_structure->manipulator.joints.contains(to)) return false;
+    Joint_t* j = _structure->manipulator.joints[from];
+    _structure->manipulator.joints.remove(from);
+    _structure->manipulator.joints[to] = j;
+    j->setId(to);
+    return true;
+}
+
+bool ProjectController::getJoint(int i, Joint_t** out)
+{
+    *out = nullptr;
+    if(_structure->manipulator.joints.contains(i) == false)
+        return false;
+    *out = _structure->manipulator.joints[i];
+    return true;
+}
+
+QMap<int, Joint_t*>::ConstIterator ProjectController::jointsBegin()
+{
+    return _structure->manipulator.joints.constBegin();
+}
+
+QMap<int, Joint_t*>::ConstIterator ProjectController::jointsEnd()
+{
+    return _structure->manipulator.joints.constEnd();
+}
+
+int ProjectController::getFirstFreeId()
+{
+    return getNextFreeId(0, +1);
+}
+
+int ProjectController::getNextFreeId(int cur, int dir)
+{
+    for(int i = cur+dir; i > 0 && i < 255; i+=dir)
+    {
+        if(_structure->manipulator.joints.contains(i) == false)
+            return i;
+    }
+    return -1;
+}
 
 bool ProjectController::removeJoint(Joint_t* joint)
 {
-    if(_structure->manipulator.joints.contains(joint) == false)
+    if(!joint)
         return false;
-    emit onJointRemoved(joint);
-    return _structure->manipulator.joints.removeOne(joint);
+    return removeJoint(joint->getId());
 }
 
 bool ProjectController::removeJoint(int id)
 {
-    if(id >= _structure->manipulator.joints.size() || id < 0)
-        return false;
-    emit onJointRemoved(_structure->manipulator.joints.at(id));
-    _structure->manipulator.joints.removeAt(id);
-    return false;
+    Joint_t* joint = _structure->manipulator.joints[id];
+    bool result = _structure->manipulator.joints.remove(id);
+    if(result)
+    {
+        emit onJointRemoved(joint);
+        delete joint;
+    }
+    return result;
 }
 
 QString ProjectController::getProjectName()

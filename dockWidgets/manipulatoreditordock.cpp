@@ -12,6 +12,52 @@
 #include <QLabel>
 #include <QListIterator>
 #include <QDoubleSpinBox>
+#include <QFormLayout>
+#include <QComboBox>
+#include <QScrollBar>
+#include <QKeyEvent>
+
+
+GetIntDialog::GetIntDialog(int min, int max, Qt::WindowFlags flags) : QDialog(NULL, flags)
+{
+    setFixedSize(160, 80);
+    QWidget::setWindowTitle(tr("Input value"));
+    setWindowFlags(windowFlags().setFlag(Qt::WindowContextHelpButtonHint, false));
+    setTabletTracking(false);
+    setModal(true);
+
+    QVBoxLayout *vbl = new QVBoxLayout();
+
+    _valueBox = new QSpinBox();
+    _valueBox->setRange(min, max);
+    _valueBox->setKeyboardTracking(true);
+
+    _acceptBut = new QPushButton(tr("Accept"));
+    _canselBut = new QPushButton(tr("Cansel"));
+    connect(_acceptBut, &QPushButton::pressed, this, &GetIntDialog::onAcceptSlot);
+    connect(_valueBox, &QSpinBox::editingFinished, this, &GetIntDialog::onAcceptSlot);
+
+    QHBoxLayout *hbl = new QHBoxLayout();
+    hbl->addWidget(_canselBut);
+    hbl->addWidget(_acceptBut);
+
+    vbl->addWidget(_valueBox);
+    vbl->addLayout(hbl);
+
+    setLayout(vbl);
+}
+
+void GetIntDialog::onAcceptSlot()
+{
+    setResult(QDialog::Accepted);
+    close();
+}
+
+
+void GetIntDialog::getResult(int* out)
+{
+    *out = _valueBox->value();
+}
 
 //-----------Joint widget for the selected widget----------
 
@@ -33,36 +79,88 @@ void SelectedJointWidget::setJoint(Joint_t* j)
 
 void SelectedJointWidget::resetSignalsSlots()
 {
-    if(_joint == NULL) return;
-    disconnect(_joint, SIGNAL(onCurrentValueChanged(double)), _currentValue, SLOT(setValue(double)));
-
+    Q_FOREACH(auto c, _connections)
+    {
+        disconnect(c);
+    }
 }
 
 void SelectedJointWidget::createConnections()
 {
-    connect(_joint, SIGNAL(onCurrentValueChanged(double)), _currentValue, SLOT(setValue(double)));
-
+    _connections << connect(_joint, SIGNAL(onCurrentValueChanged(double)), _currentValue, SLOT(setValue(double)));
+    _connections << connect(_joint, SIGNAL(onIdChanged(int)), _idSpin, SLOT(setValue(int)));
 }
 
 void SelectedJointWidget::initWidgets()
 {
     _currentValue = new QDoubleSpinBox();
     _currentValue->setDecimals(2);
+    _currentValue->setSingleStep(0.5);
     connect(_currentValue, SIGNAL(valueChanged(double)), this, SLOT(onCurrentValueChanged(double)));
 
+    _idSpin = new QSpinBox();
+    _idSpin->setRange(0, 255);
+    connect(_idSpin, SIGNAL(valueChanged(int)), this, SLOT(onIdChanged(int)));
 
-    QVBoxLayout *vbl = new QVBoxLayout();
+    _parentsList = new QListWidget();
+    _parentsList->setFixedHeight(20);
+    _parentsList->verticalScrollBar()->hide();
+    _parentsList->setFlow(QListView::LeftToRight);
+    _parentsList->addItem(tr("1"));
+    _parentsList->addItem(tr("2"));
+    _parentsList->addItem(tr("3"));
+    _parentsList->addItem(tr("4"));
 
-    vbl->addWidget(_currentValue);
-    setLayout(vbl);
+    _deleteParent = new QPushButton(tr("Delete"));
+    _addParent = new QPushButton(tr("Add"));
+    connect(_addParent, &QPushButton::clicked, this, []()
+    {
+        GetIntDialog _getIntDialog (0, 255);
+        _getIntDialog.show();
+        if(_getIntDialog.exec())
+        {
+            int out = 0;
+            _getIntDialog.getResult(&out);
+            qDebug() << out;
+        }
+    });
+
+    QHBoxLayout* tempHbl = new QHBoxLayout;
+    QVBoxLayout* tempVbl = new QVBoxLayout;
+    tempHbl->addWidget(_deleteParent);
+    tempHbl->addWidget(_addParent);
+    tempVbl->addWidget(_parentsList);
+    tempVbl->addLayout(tempHbl);
+
+    QFormLayout *fl = new QFormLayout();
+    fl->setFormAlignment(Qt::AlignHCenter | Qt::AlignTop);
+    fl->setAlignment(Qt::AlignHCenter | Qt::AlignTop);
+    fl->setVerticalSpacing(0);
+    fl->addRow(tr("Id"), _idSpin);
+    fl->addRow(tr("Current value:"), _currentValue);
+    fl->addRow(tr("Parents"), tempVbl);
+    fl->setSizeConstraint(QFormLayout::SizeConstraint::SetFixedSize);
+    fl->setSpacing(4);
+    setLayout(fl);
+}
+
+
+void SelectedJointWidget::onIdChanged(int id)
+{
+    if(id == _joint->getId()) return;
+    int dir = id - _joint->getId();
+    int newId = projectManager.getOpenedProject()->getNextFreeId(_joint->getId(), dir);
+    projectManager.getOpenedProject()->changeJointId(_joint->getId(), newId);
+    _idSpin->setValue(newId);
 }
 
 void SelectedJointWidget::updateWidgets()
 {
     _currentValue->setValue(_joint->getCurrentValue());
-    _currentValue->setSingleStep(0.5);
     _currentValue->setRange(_joint->getMinValue(), _joint->getMaxValue());
-    _currentValue->setPrefix(_joint->getJointType() == JointType_t::JOINT_LINEAR ? tr("mm ") : tr("angle "));
+    _currentValue->setSuffix(_joint->getJointType() == JointType_t::JOINT_LINEAR ? tr(" mm") : tr(" degrees"));
+
+    _idSpin->setValue(_joint->getId());
 
 }
 
@@ -177,21 +275,18 @@ void ManipulatorEditorDock::initWidgets()
     }
     connect(_list, &QListWidget::itemClicked, this, &ManipulatorEditorDock::jointSelectedSlot);
 
-    _upJoint = new QPushButton();
-    _upJoint->setText(tr("Up"));
-    _downJoint = new QPushButton();
-    _downJoint->setText(tr("Down"));
+    //_editButton = new QPushButton();
+    //_editButton->setText(tr("Edit joint"));
+    //connect(_editButton, &QPushButton::clicked, this, &ManipulatorEditorDock::editButtonClickedSlot);
 
-    QHBoxLayout *hblForButt = new QHBoxLayout();
-    hblForButt->addWidget(_downJoint);
-    hblForButt->addWidget(_upJoint);
 
     _detailedWidget = new SelectedJointWidget();
 
     vl->addLayout(bhl);
     vl->addWidget(_list);
-    vl->addLayout(hblForButt);
     vl->addWidget(_detailedWidget);
+    _detailedWidget->setEnabled(false);
+    //vl->addWidget(_editButton);
 
     _mainWidget->setLayout(vl);
     setWidget(_mainWidget);
@@ -218,8 +313,7 @@ void ManipulatorEditorDock::deleteListItem(Joint_t* jvm)
             if(itemW == _selectedItem) //set to NULL for correct work rmJoint button
             {
                 _rmJoint->setEnabled(false);
-                _upJoint->setEnabled(false);
-                _downJoint->setEnabled(false);
+                _detailedWidget->setEnabled(false);
                 _list->setCurrentRow(-1);
             }
             itemW->deleteLater();//this object will be deleted after exiting the method
@@ -228,6 +322,7 @@ void ManipulatorEditorDock::deleteListItem(Joint_t* jvm)
         }
     }
 }
+
 
 void ManipulatorEditorDock::onJointCreated(Joint_t* jvm)
 {
@@ -241,7 +336,7 @@ void ManipulatorEditorDock::onJointDeleted(Joint_t* jvm)
 
 void ManipulatorEditorDock::addButtonClickedSlot()
 {
-    projectManager.getOpenedProject()->addJoint(new Joint_t{});
+    projectManager.getOpenedProject()->createJoint();
 }
 
 void ManipulatorEditorDock::rmButtonClickedSlot()
@@ -255,9 +350,11 @@ void ManipulatorEditorDock::jointSelectedSlot(QListWidgetItem* item)
 {
     _selectedItem = qobject_cast<JointListWidgetItem*>(_list->itemWidget(item));
     _rmJoint->setEnabled(true);
-    int cRow = _list->currentRow();
-    _upJoint->setEnabled(cRow > 0);
-    _downJoint->setEnabled(cRow < _list->count()-1);
+    _detailedWidget->setEnabled(true);
     _detailedWidget->setJoint(_selectedItem->getJoint());
 }
 
+//void ManipulatorEditorDock::editButtonClickedSlot()
+//{
+//    _detailedWidget->showNormal();
+//}

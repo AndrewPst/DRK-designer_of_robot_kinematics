@@ -45,16 +45,15 @@ CentralWindow::CentralWindow(QWidget* parent) : QMainWindow(parent)
     s->manipulator.dof = 5;
     s->manipulator.kinematicsType = KinematicsType_t::KINEMATICS_DEFAULT;
 
+    projectManager.setOpenedProject(new ProjectController(s));
     for(int i = 1; i < 6; i++)
     {
-        Joint_t *j = new Joint_t();
+        Joint_t *j = projectManager.getOpenedProject()->createJoint();
         j->setJointType(JointType_t::JOINT_ROTATION);
         j->setMinValue(0);
         j->setMaxValue(180);
         j->setCurrentValue((i*10) % 180);
-        s->manipulator.joints.append(j);
     }
-    projectManager.setOpenedProject(new ProjectController(s));
     //hide central widget
     setCentralWidget(nullptr);
 }

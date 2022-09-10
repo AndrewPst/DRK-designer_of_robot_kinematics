@@ -2,6 +2,7 @@
 #define MANIPULATOREDITORDOCK_H
 
 #include "basedock.h"
+#include <QDialog>
 
 QT_FORWARD_DECLARE_CLASS(QListWidget);
 QT_FORWARD_DECLARE_CLASS(QListWidgetItem);
@@ -11,6 +12,30 @@ QT_FORWARD_DECLARE_CLASS(Joint_t);
 QT_FORWARD_DECLARE_CLASS(ProjectController);
 QT_FORWARD_DECLARE_CLASS(QDoubleSpinBox);
 QT_FORWARD_DECLARE_CLASS(QSpinBox);
+QT_FORWARD_DECLARE_CLASS(QComboBox);
+QT_FORWARD_DECLARE_CLASS(QListView);
+
+
+class GetIntDialog : public QDialog
+{
+    Q_OBJECT
+public:
+
+    GetIntDialog(int min = 0, int max = INT_MAX, Qt::WindowFlags = {});
+
+    void getResult(int* out);
+
+    virtual ~GetIntDialog() {};
+
+private slots:
+
+    void onAcceptSlot();
+
+private:
+
+    QPushButton *_acceptBut, *_canselBut;
+    QSpinBox *_valueBox;
+};
 
 //-----------Joint widget for the selected widget----------
 
@@ -34,6 +59,7 @@ private:
 private slots:
 
     void onCurrentValueChanged(double);
+    void onIdChanged(int);
 
 
 private:
@@ -41,7 +67,14 @@ private:
     Joint_t* _joint  = NULL;
 
     QDoubleSpinBox* _currentValue;
+    QSpinBox *_idSpin;
 
+    QComboBox* _typeJointBox;
+
+    QListWidget* _parentsList;
+    QPushButton* _deleteParent, *_addParent;
+
+    QList<QMetaObject::Connection> _connections;
 };
 
 //-----------Joint widget for the QWidgetList----------
@@ -99,6 +132,8 @@ private slots:
     void addButtonClickedSlot();
     void rmButtonClickedSlot();
 
+    //void editButtonClickedSlot();
+
     void jointSelectedSlot(QListWidgetItem*);
 
 private:
@@ -113,7 +148,8 @@ private:
 
     QListWidget *_list;
 
-    QPushButton *_addJoint, *_rmJoint, *_upJoint, *_downJoint;
+    QPushButton *_addJoint, *_rmJoint;
+    //QPushButton *_editButton;
 
     SelectedJointWidget *_detailedWidget = nullptr;
     JointListWidgetItem *_selectedItem = nullptr;

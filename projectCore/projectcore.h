@@ -3,6 +3,7 @@
 
 #include <QList>
 #include <QObject>
+#include <QMap>
 
 struct Joint_t;
 struct ProjectStructure;
@@ -14,10 +15,12 @@ public:
 
     explicit ProjectController(ProjectStructure*);
 
-    void addJoint(Joint_t*);
+    Joint_t* createJoint();
 
     bool getJoint(int, Joint_t**);
     Joint_t* getJoint(int, bool* = nullptr);
+
+    Joint_t* getGroundedJoint();
 
     bool removeJoint(Joint_t*);
     bool removeJoint(int id);
@@ -28,8 +31,13 @@ public:
     QString getProjectVersion();
     void setProjectVersion(QString&);
 
-    QList<Joint_t*>::ConstIterator jointsBegin();
-    QList<Joint_t*>::ConstIterator jointsEnd();
+    int getFirstFreeId();
+    int getNextFreeId(int, int);
+
+    bool changeJointId(int, int);
+
+    QMap<int, Joint_t*>::ConstIterator jointsBegin();
+    QMap<int, Joint_t*>::ConstIterator jointsEnd();
 
 signals:
 
@@ -40,6 +48,7 @@ signals:
 
 private:
     ProjectStructure *_structure;
+
 };
 
 class ProjectsManager : public QObject
