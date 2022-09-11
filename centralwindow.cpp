@@ -1,14 +1,11 @@
 #include "centralwindow.h"
 #include "basecentraldock.h"
-#include "CentralDocks/exemplecentraldock.h"
-#include "CentralDocks/glcentraldock.h"
-#include "projectCore/projectStructure.h"
-#include "projectCore/projectcore.h"
 #include <iostream>
 
 #include <QTextEdit>
 #include <QMenu>
 
+#include <QGLWidget>
 
 CentralWindow::CentralWindow(QWidget* parent) : QMainWindow(parent)
 {

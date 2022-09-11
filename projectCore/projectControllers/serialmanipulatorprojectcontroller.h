@@ -1,11 +1,13 @@
 #ifndef SERIALMANIPULATORPROJECTCONTROLLER_H
 #define SERIALMANIPULATORPROJECTCONTROLLER_H
 
+#include "projectCore/baseprojectcontroller.h"
 
-class SerialManipulatorProjectController
+class SerialManipulatorProjectController : public BaseProjectController
 {
 public:
-    SerialManipulatorProjectController();
+    explicit SerialManipulatorProjectController();
+
 };
 
 #endif // SERIALMANIPULATORPROJECTCONTROLLER_H

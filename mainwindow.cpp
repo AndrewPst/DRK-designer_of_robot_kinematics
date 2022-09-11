@@ -3,7 +3,6 @@
 #include "basedock.h"
 
 #include "dockWidgets/manybuttonsdock.h"
-#include "dockWidgets/manipulatoreditordock.h"
 
 #include <QMenu>
 #include <QMenuBar>
@@ -29,17 +28,13 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     _dockWidgets.append(b);
     addDockWidget(Qt::BottomDockWidgetArea, b);
 
-//    ManipulatorEditorDock *m = new ManipulatorEditorDock(tr("Manipulator editor"), this);
-//    _dockWidgets.append(m);
-//    addDockWidget(Qt::RightDockWidgetArea, m);
-
     setupMenuBar();
 
     setCentralWidget(_centralWindow);
     centralWidget()->show();
 }
 
-//----Privat methods----
+//----Private methods----
 
 void MainWindow::setupMenuBar()
 {
@@ -125,8 +120,6 @@ void MainWindow::setupMenuBar()
 
     _viewMenu->addMenu(_dockParametersMenu);
 }
-
-
 
 
 //----Public slots----

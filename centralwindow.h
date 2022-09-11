@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 
-class BaseCentralDock;
+QT_FORWARD_DECLARE_CLASS(BaseCentralDock);
 QT_FORWARD_DECLARE_CLASS(QMenu)
 
 class CentralWindow : public QMainWindow

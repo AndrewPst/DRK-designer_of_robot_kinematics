@@ -21,7 +21,8 @@ SOURCES += \
     openGL/glvisualizatorwidget.cpp \
     openGL/projectvisualizator.cpp \
     projectCore/baseprojectcontroller.cpp \
-    projectCore/projectControllers/serialmanipulatorprojectcontroller.cpp
+    projectCore/projectControllers/serialmanipulatorprojectcontroller.cpp \
+    projectCore/projectsmanager.cpp
 
 HEADERS += \
     CentralDocks/glcentraldock.h \
@@ -36,7 +37,9 @@ HEADERS += \
     openGL/glvisualizatorwidget.h \
     openGL/projectvisualizator.h \
     projectCore/baseprojectcontroller.h \
-    projectCore/projectControllers/serialmanipulatorprojectcontroller.h
+    projectCore/projectControllers/serialmanipulatorprojectcontroller.h \
+    projectCore/projectType.h \
+    projectCore/projectsmanager.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

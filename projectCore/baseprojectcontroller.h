@@ -6,6 +6,7 @@
 QT_FORWARD_DECLARE_CLASS(BaseDock)
 QT_FORWARD_DECLARE_CLASS(BaseCentralDock)
 QT_FORWARD_DECLARE_STRUCT(ProjectSource_t);
+QT_FORWARD_DECLARE_STRUCT(QMenu);
 
 class BaseProjectController : public QObject
 {
@@ -16,11 +17,12 @@ class BaseProjectController : public QObject
 public:
     explicit BaseProjectController();
 
-    virtual QList<BaseDock*> getAviableCentralDocks();
-    virtual QList<BaseCentralDock*> getAviableDocks();
+    const QList<BaseDock*>& getAviableDocks() const;
+    const QList<BaseCentralDock*>& getAviableCentralDocks() const;
+    const QMenu* getTitlebarMenu() const;
 
-    QString getProjectName() const;
-    void setProjectName(QString&);
+    QString getName() const;
+    void setName(QString&);
 
     Version_t getVersion() const;
     void setVersion(Version_t&);
@@ -33,6 +35,9 @@ signals:
 protected:
 
     ProjectSource_t* _projectSource;
+
+    QList<BaseDock*> _avaiableDocks;
+    QList<BaseCentralDock*> _avaiableCentralDocks;
 
 };
 
