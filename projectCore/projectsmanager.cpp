@@ -21,5 +21,10 @@ void ProjectsManager::createNewProject(const ProjectType_t type)
         break;
     }
 
-    onProjectOpened(_openedProject);
+    emit onProjectOpened(_openedProject);
+}
+
+BaseProjectController* ProjectsManager::getOpenedProject() const
+{
+    return _openedProject;
 }

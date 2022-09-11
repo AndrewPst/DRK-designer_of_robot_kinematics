@@ -18,6 +18,8 @@ public:
                                    QMainWindow* parent = nullptr,
                                    Qt::WindowFlags flags = {});
 
+    virtual Qt::DockWidgetArea getDefaultArea() const;
+
     QMenu *getMenu();
 //---Translate signals from Titlebar to parent window
 signals:

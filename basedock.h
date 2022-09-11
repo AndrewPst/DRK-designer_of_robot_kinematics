@@ -23,9 +23,11 @@ public:
     QMenu* getMenu();
 
     //Set parameter '_drawAsWindow' for opening widget as window
-    void drawAsWindow(bool);
+
+    virtual Qt::DockWidgetArea getDefaultArea() const;
 
 protected:
+    void drawAsWindow(bool);
     void contextMenuEvent(QContextMenuEvent *event) override;
 
 private slots:

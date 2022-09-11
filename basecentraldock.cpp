@@ -2,8 +2,8 @@
 #include <QContextMenuEvent>
 
 BaseCentralDock::BaseCentralDock(const QString& title,
-                                             QMainWindow* parent ,
-                                             Qt::WindowFlags flags)
+                                 QMainWindow* parent ,
+                                 Qt::WindowFlags flags)
     : QDockWidget(title, parent, flags), _flags(flags), _parentWindow(parent)
 {
     setObjectName(title);
@@ -22,10 +22,16 @@ BaseCentralDock::BaseCentralDock(const QString& title,
     _menu->addAction(a);
 }
 
- QMenu *BaseCentralDock::getMenu()
- {
-     return _menu;
- }
+QMenu *BaseCentralDock::getMenu()
+{
+    return _menu;
+}
+
+Qt::DockWidgetArea BaseCentralDock::getDefaultArea() const
+{
+    return Qt::RightDockWidgetArea;
+}
+
 
 //---public slots---
 void BaseCentralDock::splitHInto(bool)

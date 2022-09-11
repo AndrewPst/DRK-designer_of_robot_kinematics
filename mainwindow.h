@@ -5,12 +5,12 @@
 #include <QCoreApplication>
 
 //----forward declaration classes----
-class ToolBar;
-class CentralWindow;
-class BaseDock;
+QT_FORWARD_DECLARE_CLASS(ToolBar)
+QT_FORWARD_DECLARE_CLASS(CentralWindow)
+QT_FORWARD_DECLARE_CLASS(BaseDock)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(QActionGroup)
-
+QT_FORWARD_DECLARE_CLASS(BaseProjectController)
 
 class MainWindow : public QMainWindow
 {
@@ -20,8 +20,12 @@ public:
     explicit MainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = {});
     ~MainWindow();
 
-//----Actions slots----
 public slots:
+
+    void onProjectOpened(BaseProjectController*);
+
+//----Actions slots----
+private slots:
 
     //----File actions----
     void actionNewProjectSlot(); //Create new project

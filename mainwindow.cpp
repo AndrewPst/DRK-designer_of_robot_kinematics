@@ -2,8 +2,8 @@
 #include "centralwindow.h"
 #include "basedock.h"
 
-#include "dockWidgets/manybuttonsdock.h"
 #include "projectCore/projectsmanager.h"
+#include "projectCore/baseprojectcontroller.h"
 
 #include <QMenu>
 #include <QMenuBar>
@@ -16,6 +16,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
 {
     setObjectName("MainWindow");
+
+    connect(&projectsManager, &ProjectsManager::onProjectOpened, this, &MainWindow::onProjectOpened);
+
     setWindowTitle(tr("Project 1 - %1").arg(QCoreApplication::applicationName()));
     _centralWindow = new CentralWindow(this);
 
@@ -24,10 +27,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     opts |= AllowTabbedDocks;
     opts |= AnimatedDocks;
     QMainWindow::setDockOptions(opts);
-
-    ManyButtonsDock *b = new ManyButtonsDock(tr("Exemple"), this);
-    _dockWidgets.append(b);
-    addDockWidget(Qt::BottomDockWidgetArea, b);
 
     setupMenuBar();
 
@@ -145,9 +144,20 @@ void MainWindow::actionSetDockOptionsSlot()
     QMainWindow::setDockOptions(opts);
 }
 
+void MainWindow::onProjectOpened(BaseProjectController* proj)
+{
+    Q_FOREACH(auto a, proj->getAviableDocks())
+    {
+        _viewMenu->addMenu(a->getMenu());
+        addDockWidget(a->getDefaultArea(), a);
+    }
+}
+
 void MainWindow::actionNewProjectSlot()
 {
-
+    if(projectsManager.getOpenedProject())
+        return;
+    projectsManager.createNewProject(ProjectType_t::PROJECT_SERIAL_MANIPULATOR);
 }
 
 void MainWindow::actionOpenProjectSlot()

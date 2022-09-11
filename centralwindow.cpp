@@ -1,5 +1,8 @@
 #include "centralwindow.h"
 #include "basecentraldock.h"
+#include "projectCore/baseprojectcontroller.h"
+#include "projectCore/projectsmanager.h"
+
 #include <iostream>
 
 #include <QTextEdit>
@@ -12,6 +15,9 @@ CentralWindow::CentralWindow(QWidget* parent) : QMainWindow(parent)
     setObjectName("centralWindow");
     setWindowTitle(tr("Graphics visualization"));
     setWindowFlags(Qt::Widget);
+
+    connect(&projectsManager, &ProjectsManager::onProjectOpened, this, &CentralWindow::onProjectOpened);
+
 
     setCorner(Qt::Corner::TopRightCorner, Qt::RightDockWidgetArea);
 
@@ -48,25 +54,12 @@ QMenu* CentralWindow::getMenu()
 
 //---Public slots---
 
-void CentralWindow::createNewDockSlot(bool)
+void CentralWindow::onProjectOpened(BaseProjectController* proj)
 {
-    //getNewDock(Qt::RightDockWidgetArea);
-}
-
-void CentralWindow::splitDockSlot(BaseCentralDock* w, Qt::Orientation o)
-{
-    //splitDock(w, o);
-}
-
-void CentralWindow::addTabDockSlot(BaseCentralDock* w)
-{
-//    if(!w)
-//        return;
-//    BaseCentralDock *dv = getNewDock(Qt::RightDockWidgetArea);
-//    tabifyDockWidget(w, dv);
-//    dv->show();
-//    dv->raise();
-
+    Q_FOREACH(auto a, proj->getAviableCentralDocks())
+    {
+        addDockWidget(a->getDefaultArea(), a);
+    }
 }
 
 
@@ -77,11 +70,6 @@ void CentralWindow::initMenu()
     //Init menu
     _menu = new QMenu(objectName(), this);
 
-    _createNewDock = new QAction(tr("Create new dock widget"), this);
-    connect(_createNewDock, &QAction::triggered, this, &CentralWindow::createNewDockSlot);
-    _pinAllWidgets = new QAction(tr("Pin all widgets"), this);
-    _menu->addAction(_createNewDock);
-    _menu->addAction(_pinAllWidgets);
 }
 
 

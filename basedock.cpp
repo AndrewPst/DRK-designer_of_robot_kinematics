@@ -32,6 +32,11 @@ QMenu* BaseDock::getMenu()
 }
 
 
+Qt::DockWidgetArea BaseDock::getDefaultArea() const
+{
+    return Qt::RightDockWidgetArea;
+}
+
 //---Setters---
 void BaseDock::drawAsWindow(bool v)
 {
