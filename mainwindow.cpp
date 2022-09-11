@@ -3,6 +3,7 @@
 #include "basedock.h"
 
 #include "dockWidgets/manybuttonsdock.h"
+#include "projectCore/projectsmanager.h"
 
 #include <QMenu>
 #include <QMenuBar>

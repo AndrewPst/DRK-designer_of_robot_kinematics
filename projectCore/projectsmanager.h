@@ -1,7 +1,10 @@
 #ifndef PROJECTSMANAGER_H
 #define PROJECTSMANAGER_H
 
+#include "projectCore/projectType.h"
+
 #include <QObject>
+
 
 QT_FORWARD_DECLARE_CLASS(BaseProjectController);
 
@@ -18,6 +21,12 @@ public:
     static ProjectsManager& getInstance();
 
     BaseProjectController* getOpenedProject() const;
+
+    void createNewProject(const ProjectType_t);
+
+signals:
+
+    void onProjectOpened(BaseProjectController* const);
 
 private:
 
