@@ -54,7 +54,7 @@ QMenu* CentralWindow::getMenu()
 
 //---Public slots---
 
-void CentralWindow::onProjectOpened(BaseProjectController* proj)
+void CentralWindow::onProjectOpened(BaseProjectController* const proj)
 {
     Q_FOREACH(auto a, proj->getAviableCentralDocks())
     {

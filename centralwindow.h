@@ -18,7 +18,7 @@ public:
 
 public slots:
 
-    void onProjectOpened(BaseProjectController*);
+    void onProjectOpened(BaseProjectController* const);
 
 private slots:
 

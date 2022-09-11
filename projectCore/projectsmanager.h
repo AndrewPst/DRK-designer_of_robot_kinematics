@@ -27,7 +27,7 @@ public:
 
 signals:
 
-    void onProjectOpened(BaseProjectController*);
+    void onProjectOpened(BaseProjectController* const);
 
 private:
 

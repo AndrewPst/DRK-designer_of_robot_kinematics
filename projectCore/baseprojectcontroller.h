@@ -19,7 +19,8 @@ public:
 
     const QList<BaseDock*>& getAviableDocks() const;
     const QList<BaseCentralDock*>& getAviableCentralDocks() const;
-    const QMenu* getTitlebarMenu() const;
+    QMenu* getEditTitlebarMenu() const;
+    QMenu* getViewTitlebarMenu() const;
 
     QString getName() const;
     void setName(QString&);
@@ -38,6 +39,8 @@ protected:
 
     QList<BaseDock*> _avaiableDocks;
     QList<BaseCentralDock*> _avaiableCentralDocks;
+
+    QMenu *_viewMenu, *_editMenu;
 
 };
 

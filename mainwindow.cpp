@@ -93,9 +93,6 @@ void MainWindow::setupMenuBar()
 
     _viewMenu->addSeparator();
 
-    for(qsizetype i = 0; i < _dockWidgets.size(); i++)
-        _viewMenu->addMenu(_dockWidgets[i]->getMenu());
-
     _viewMenu->addSeparator();
     _dockParametersMenu = new QMenu(tr("Dock widgets parameters"), this);
     action = _dockParametersMenu->addAction(tr("Animated docks"));
@@ -144,13 +141,17 @@ void MainWindow::actionSetDockOptionsSlot()
     QMainWindow::setDockOptions(opts);
 }
 
-void MainWindow::onProjectOpened(BaseProjectController* proj)
+void MainWindow::onProjectOpened(BaseProjectController* const proj)
 {
+    setWindowTitle(tr("%1 - %2").arg(proj->getName()).arg(QCoreApplication::applicationName()));
+
     Q_FOREACH(auto a, proj->getAviableDocks())
     {
         _viewMenu->addMenu(a->getMenu());
         addDockWidget(a->getDefaultArea(), a);
     }
+    _editMenu->addMenu(proj->getEditTitlebarMenu());
+    _viewMenu->addMenu(proj->getViewTitlebarMenu());
 }
 
 void MainWindow::actionNewProjectSlot()

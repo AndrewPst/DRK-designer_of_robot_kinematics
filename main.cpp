@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     //Set application params
-    QCoreApplication::setApplicationName("Kinematicks designer");
+    QCoreApplication::setApplicationName("DRK (designer of robot kinematics)");
     QCoreApplication::setApplicationVersion("0.1.0.1 alfa");
 
     glObjectsContainer::addObject(new glField);

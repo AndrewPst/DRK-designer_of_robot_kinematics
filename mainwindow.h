@@ -22,7 +22,7 @@ public:
 
 public slots:
 
-    void onProjectOpened(BaseProjectController*);
+    void onProjectOpened(BaseProjectController* const);
 
 //----Actions slots----
 private slots:
@@ -59,7 +59,5 @@ private:
     QMenu *_dockParametersMenu;
 
     CentralWindow* _centralWindow;
-
-    QList<BaseDock*> _dockWidgets;
 };
 #endif // MAINWINDOW_H

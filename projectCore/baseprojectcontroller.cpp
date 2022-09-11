@@ -1,8 +1,11 @@
 #include "baseprojectcontroller.h"
+#include <QMenu>
 
 BaseProjectController::BaseProjectController()
+    : _viewMenu(new QMenu(tr("Serial"))), _editMenu(new QMenu(tr("Serial")))
 {
-
+    _viewMenu->addAction(tr("test"));
+    _editMenu->addAction(tr("test"));
 }
 
 QString BaseProjectController::getName() const
@@ -35,5 +38,15 @@ const QList<BaseCentralDock*>& BaseProjectController::getAviableCentralDocks() c
     return _avaiableCentralDocks;
 }
 
+
+QMenu* BaseProjectController::getEditTitlebarMenu() const
+{
+    return _editMenu;
+}
+
+QMenu* BaseProjectController::getViewTitlebarMenu() const
+{
+    return _viewMenu;
+}
 
 
