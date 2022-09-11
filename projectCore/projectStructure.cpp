@@ -1,4 +1,5 @@
 #include "projectCore/projectStructure.h"
+#include "projectCore/projectcore.h"
 
 Joint_t::Joint_t()
 {
@@ -92,7 +93,7 @@ void Joint_t::setCurrentValue(double val)
 }
 
 
-bool Joint_t::isGrounded()
+bool Joint_t::isGrounded() const
 {
     return _isGround;
 }
@@ -104,7 +105,7 @@ void Joint_t::setGrounded(bool val)
     emit onGroundedChanged(val);
 }
 
-int Joint_t::getId()
+int Joint_t::getId() const
 {
     return _id;
 }
@@ -116,26 +117,48 @@ void Joint_t::setId(int val)
     emit onIdChanged(val);
 }
 
-QSet<int> Joint_t::getParents()
+int Joint_t::getParentId() const
 {
     return _parents;
 }
 
-void Joint_t::setParents(QSet<int>& val)
+void Joint_t::setParentId(int val)
 {
     if(val == _parents) return;
+    if(val == _id) return;
+    if(val != -1)
+    {
+        bool result = false;
+        Joint_t* parent = projectManager.getOpenedProject()->getJoint(val, &result);
+        if(result)
+            parent->setChildId(_id);
+        else
+            return;
+        if(_parents != -1)
+        {
+            bool result = false;
+            Joint_t* parent = projectManager.getOpenedProject()->getJoint(_parents, &result);
+            if(result)
+                parent->setChildId(-1);
+        }
+
+    }
     _parents = val;
-    emit onParentsChanged(val);
+    emit onParentIdChanged(val);
 }
 
-QSet<int> Joint_t::getChildren()
+int Joint_t::getChildId() const
 {
     return _children;
 }
 
-void Joint_t::setChildren(QSet<int>& val)
+void Joint_t::setChildId(int val)
 {
     if(val == _children) return;
+    bool result = false;
+    Joint_t* parent = projectManager.getOpenedProject()->getJoint(_children, &result);
+    if(result)
+        parent->setParentId(-1);
     _children = val;
-    emit onChildrenChanged(val);
+    emit onChildIdChanged(val);
 }

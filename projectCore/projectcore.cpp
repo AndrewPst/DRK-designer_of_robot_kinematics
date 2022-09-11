@@ -14,7 +14,7 @@ Joint_t*  ProjectController::createJoint()
     if(id == -1)
         return nullptr;
 
-    Joint_t* joint = new Joint_t();
+    Joint_t* joint = new Joint_t{};
     joint->setId(id);
     _structure->manipulator.joints[id] = joint;
     emit onNewJointAdded(joint);

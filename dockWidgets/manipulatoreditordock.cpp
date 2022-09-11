@@ -89,6 +89,8 @@ void SelectedJointWidget::createConnections()
 {
     _connections << connect(_joint, SIGNAL(onCurrentValueChanged(double)), _currentValue, SLOT(setValue(double)));
     _connections << connect(_joint, SIGNAL(onIdChanged(int)), _idSpin, SLOT(setValue(int)));
+    _connections << connect(_joint, SIGNAL(onParentIdChanged(int)), _parentIdBox, SLOT(setValue(int)));
+    _connections << connect(_joint, SIGNAL(onChildIdChanged(int)), _childIdBox, SLOT(setValue(int)));
 }
 
 void SelectedJointWidget::initWidgets()
@@ -100,37 +102,16 @@ void SelectedJointWidget::initWidgets()
 
     _idSpin = new QSpinBox();
     _idSpin->setRange(0, 255);
-    connect(_idSpin, SIGNAL(valueChanged(int)), this, SLOT(onIdChanged(int)));
+    connect(_idSpin, SIGNAL(editingFinished()), this, SLOT(onIdChanged()));
 
-    _parentsList = new QListWidget();
-    _parentsList->setFixedHeight(20);
-    _parentsList->verticalScrollBar()->hide();
-    _parentsList->setFlow(QListView::LeftToRight);
-    _parentsList->addItem(tr("1"));
-    _parentsList->addItem(tr("2"));
-    _parentsList->addItem(tr("3"));
-    _parentsList->addItem(tr("4"));
 
-    _deleteParent = new QPushButton(tr("Delete"));
-    _addParent = new QPushButton(tr("Add"));
-    connect(_addParent, &QPushButton::clicked, this, []()
-    {
-        GetIntDialog _getIntDialog (0, 255);
-        _getIntDialog.show();
-        if(_getIntDialog.exec())
-        {
-            int out = 0;
-            _getIntDialog.getResult(&out);
-            qDebug() << out;
-        }
-    });
+    _parentIdBox = new QSpinBox();
+    _parentIdBox->setRange(0, 255);
+    connect(_parentIdBox, SIGNAL(editingFinished()), this, SLOT(onParentIdChanged()));
 
-    QHBoxLayout* tempHbl = new QHBoxLayout;
-    QVBoxLayout* tempVbl = new QVBoxLayout;
-    tempHbl->addWidget(_deleteParent);
-    tempHbl->addWidget(_addParent);
-    tempVbl->addWidget(_parentsList);
-    tempVbl->addLayout(tempHbl);
+    _childIdBox = new QSpinBox();
+    _childIdBox->setRange(0, 255);
+    _childIdBox->setEnabled(false);
 
     QFormLayout *fl = new QFormLayout();
     fl->setFormAlignment(Qt::AlignHCenter | Qt::AlignTop);
@@ -138,20 +119,33 @@ void SelectedJointWidget::initWidgets()
     fl->setVerticalSpacing(0);
     fl->addRow(tr("Id"), _idSpin);
     fl->addRow(tr("Current value:"), _currentValue);
-    fl->addRow(tr("Parents"), tempVbl);
+    fl->addRow(tr("Parent id"), _parentIdBox);
+    fl->addRow(tr("Child id"), _childIdBox);
     fl->setSizeConstraint(QFormLayout::SizeConstraint::SetFixedSize);
     fl->setSpacing(4);
+    fl->setFormAlignment(Qt::AlignmentFlag::AlignCenter);
+    fl->setAlignment(Qt::AlignmentFlag::AlignCenter);
     setLayout(fl);
 }
 
 
-void SelectedJointWidget::onIdChanged(int id)
+void SelectedJointWidget::onIdChanged()
 {
+    int id = _idSpin->value();
     if(id == _joint->getId()) return;
     int dir = id - _joint->getId();
     int newId = projectManager.getOpenedProject()->getNextFreeId(_joint->getId(), dir);
     projectManager.getOpenedProject()->changeJointId(_joint->getId(), newId);
     _idSpin->setValue(newId);
+}
+
+void SelectedJointWidget::onParentIdChanged()
+{
+    int val = _parentIdBox->value();
+    if(val == _joint->getParentId()) return;
+    _joint->setParentId(val);
+    if(val != _joint->getParentId())
+        _parentIdBox->setValue(_joint->getParentId());
 }
 
 void SelectedJointWidget::updateWidgets()
@@ -161,6 +155,8 @@ void SelectedJointWidget::updateWidgets()
     _currentValue->setSuffix(_joint->getJointType() == JointType_t::JOINT_LINEAR ? tr(" mm") : tr(" degrees"));
 
     _idSpin->setValue(_joint->getId());
+    _parentIdBox->setValue(_joint->getParentId());
+    _childIdBox->setValue(_joint->getChildId());
 
 }
 
@@ -168,7 +164,6 @@ void SelectedJointWidget::onCurrentValueChanged(double value)
 {
     if(value == _joint->getCurrentValue()) return;
     _joint->setCurrentValue(value);
-    _currentValue->setValue(value);
 }
 
 

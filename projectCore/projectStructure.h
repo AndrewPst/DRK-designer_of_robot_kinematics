@@ -14,7 +14,8 @@ enum class JointType_t
 {
     JOINT_UNKNOWN = 0,
     JOINT_ROTATION,
-    JOINT_LINEAR
+    JOINT_LINEAR,
+    JOINT_EFFECTOR
 };
 
 //Denavit–Hartenberg parameters
@@ -39,9 +40,9 @@ struct Joint_t : public QObject
     Q_PROPERTY(double maxValue READ getMaxValue WRITE setMaxValue NOTIFY onMaxValueChanged)
     Q_PROPERTY(double currentValue READ getCurrentValue WRITE setCurrentValue NOTIFY onCurrentValueChanged)
     Q_PROPERTY(bool isGrounded READ isGrounded WRITE setGrounded NOTIFY onGroundedChanged)
-    Q_PROPERTY(QSet<int> parents READ getParents WRITE setParents NOTIFY onParentsChanged)
-    Q_PROPERTY(QSet<int> children READ getChildren WRITE setChildren NOTIFY onChildrenChanged)
-    Q_PROPERTY(int id READ getId WRITE setId NOTIFY onIdChanged)
+    Q_PROPERTY(int parents READ getParentId WRITE setParentId NOTIFY onParentIdChanged)
+    Q_PROPERTY(int children READ getChildId WRITE setChildId NOTIFY onChildIdChanged)
+    Q_PROPERTY(int id READ getId WRITE setId NOTIFY onChildIdChanged)
 
     friend class ProjectController;
 
@@ -52,16 +53,15 @@ public:
     JointType_t getJointType() const;
     void setJointType(const JointType_t&);
 
-    bool isGrounded();
+    bool isGrounded() const;
     void setGrounded(bool);
 
-    int getId();
+    int getId() const;
 
-    QSet<int> getParents();
-    void setParents(QSet<int>&);
+    int getParentId() const;
+    void setParentId(int);
 
-    QSet<int> getChildren();
-    void setChildren(QSet<int>&);
+    int getChildId() const;
 
     QVector3D getPosition() const;
     void setPosition(const QVector3D&);
@@ -92,31 +92,31 @@ signals:
     void onMaxValueChanged(double);
     void onCurrentValueChanged(double);
     void onGroundedChanged(bool);
-    void onParentsChanged(QSet<int>);
-    void onChildrenChanged(QSet<int>);
+    void onParentIdChanged(int);
+    void onChildIdChanged(int);
 
 private:
 
     void setId(int);
-
+    void setChildId(int);
 
 private:
-    JointType_t _type;
-    bool _isGround;
+    JointType_t _type = JointType_t::JOINT_UNKNOWN;
+    bool _isGround = false;
 
-    int _id;
+    int _id{0};
 
     //using array because the parallel manipulator has many parents and children
-    QSet<int> _parents;
-    QSet<int> _children;
+    int _parents{-1};
+    int _children{-1};
 
-    QVector3D _position; //position relative to the parent object
-    QVector3D _rotation; //rotation relative to the parent object
-    DHParameters_t _dhParameters;
-    double _minValue, _maxValue;
+    QVector3D _position{}; //position relative to the parent object
+    QVector3D _rotation{}; //rotation relative to the parent object
+    DHParameters_t _dhParameters{};
+    double _minValue{}, _maxValue{};
 
     //Non file parameters
-    double _currentValue;
+    double _currentValue{};
 };
 
 //----------Manipulator structure-----------

@@ -59,8 +59,8 @@ private:
 private slots:
 
     void onCurrentValueChanged(double);
-    void onIdChanged(int);
-
+    void onIdChanged();
+    void onParentIdChanged();
 
 private:
 
@@ -71,8 +71,8 @@ private:
 
     QComboBox* _typeJointBox;
 
-    QListWidget* _parentsList;
-    QPushButton* _deleteParent, *_addParent;
+    QSpinBox *_parentIdBox;
+    QSpinBox *_childIdBox;
 
     QList<QMetaObject::Connection> _connections;
 };
@@ -95,9 +95,9 @@ public:
 public slots:
 
     void jointChanged();
-
     void onDataUpdated();
 
+private slots:
 
 private:
     void initWidgets();
