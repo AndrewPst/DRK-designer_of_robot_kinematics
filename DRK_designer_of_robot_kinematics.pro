@@ -8,13 +8,10 @@ LIBS    +=  -lopengl32
 LIBS    +=  -lglu32
 
 SOURCES += \
-    CentralDocks/exemplecentraldock.cpp \
     CentralDocks/glcentraldock.cpp \
-    CentralDocks/titleBars/splittertitlebar.cpp \
     basecentraldock.cpp \
     basedock.cpp \
     centralwindow.cpp \
-    dockWidgets/manipulatoreditordock.cpp \
     dockWidgets/manybuttonsdock.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -23,18 +20,14 @@ SOURCES += \
     openGL/globjectscontainer.cpp \
     openGL/glvisualizatorwidget.cpp \
     openGL/projectvisualizator.cpp \
-    projectCore/projectStructure.cpp \
-    projectCore/projectcore.cpp
+    projectCore/baseprojectcontroller.cpp \
+    projectCore/projectControllers/serialmanipulatorprojectcontroller.cpp
 
 HEADERS += \
-    CentralDocks/CentralDockType.h \
-    CentralDocks/exemplecentraldock.h \
     CentralDocks/glcentraldock.h \
-    CentralDocks/titleBars/splittertitlebar.h \
     basecentraldock.h \
     basedock.h \
     centralwindow.h \
-    dockWidgets/manipulatoreditordock.h \
     dockWidgets/manybuttonsdock.h \
     mainwindow.h \
     openGL/baseglobject.h \
@@ -42,8 +35,8 @@ HEADERS += \
     openGL/globjectscontainer.h \
     openGL/glvisualizatorwidget.h \
     openGL/projectvisualizator.h \
-    projectCore/projectStructure.h \
-    projectCore/projectcore.h
+    projectCore/baseprojectcontroller.h \
+    projectCore/projectControllers/serialmanipulatorprojectcontroller.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

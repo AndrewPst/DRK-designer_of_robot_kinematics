@@ -2,7 +2,6 @@
 #define CENTRALWINDOW_H
 
 #include <QMainWindow>
-#include "CentralDocks/CentralDockType.h"
 
 class BaseCentralDock;
 QT_FORWARD_DECLARE_CLASS(QMenu)
@@ -31,7 +30,7 @@ private:
 
 
     BaseCentralDock *getNewDock(Qt::DockWidgetArea area); //Return new dock widget
-    BaseCentralDock *createDockByType(const QString&, const CentralDockTypes_t&, Qt::WindowFlags); //Creates a new widget by its type
+    //BaseCentralDock *createDockByType(const QString&, const CentralDockTypes_t&, Qt::WindowFlags); //Creates a new widget by its type
 
     void splitDock(BaseCentralDock* w, Qt::Orientation o);//Divides the widget by orientation
 

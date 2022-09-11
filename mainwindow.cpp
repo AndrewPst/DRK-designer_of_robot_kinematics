@@ -29,9 +29,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     _dockWidgets.append(b);
     addDockWidget(Qt::BottomDockWidgetArea, b);
 
-    ManipulatorEditorDock *m = new ManipulatorEditorDock(tr("Manipulator editor"), this);
-    _dockWidgets.append(m);
-    addDockWidget(Qt::RightDockWidgetArea, m);
+//    ManipulatorEditorDock *m = new ManipulatorEditorDock(tr("Manipulator editor"), this);
+//    _dockWidgets.append(m);
+//    addDockWidget(Qt::RightDockWidgetArea, m);
 
     setupMenuBar();
 
