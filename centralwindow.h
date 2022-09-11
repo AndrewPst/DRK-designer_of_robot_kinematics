@@ -29,10 +29,10 @@ private:
     void initMenu();
 
 
-    BaseCentralDock *getNewDock(Qt::DockWidgetArea area); //Return new dock widget
-    //BaseCentralDock *createDockByType(const QString&, const CentralDockTypes_t&, Qt::WindowFlags); //Creates a new widget by its type
+//    BaseCentralDock *getNewDock(Qt::DockWidgetArea area); //Return new dock widget
+//    //BaseCentralDock *createDockByType(const QString&, const CentralDockTypes_t&, Qt::WindowFlags); //Creates a new widget by its type
 
-    void splitDock(BaseCentralDock* w, Qt::Orientation o);//Divides the widget by orientation
+//    void splitDock(BaseCentralDock* w, Qt::Orientation o);//Divides the widget by orientation
 
 private:
 

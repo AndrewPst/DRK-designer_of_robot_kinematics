@@ -32,7 +32,7 @@ CentralWindow::CentralWindow(QWidget* parent) : QMainWindow(parent)
     QMainWindow::setDockOptions(opts);
 
     //add first widget
-    getNewDock(Qt::TopDockWidgetArea);
+    //getNewDock(Qt::TopDockWidgetArea);
     //getNewDock(Qt::TopDockWidgetArea);
 
     //hide central widget
@@ -50,22 +50,22 @@ QMenu* CentralWindow::getMenu()
 
 void CentralWindow::createNewDockSlot(bool)
 {
-    getNewDock(Qt::RightDockWidgetArea);
+    //getNewDock(Qt::RightDockWidgetArea);
 }
 
 void CentralWindow::splitDockSlot(BaseCentralDock* w, Qt::Orientation o)
 {
-    splitDock(w, o);
+    //splitDock(w, o);
 }
 
 void CentralWindow::addTabDockSlot(BaseCentralDock* w)
 {
-    if(!w)
-        return;
-    BaseCentralDock *dv = getNewDock(Qt::RightDockWidgetArea);
-    tabifyDockWidget(w, dv);
-    dv->show();
-    dv->raise();
+//    if(!w)
+//        return;
+//    BaseCentralDock *dv = getNewDock(Qt::RightDockWidgetArea);
+//    tabifyDockWidget(w, dv);
+//    dv->show();
+//    dv->raise();
 
 }
 

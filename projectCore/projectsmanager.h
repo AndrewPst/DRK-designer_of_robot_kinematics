@@ -4,11 +4,12 @@
 #include "projectCore/projectType.h"
 
 #include <QObject>
+#include <memory>
 
 
 QT_FORWARD_DECLARE_CLASS(BaseProjectController);
 
-class ProjectsManager : QObject
+class ProjectsManager : public QObject
 {
     Q_OBJECT
 private:
@@ -26,7 +27,7 @@ public:
 
 signals:
 
-    void onProjectOpened(BaseProjectController* const);
+    void onProjectOpened(BaseProjectController*);
 
 private:
 
