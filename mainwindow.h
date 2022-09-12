@@ -11,6 +11,7 @@ QT_FORWARD_DECLARE_CLASS(BaseDock)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(QActionGroup)
 QT_FORWARD_DECLARE_CLASS(BaseProjectController)
+QT_FORWARD_DECLARE_CLASS(NewProjectConstructorWidget);
 
 class MainWindow : public QMainWindow
 {

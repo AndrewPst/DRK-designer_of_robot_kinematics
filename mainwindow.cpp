@@ -1,10 +1,11 @@
 #include "mainwindow.h"
 #include "centralwindow.h"
 #include "basedock.h"
-
+#include "messageWindows/newprojectconstructorwidget.h"
 #include "projectCore/projectsmanager.h"
 #include "projectCore/baseprojectcontroller.h"
 
+#include <QDebug>
 #include <QMenu>
 #include <QMenuBar>
 #include <QKeySequence>
@@ -190,7 +191,13 @@ void MainWindow::actionOpenProjectSlot()
 
 void MainWindow::actionSaveAllSlot()
 {
-
+    NewProjectConstructorWidget contructor;
+    contructor.show();
+    if(contructor.exec() == true)
+    {
+        qDebug() << contructor.getName();
+        qDebug() << (int)contructor.getProjectType();
+    }
 }
 
 void MainWindow::actionSaveAllAsSlot()

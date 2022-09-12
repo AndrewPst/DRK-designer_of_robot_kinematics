@@ -15,6 +15,7 @@ SOURCES += \
     dockWidgets/manybuttonsdock.cpp \
     main.cpp \
     mainwindow.cpp \
+    messageWindows/newprojectconstructorwidget.cpp \
     openGL/baseglobject.cpp \
     openGL/glfield.cpp \
     openGL/globjectscontainer.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
     centralwindow.h \
     dockWidgets/manybuttonsdock.h \
     mainwindow.h \
+    messageWindows/newprojectconstructorwidget.h \
     openGL/baseglobject.h \
     openGL/glfield.h \
     openGL/globjectscontainer.h \
