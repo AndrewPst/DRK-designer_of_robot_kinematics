@@ -8,13 +8,15 @@
 #include <QMainWindow>
 #include <QMenu>
 
+QT_FORWARD_DECLARE_CLASS(BaseProjectController)
+
 //Base class for dock widget in central window
 class BaseCentralDock : public QDockWidget
 {
     Q_OBJECT
 
 public:
-    explicit BaseCentralDock(const QString& title,
+    explicit BaseCentralDock(const QString& title = "",
                                    QMainWindow* parent = nullptr,
                                    Qt::WindowFlags flags = {});
 
@@ -29,12 +31,6 @@ signals:
     void onTabDock(BaseCentralDock*); //Add a new widget to a tab
 
 
-
-public slots:
-
-    void splitHInto(bool);
-    void splitVInto(bool);
-    void addTabinto(bool);
 
 //---Events---
 private slots:
@@ -55,7 +51,6 @@ private:
 protected:
     QWidget *_titleWidget;
     Qt::WindowFlags _flags;
-    QMainWindow *_parentWindow;
 
     QMenu *_menu;
 };

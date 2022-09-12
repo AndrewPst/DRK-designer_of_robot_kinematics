@@ -1,10 +1,14 @@
 #include "basecentraldock.h"
+#include "centralwindow.h"
+#include "projectCore/projectsmanager.h"
+#include "projectCore/baseprojectcontroller.h"
+
 #include <QContextMenuEvent>
 
 BaseCentralDock::BaseCentralDock(const QString& title,
                                  QMainWindow* parent ,
                                  Qt::WindowFlags flags)
-    : QDockWidget(title, parent, flags), _flags(flags), _parentWindow(parent)
+    : QDockWidget(title, parent, flags), _flags(flags)
 {
     setObjectName(title);
     setWindowTitle(title);
@@ -14,7 +18,6 @@ BaseCentralDock::BaseCentralDock(const QString& title,
 
     //Callback to open a widget in the form of a window
     connect(this, SIGNAL(topLevelChanged(bool)), this, SLOT(onTopLevelChanged(bool)));
-
 
     _menu = new QMenu(objectName(), this);
     QAction *a = toggleViewAction();
@@ -34,21 +37,6 @@ Qt::DockWidgetArea BaseCentralDock::getDefaultArea() const
 
 
 //---public slots---
-void BaseCentralDock::splitHInto(bool)
-{
-    emit onSplitDock(this, Qt::Orientation::Vertical);
-}
-
-void BaseCentralDock::splitVInto(bool)
-{
-    emit onSplitDock(this, Qt::Orientation::Horizontal);
-}
-
-void BaseCentralDock::addTabinto(bool)
-{
-    emit onTabDock(this);
-}
-
 
 //---private slots
 void BaseCentralDock::closeWidgetSlot(bool)
@@ -89,7 +77,9 @@ void BaseCentralDock::onTopLevelChanged(bool)
 void BaseCentralDock::closeEvent(QCloseEvent*)
 {
     //Remove this widget from parent window
-    _parentWindow->removeDockWidget(this);
+    CentralWindow* window = qobject_cast<CentralWindow*>(parent());
+    window->removeDockWidget(this);
+    projectsManager.getOpenedProject()->deleteCentralDock(this);
 }
 
 void BaseCentralDock::changeEvent(QEvent *event)

@@ -71,4 +71,9 @@ BaseProjectController::~BaseProjectController()
     }
 }
 
+void BaseProjectController::deleteCentralDock(BaseCentralDock* dock)
+{
+    _avaiableCentralDocks.removeOne(dock);
+}
+
 

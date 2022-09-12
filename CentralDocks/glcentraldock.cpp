@@ -1,4 +1,7 @@
 #include "glcentraldock.h"
+#include "centralwindow.h"
+#include "projectCore/projectsmanager.h"
+#include "projectCore/baseprojectcontroller.h"
 
 #include <QAction>
 #include <QHBoxLayout>
@@ -23,13 +26,13 @@ glCentralDock::glCentralDock(const QString& title,
 
     QVBoxLayout *bLayout = new QVBoxLayout();
     QPushButton *splitVButton = new QPushButton(tr("|"));
-    connect(splitVButton, &QPushButton::clicked, this, &BaseCentralDock::splitVInto);
+    connect(splitVButton, &QPushButton::clicked, this, &glCentralDock::onVSplit);
     splitVButton->setFixedSize(32, 32);
     QPushButton *splitHButton = new QPushButton(tr("-"));
-    connect(splitHButton, &QPushButton::clicked, this, &BaseCentralDock::splitHInto);
+    connect(splitHButton, &QPushButton::clicked, this, &glCentralDock::onHSplit);
     splitHButton->setFixedSize(32, 32);
     QPushButton *addTabButton = new QPushButton(tr("TAB"));
-    connect(addTabButton, &QPushButton::clicked, this, &BaseCentralDock::addTabinto);
+    connect(addTabButton, &QPushButton::clicked, this, &glCentralDock::onTabSplit);
     addTabButton->setFixedSize(32, 32);
     bLayout->setAlignment(Qt::AlignmentFlag::AlignTop);
 
@@ -95,6 +98,25 @@ void glCentralDock::setLookDirectionSlot(QAction* action)
         _glWidget->setAngleY(0);
     }
 }
+
+void glCentralDock::onHSplit()
+{
+    CentralWindow* window = qobject_cast<CentralWindow*>(parent());
+    window->splitDockWidget(this, projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(), Qt::Orientation::Vertical);
+}
+
+void glCentralDock::onVSplit()
+{
+    CentralWindow* window = qobject_cast<CentralWindow*>(parent());
+    window->splitDockWidget(this,  projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(), Qt::Orientation::Horizontal);
+}
+
+void glCentralDock::onTabSplit()
+{
+    CentralWindow* window = qobject_cast<CentralWindow*>(parent());
+    window->tabDockWidget(this,  projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>());
+}
+
 
 void glCentralDock::reverseDirecionSlot()
 {

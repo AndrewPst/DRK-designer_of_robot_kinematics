@@ -1,12 +1,17 @@
 #ifndef BASEPROJECTCONTROLLER_H
 #define BASEPROJECTCONTROLLER_H
 
+#include "basecentraldock.h"
+
 #include <QObject>
 
+
+
 QT_FORWARD_DECLARE_CLASS(BaseDock)
-QT_FORWARD_DECLARE_CLASS(BaseCentralDock)
 QT_FORWARD_DECLARE_STRUCT(ProjectSource_t);
-QT_FORWARD_DECLARE_STRUCT(QMenu);
+
+//#include "projectCore/templateTisBase.h"
+
 
 class BaseProjectController : public QObject
 {
@@ -21,6 +26,19 @@ public:
     const QList<BaseCentralDock*>& getAviableCentralDocks() const;
     QMenu* getEditTitlebarMenu() const;
     QMenu* getViewTitlebarMenu() const;
+
+    template <
+        typename T
+      , typename = typename std::enable_if_t<std::is_base_of_v<BaseCentralDock, T>>
+    >
+    T * getNewCentralDock()
+    {
+        T* result = new T();
+        _avaiableCentralDocks.append(result);
+        return result;
+    }
+
+    void deleteCentralDock(BaseCentralDock*);
 
 
     QString getName() const;

@@ -18,7 +18,6 @@ CentralWindow::CentralWindow(QWidget* parent) : QMainWindow(parent)
 
     connect(&projectsManager, &ProjectsManager::onProjectOpened, this, &CentralWindow::onProjectOpened);
 
-    setCorner(Qt::Corner::TopRightCorner, Qt::RightDockWidgetArea);
 
     //Setup openGl
     QGLFormat fmt;
@@ -34,6 +33,8 @@ CentralWindow::CentralWindow(QWidget* parent) : QMainWindow(parent)
     opts |= AllowTabbedDocks;
     QMainWindow::setDockOptions(opts);
 
+    setCorner(Qt::Corner::TopRightCorner, Qt::RightDockWidgetArea);
+    setCorner(Qt::Corner::BottomRightCorner, Qt::RightDockWidgetArea);
     //add first widget
     //getNewDock(Qt::TopDockWidgetArea);
     //getNewDock(Qt::TopDockWidgetArea);
@@ -46,15 +47,25 @@ void CentralWindow::splitDockWidget(BaseCentralDock* base, BaseCentralDock* nw, 
 {
     if(!base || !nw) return;
     auto area = (o == Qt::Orientation::Vertical) ? Qt::BottomDockWidgetArea : Qt::RightDockWidgetArea;
-    addDockWidget(area, nw);
+    QMainWindow::addDockWidget(area, nw);
     if(tabifiedDockWidgets(base).size() == 0)
         QMainWindow::splitDockWidget(base, nw, o);
 }
 
-void CentralWindow::tabDockWidget(BaseCentralDock* widget, BaseCentralDock* tab)
+void CentralWindow::tabDockWidget(BaseCentralDock* first, BaseCentralDock* second)
 {
-    if(!widget || !tab) return;
-    QMainWindow::tabifyDockWidget(widget, tab);
+    if(!first || !second) return;
+    QMainWindow::addDockWidget( Qt::RightDockWidgetArea, second);
+    QMainWindow::tabifyDockWidget(first, second);
+    second->show();
+    second->raise();
+}
+
+void CentralWindow::addNewDockWidget(BaseCentralDock* w)
+{
+    if(!w) return;
+    QMainWindow::addDockWidget(Qt::DockWidgetArea::RightDockWidgetArea, w);
+    w->setFloating(true);
 }
 
 

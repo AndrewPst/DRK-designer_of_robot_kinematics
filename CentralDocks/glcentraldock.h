@@ -7,7 +7,7 @@
 class glCentralDock : public BaseCentralDock
 {
 public:
-    glCentralDock(const QString& title,
+    glCentralDock(const QString& title = "Visualization",
                   QMainWindow *parent = nullptr,
                   Qt::WindowFlags flags = {});
 
@@ -16,6 +16,12 @@ public slots:
     void setProjectionModeSlot(QAction*);
     void setLookDirectionSlot(QAction*);
     void reverseDirecionSlot();
+
+private slots:
+
+    void onHSplit();
+    void onVSplit();
+    void onTabSplit();
 
 private:
 

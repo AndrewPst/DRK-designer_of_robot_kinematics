@@ -1,5 +1,4 @@
 #include "serialmanipulatorprojectcontroller.h"
-
 #include "CentralDocks/glcentraldock.h"
 #include <dockWidgets/manybuttonsdock.h>
 
@@ -8,7 +7,5 @@ SerialManipulatorProjectController::SerialManipulatorProjectController() : BaseP
     _avaiableCentralDocks << new glCentralDock(tr("Visualization"));
     _avaiableDocks << new ManyButtonsDock(tr("Buttons"));
 }
-
-
 
 
