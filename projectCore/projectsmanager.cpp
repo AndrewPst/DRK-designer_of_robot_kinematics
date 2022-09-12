@@ -3,6 +3,11 @@
 
 ProjectsManager& projectsManager = ProjectsManager::getInstance();
 
+ProjectsManager::ProjectsManager()
+{
+    initAvailableControllers();
+}
+
 ProjectsManager& ProjectsManager::getInstance()
 {
     static ProjectsManager pm;
@@ -12,16 +17,17 @@ ProjectsManager& ProjectsManager::getInstance()
 void ProjectsManager::createNewProject(const ProjectType_t type)
 {
     //TODO make type-class system
+    _openedProject = getProjectByType(type);
+    if(_openedProject == nullptr)
+        return;
 
-    switch (type) {
-    case ProjectType_t::PROJECT_SERIAL_MANIPULATOR:
-        _openedProject = new SerialManipulatorProjectController();
-        break;
-    default:
-        break;
-    }
-
+    _openedProject->setName(tr("Project test"));
     emit onProjectOpened(_openedProject);
+}
+
+const QMap<ProjectType_t, QString>& ProjectsManager::getAvailablesControllers() const
+{
+    return _projectsDictionary;
 }
 
 

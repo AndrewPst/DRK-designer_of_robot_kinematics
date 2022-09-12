@@ -9,3 +9,6 @@ SerialManipulatorProjectController::SerialManipulatorProjectController() : BaseP
     _avaiableDocks << new ManyButtonsDock(tr("Buttons"));
 }
 
+
+
+

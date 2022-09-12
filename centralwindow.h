@@ -13,6 +13,10 @@ class CentralWindow : public QMainWindow
 public:
     explicit CentralWindow(QWidget* parent = nullptr);
 
+    void splitDockWidget(BaseCentralDock*, BaseCentralDock*, Qt::Orientation);
+    void tabDockWidget(BaseCentralDock*, BaseCentralDock*);
+    void addNewDockWidget(BaseCentralDock*);
+
 public slots:
 
     void onProjectOpened(BaseProjectController* const);
@@ -22,7 +26,7 @@ private slots:
 
 
 private:
-    void initMenu();
+
 
 };
 

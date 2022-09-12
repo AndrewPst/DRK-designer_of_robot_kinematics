@@ -21,6 +21,7 @@ SOURCES += \
     openGL/glvisualizatorwidget.cpp \
     openGL/projectvisualizator.cpp \
     projectCore/baseprojectcontroller.cpp \
+    projectCore/initAvailableControllers.cpp \
     projectCore/projectControllers/serialmanipulatorprojectcontroller.cpp \
     projectCore/projectsmanager.cpp
 

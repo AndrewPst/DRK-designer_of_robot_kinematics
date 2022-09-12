@@ -18,8 +18,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     setObjectName("MainWindow");
 
     connect(&projectsManager, &ProjectsManager::onProjectOpened, this, &MainWindow::onProjectOpened);
+    connect(&projectsManager, &ProjectsManager::onProjectClosed, this, &MainWindow::onProjectClosed);
 
-    setWindowTitle(tr("Project 1 - %1").arg(QCoreApplication::applicationName()));
+    setWindowTitle(tr("%1").arg(QCoreApplication::applicationName()));
     _centralWindow = new CentralWindow(this);
 
     DockOptions opts;
@@ -147,7 +148,7 @@ void MainWindow::actionSetDockOptionsSlot()
 
 void MainWindow::onProjectOpened(BaseProjectController* const proj)
 {
-    setWindowTitle(tr("%1 - %2").arg(proj->getName(), QCoreApplication::applicationName()));
+    setWindowTitle(tr("%1 (%2) - %3").arg(proj->getName(),proj->getVersion(), QCoreApplication::applicationName()));
 
     _viewMenu = proj->getViewTitlebarMenu();
     _projectMenu = proj->getEditTitlebarMenu();
@@ -167,7 +168,7 @@ void MainWindow::onProjectOpened(BaseProjectController* const proj)
 
 void MainWindow::onProjectClosed(BaseProjectController* const)
 {
-
+    setWindowTitle(tr("%1").arg(QCoreApplication::applicationName()));
 }
 
 void MainWindow::actionNewProjectSlot()

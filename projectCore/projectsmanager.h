@@ -4,7 +4,9 @@
 #include "projectCore/projectType.h"
 
 #include <QObject>
-#include <memory>
+#include <QString>
+#include <QMap>
+
 
 
 QT_FORWARD_DECLARE_CLASS(BaseProjectController);
@@ -13,9 +15,13 @@ class ProjectsManager : public QObject
 {
     Q_OBJECT
 private:
-    ProjectsManager() = default;
+    ProjectsManager();
     ProjectsManager(const ProjectsManager&) = delete;
     ProjectsManager& operator=(const ProjectsManager&) = delete;
+
+    QMap<ProjectType_t, QString> _projectsDictionary;
+
+    void initAvailableControllers();
 
 public:
 
@@ -25,6 +31,10 @@ public:
 
     void createNewProject(const ProjectType_t);
     void closeProject();
+
+    BaseProjectController* getProjectByType(const ProjectType_t);
+
+    const QMap<ProjectType_t, QString>& getAvailablesControllers() const;
 
 signals:
 

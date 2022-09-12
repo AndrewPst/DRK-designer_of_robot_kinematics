@@ -12,12 +12,14 @@ BaseProjectController::BaseProjectController()
 
 QString BaseProjectController::getName() const
 {
-    return "";
+    return _projectName;
 }
 
-void BaseProjectController::setName(QString&)
+void BaseProjectController::setName(const QString& name)
 {
-    //TODO make logic
+    if(name == _projectName) return;
+    _projectName = name;
+    emit onRenamed(_projectName);
 }
 
 QString BaseProjectController::getVersion() const
@@ -25,9 +27,11 @@ QString BaseProjectController::getVersion() const
     return "";
 }
 
-void BaseProjectController::setVersion(Version_t&)
+void BaseProjectController::setVersion(const Version_t& ver)
 {
-    //TODO make logic
+    if(ver == _projectVersion) return;
+    _projectVersion = ver;
+    emit onVersionChanged(_projectVersion);
 }
 
 const QList<BaseDock*>& BaseProjectController::getAviableDocks() const

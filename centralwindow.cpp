@@ -18,10 +18,7 @@ CentralWindow::CentralWindow(QWidget* parent) : QMainWindow(parent)
 
     connect(&projectsManager, &ProjectsManager::onProjectOpened, this, &CentralWindow::onProjectOpened);
 
-
     setCorner(Qt::Corner::TopRightCorner, Qt::RightDockWidgetArea);
-
-    initMenu();
 
     //Setup openGl
     QGLFormat fmt;
@@ -45,6 +42,21 @@ CentralWindow::CentralWindow(QWidget* parent) : QMainWindow(parent)
     setCentralWidget(nullptr);
 }
 
+void CentralWindow::splitDockWidget(BaseCentralDock* base, BaseCentralDock* nw, Qt::Orientation o)
+{
+    if(!base || !nw) return;
+    auto area = (o == Qt::Orientation::Vertical) ? Qt::BottomDockWidgetArea : Qt::RightDockWidgetArea;
+    addDockWidget(area, nw);
+    if(tabifiedDockWidgets(base).size() == 0)
+        QMainWindow::splitDockWidget(base, nw, o);
+}
+
+void CentralWindow::tabDockWidget(BaseCentralDock* widget, BaseCentralDock* tab)
+{
+    if(!widget || !tab) return;
+    QMainWindow::tabifyDockWidget(widget, tab);
+}
+
 
 //---- Getters ----
 
@@ -60,13 +72,6 @@ void CentralWindow::onProjectOpened(BaseProjectController* const proj)
 
 
 //---Private methods---
-
-void CentralWindow::initMenu()
-{
-    //Init menu
-
-
-}
 
 
 //BaseCentralDock* CentralWindow::getNewDock(Qt::DockWidgetArea area)

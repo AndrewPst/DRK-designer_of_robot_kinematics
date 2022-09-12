@@ -22,11 +22,12 @@ public:
     QMenu* getEditTitlebarMenu() const;
     QMenu* getViewTitlebarMenu() const;
 
+
     QString getName() const;
-    void setName(QString&);
+    void setName(const QString&);
 
     Version_t getVersion() const;
-    void setVersion(Version_t&);
+    void setVersion(const Version_t&);
 
     virtual ~BaseProjectController();
 
@@ -38,6 +39,10 @@ signals:
 protected:
 
     ProjectSource_t* _projectSource;
+
+    //TEMP
+    QString _projectName;
+    Version_t _projectVersion;
 
     QList<BaseDock*> _avaiableDocks;
     QList<BaseCentralDock*> _avaiableCentralDocks;
