@@ -22,7 +22,9 @@ public:
 
 public slots:
 
+    //project slots
     void onProjectOpened(BaseProjectController* const);
+    void onProjectClosed(BaseProjectController* const);
 
 //----Actions slots----
 private slots:
@@ -54,7 +56,10 @@ private:
     //QList<ToolBar*> _toolBars;
     QMenu *_fileMenu;
     QMenu *_editMenu;
+    QMenu *_windowMenu;
+
     QMenu *_viewMenu;
+    QMenu *_projectMenu;
 
     QMenu *_dockParametersMenu;
 

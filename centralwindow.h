@@ -13,9 +13,6 @@ class CentralWindow : public QMainWindow
 public:
     explicit CentralWindow(QWidget* parent = nullptr);
 
-    //---Get menu for toolbar---
-    QMenu* getMenu();
-
 public slots:
 
     void onProjectOpened(BaseProjectController* const);
@@ -26,10 +23,6 @@ private slots:
 
 private:
     void initMenu();
-
-private:
-
-    QMenu* _menu;
 
 };
 

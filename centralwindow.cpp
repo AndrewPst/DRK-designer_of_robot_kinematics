@@ -47,10 +47,6 @@ CentralWindow::CentralWindow(QWidget* parent) : QMainWindow(parent)
 
 
 //---- Getters ----
-QMenu* CentralWindow::getMenu()
-{
-    return _menu;
-}
 
 //---Public slots---
 
@@ -68,7 +64,7 @@ void CentralWindow::onProjectOpened(BaseProjectController* const proj)
 void CentralWindow::initMenu()
 {
     //Init menu
-    _menu = new QMenu(objectName(), this);
+
 
 }
 

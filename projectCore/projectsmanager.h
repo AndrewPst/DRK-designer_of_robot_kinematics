@@ -24,10 +24,13 @@ public:
     BaseProjectController* getOpenedProject() const;
 
     void createNewProject(const ProjectType_t);
+    void closeProject();
 
 signals:
 
     void onProjectOpened(BaseProjectController* const);
+    void onProjectClosed(BaseProjectController* const);
+
 
 private:
 

@@ -28,6 +28,8 @@ public:
     Version_t getVersion() const;
     void setVersion(Version_t&);
 
+    virtual ~BaseProjectController();
+
 signals:
 
     void onRenamed(QString);

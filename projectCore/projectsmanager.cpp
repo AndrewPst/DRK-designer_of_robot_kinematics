@@ -24,7 +24,16 @@ void ProjectsManager::createNewProject(const ProjectType_t type)
     emit onProjectOpened(_openedProject);
 }
 
+
 BaseProjectController* ProjectsManager::getOpenedProject() const
 {
     return _openedProject;
+}
+void ProjectsManager::closeProject()
+{
+    if(!_openedProject)
+        return;
+    emit onProjectClosed(_openedProject);
+    _openedProject->deleteLater();
+    _openedProject = NULL;
 }

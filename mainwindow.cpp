@@ -61,6 +61,9 @@ void MainWindow::setupMenuBar()
 
     _fileMenu->addSeparator();
 
+    action = _fileMenu->addAction(tr("Close project"));
+    connect(action, &QAction::triggered, this, &MainWindow::actionCloseProjectSlot);
+
     action = _fileMenu->addAction(tr("&Return to last save"));
     connect(action, &QAction::triggered, this, &MainWindow::actionReturnToLastSaveSlot);
 
@@ -87,13 +90,10 @@ void MainWindow::setupMenuBar()
     action = _editMenu->addAction(tr("Pr&eferences"));
     connect(action, &QAction::toggled, this, &MainWindow::actionOpenPreferencesSlot);
 
-    //----Setup view menu----
-    _viewMenu = menuBar()->addMenu(tr("&View"));
-    _viewMenu->addMenu(_centralWindow->getMenu());
+    //----Setup window menu----
+    _windowMenu = menuBar()->addMenu(tr("&Window"));
 
-    _viewMenu->addSeparator();
-
-    _viewMenu->addSeparator();
+    _windowMenu->addSeparator();
     _dockParametersMenu = new QMenu(tr("Dock widgets parameters"), this);
     action = _dockParametersMenu->addAction(tr("Animated docks"));
     action->setCheckable(true);
@@ -115,7 +115,11 @@ void MainWindow::setupMenuBar()
     action->setChecked(dockOptions() & GroupedDragging);
     connect(action, &QAction::toggled, this, &MainWindow::actionSetDockOptionsSlot);
 
-    _viewMenu->addMenu(_dockParametersMenu);
+    _windowMenu->addMenu(_dockParametersMenu);
+
+    //----Setup window menu----
+    //_viewMenu = menuBar()->addMenu(tr("Views"));
+
 }
 
 
@@ -143,15 +147,27 @@ void MainWindow::actionSetDockOptionsSlot()
 
 void MainWindow::onProjectOpened(BaseProjectController* const proj)
 {
-    setWindowTitle(tr("%1 - %2").arg(proj->getName()).arg(QCoreApplication::applicationName()));
+    setWindowTitle(tr("%1 - %2").arg(proj->getName(), QCoreApplication::applicationName()));
+
+    _viewMenu = proj->getViewTitlebarMenu();
+    _projectMenu = proj->getEditTitlebarMenu();
+
+    menuBar()->addMenu(_viewMenu);
+    menuBar()->addMenu(_projectMenu);
+
+    _viewMenu->addSeparator();
 
     Q_FOREACH(auto a, proj->getAviableDocks())
     {
         _viewMenu->addMenu(a->getMenu());
         addDockWidget(a->getDefaultArea(), a);
     }
-    _editMenu->addMenu(proj->getEditTitlebarMenu());
-    _viewMenu->addMenu(proj->getViewTitlebarMenu());
+
+}
+
+void MainWindow::onProjectClosed(BaseProjectController* const)
+{
+
 }
 
 void MainWindow::actionNewProjectSlot()
@@ -159,6 +175,11 @@ void MainWindow::actionNewProjectSlot()
     if(projectsManager.getOpenedProject())
         return;
     projectsManager.createNewProject(ProjectType_t::PROJECT_SERIAL_MANIPULATOR);
+}
+
+void MainWindow::actionCloseProjectSlot()
+{
+    projectsManager.closeProject();
 }
 
 void MainWindow::actionOpenProjectSlot()
@@ -181,10 +202,6 @@ void MainWindow::actionReturnToLastSaveSlot()
 
 }
 
-void MainWindow::actionCloseProjectSlot()
-{
-
-}
 
 void MainWindow::actionUndoSlot()
 {
