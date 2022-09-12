@@ -32,7 +32,7 @@ QMenu *BaseCentralDock::getMenu()
 
 Qt::DockWidgetArea BaseCentralDock::getDefaultArea() const
 {
-    return Qt::RightDockWidgetArea;
+    return Qt::TopDockWidgetArea;
 }
 
 
