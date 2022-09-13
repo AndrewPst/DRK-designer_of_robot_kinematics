@@ -29,7 +29,7 @@ public:
 
     BaseProjectController* getOpenedProject() const;
 
-    void createNewProject(const ProjectType_t);
+    void createNewProject(const ProjectType_t, const QString&);
     void closeProject();
 
     BaseProjectController* getProjectByType(const ProjectType_t);

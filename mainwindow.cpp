@@ -174,9 +174,14 @@ void MainWindow::onProjectClosed(BaseProjectController* const)
 
 void MainWindow::actionNewProjectSlot()
 {
-    if(projectsManager.getOpenedProject())
-        return;
-    projectsManager.createNewProject(ProjectType_t::PROJECT_SERIAL_MANIPULATOR);
+    NewProjectConstructorWidget contructor;
+    contructor.show();
+    if(contructor.exec() == true)
+    {
+        if(projectsManager.getOpenedProject())
+            projectsManager.closeProject();
+        projectsManager.createNewProject(contructor.getProjectType(), contructor.getName());
+    }
 }
 
 void MainWindow::actionCloseProjectSlot()
@@ -191,13 +196,7 @@ void MainWindow::actionOpenProjectSlot()
 
 void MainWindow::actionSaveAllSlot()
 {
-    NewProjectConstructorWidget contructor;
-    contructor.show();
-    if(contructor.exec() == true)
-    {
-        qDebug() << contructor.getName();
-        qDebug() << (int)contructor.getProjectType();
-    }
+
 }
 
 void MainWindow::actionSaveAllAsSlot()
