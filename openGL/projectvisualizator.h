@@ -4,7 +4,6 @@
 #include <QObject>
 
 QT_FORWARD_DECLARE_CLASS(glVisualizatorWidget);
-QT_FORWARD_DECLARE_CLASS(BaseGLObject);
 
 class ProjectVisualizator : public QObject
 {
@@ -38,7 +37,6 @@ private:
 
 private:
 
-    QList<BaseGLObject*> _glObjects;
     glVisualizatorWidget* _currentContext;
 
 };

@@ -3,9 +3,6 @@
 
 #include <QApplication>
 
-#include "openGL/glfield.h"
-#include "openGL/globjectscontainer.h"
-
 int main(int argc, char *argv[])
 {
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -16,8 +13,6 @@ int main(int argc, char *argv[])
     //Set application params
     QCoreApplication::setApplicationName("DRK (designer of robot kinematics)");
     QCoreApplication::setApplicationVersion("0.1.0.1 alfa");
-
-    glObjectsContainer::addObject(new glField);
 
     MainWindow w;
     w.resize(800, 600);

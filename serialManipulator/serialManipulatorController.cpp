@@ -1,6 +1,6 @@
-#include "serialmanipulatorprojectcontroller.h"
-#include "CentralDocks/glcentraldock.h"
-#include <dockWidgets/manybuttonsdock.h>
+#include "serialManipulator/serialManipulatorController.h"
+#include "serialManipulator/centralDocks/glcentraldock.h"
+#include "serialManipulator/docks/manybuttonsdock.h"
 
 SerialManipulatorProjectController::SerialManipulatorProjectController() : BaseProjectController()
 {
