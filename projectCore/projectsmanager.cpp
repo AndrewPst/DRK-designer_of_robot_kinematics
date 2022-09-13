@@ -14,14 +14,13 @@ ProjectsManager& ProjectsManager::getInstance()
     return pm;
 }
 
-void ProjectsManager::createNewProject(const ProjectType_t type)
+void ProjectsManager::createNewProject(const ProjectType_t type, const QString& name)
 {
     //TODO make type-class system
     _openedProject = getProjectByType(type);
     if(_openedProject == nullptr)
         return;
-
-    _openedProject->setName(tr("Project test"));
+    _openedProject->setName(name);
     emit onProjectOpened(_openedProject);
 }
 

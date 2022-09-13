@@ -27,10 +27,8 @@ public:
     QMenu* getEditTitlebarMenu() const;
     QMenu* getViewTitlebarMenu() const;
 
-    template <
-        typename T
-      , typename = typename std::enable_if_t<std::is_base_of_v<BaseCentralDock, T>>
-    >
+    template <typename T,
+              typename = typename std::enable_if_t<std::is_base_of_v<BaseCentralDock, T>>>
     T * getNewCentralDock()
     {
         T* result = new T();

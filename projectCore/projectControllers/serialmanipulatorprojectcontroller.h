@@ -2,7 +2,6 @@
 #define SERIALMANIPULATORPROJECTCONTROLLER_H
 
 #include "projectCore/baseprojectcontroller.h"
-#include "basecentraldock.h"
 
 
 
