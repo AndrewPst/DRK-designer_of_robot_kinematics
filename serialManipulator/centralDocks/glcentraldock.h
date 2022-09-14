@@ -2,7 +2,7 @@
 #define GLCENTRALDOCK_H
 
 #include "basecentraldock.h"
-#include "openGL/glvisualizatorwidget.h"
+#include "../openGL/glvisualizatorwidget.h"
 
 class glCentralDock : public BaseCentralDock
 {

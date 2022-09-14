@@ -1,4 +1,4 @@
-#include "glcentraldock.h"
+#include "../centralDocks/glcentraldock.h"
 #include "centralwindow.h"
 #include "projectCore/projectsmanager.h"
 #include "projectCore/baseprojectcontroller.h"

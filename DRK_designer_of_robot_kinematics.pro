@@ -14,14 +14,15 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     messageWindows/newprojectconstructorwidget.cpp \
-    openGL/glvisualizatorwidget.cpp \
-    openGL/projectvisualizator.cpp \
+    serialManipulator/openGL/glvisualizatorwidget.cpp \
+    serialManipulator/openGL/projectvisualizator.cpp \
     projectCore/baseprojectcontroller.cpp \
     projectCore/initAvailableControllers.cpp \
     projectCore/projectsmanager.cpp \
     serialManipulator/serialManipulatorController.cpp \
     serialManipulator/centralDocks/glcentraldock.cpp \
-    serialManipulator/docks/manybuttonsdock.cpp
+    serialManipulator/docks/manybuttonsdock.cpp \
+    version_t.cpp
 
 HEADERS += \
     basecentraldock.h \
@@ -29,14 +30,15 @@ HEADERS += \
     centralwindow.h \
     mainwindow.h \
     messageWindows/newprojectconstructorwidget.h \
-    openGL/glvisualizatorwidget.h \
-    openGL/projectvisualizator.h \
+    serialManipulator/openGL/glvisualizatorwidget.h \
+    serialManipulator/openGL/projectvisualizator.h \
     projectCore/baseprojectcontroller.h \
     projectCore/projectType.h \
     projectCore/projectsmanager.h \
     serialManipulator/serialManipulatorController.h \
     serialManipulator/centralDocks/glcentraldock.h \
-    serialManipulator/docks/manybuttonsdock.h
+    serialManipulator/docks/manybuttonsdock.h \
+    version_t.h
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
