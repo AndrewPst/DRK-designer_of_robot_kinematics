@@ -8,6 +8,8 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 
+using namespace serialMan;
+
 glCentralDock::glCentralDock(const QString& title,
                              QMainWindow *parent,
                              Qt::WindowFlags flags)

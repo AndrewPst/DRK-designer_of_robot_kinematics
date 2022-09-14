@@ -6,6 +6,9 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 
+namespace serialMan {
+
+
 class ManyButtonsDock : public BaseDock
 {
 public:
@@ -29,4 +32,5 @@ private:
     QList<QPushButton*> _buttons;
 };
 
+}
 #endif // MANYBUTTONSDOCK_H

@@ -2,6 +2,8 @@
 #include "serialManipulator/centralDocks/glcentraldock.h"
 #include "serialManipulator/docks/manybuttonsdock.h"
 
+using namespace serialMan;
+
 SerialManipulatorProjectController::SerialManipulatorProjectController() : BaseProjectController()
 {
     _avaiableCentralDocks << new glCentralDock(tr("Visualization"));

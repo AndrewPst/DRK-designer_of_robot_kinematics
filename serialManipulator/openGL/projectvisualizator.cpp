@@ -1,11 +1,12 @@
 #include "../openGL/projectvisualizator.h"
-#include "../openGL/glvisualizatorwidget.h"
 
 #include <QGLWidget>
 #include <gl/glu.h>
 #include <gl/gl.h>
 
-ProjectVisualizator& projectVisualizator = ProjectVisualizator::getInstance();
+using namespace serialMan;
+
+serialMan::ProjectVisualizator& serialMan::projectVisualizator = serialMan::ProjectVisualizator::getInstance();
 
 ProjectVisualizator& ProjectVisualizator::getInstance()
 {
@@ -13,7 +14,7 @@ ProjectVisualizator& ProjectVisualizator::getInstance()
     return pv;
 }
 
-void ProjectVisualizator::visualizate(glVisualizatorWidget* glv)
+void serialMan::ProjectVisualizator::visualizate(serialMan::glVisualizatorWidget* glv)
 {
     glv->makeCurrent();
     _currentContext = glv;

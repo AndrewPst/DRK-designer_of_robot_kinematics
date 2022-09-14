@@ -2,10 +2,12 @@
 #define PROJECTVISUALIZATOR_H
 
 #include <QObject>
+#include "../openGL/glvisualizatorwidget.h"
 
-QT_FORWARD_DECLARE_CLASS(glVisualizatorWidget);
+namespace serialMan
+{
 
-class ProjectVisualizator : public QObject
+class ProjectVisualizator : public ::QObject
 {
 
     Q_OBJECT
@@ -18,7 +20,7 @@ public:
 
     static ProjectVisualizator& getInstance();
 
-    void visualizate(glVisualizatorWidget*);
+    void visualizate(serialMan::glVisualizatorWidget*);
 
 public slots:
 
@@ -43,4 +45,6 @@ private:
 
 extern ProjectVisualizator& projectVisualizator;
 
+
+}
 #endif // PROJECTVISUALIZATOR_H

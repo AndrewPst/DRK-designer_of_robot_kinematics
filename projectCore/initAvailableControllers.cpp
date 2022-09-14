@@ -10,7 +10,7 @@ BaseProjectController* ProjectsManager::getProjectByType(const ProjectType_t typ
 {
     switch (type) {
     case ProjectType_t::PROJECT_SERIAL_MANIPULATOR:
-        return new SerialManipulatorProjectController();
+        return new serialMan::SerialManipulatorProjectController();
     default:
         return nullptr;
     }

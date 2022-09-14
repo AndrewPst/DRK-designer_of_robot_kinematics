@@ -1,5 +1,8 @@
 #include "manybuttonsdock.h"
 #include <QListWidget>
+
+using namespace serialMan;
+
 ManyButtonsDock::ManyButtonsDock(const QString& title,
                                  QWidget* parent,
                                  Qt::WindowFlags flags) : BaseDock(title, parent, flags)

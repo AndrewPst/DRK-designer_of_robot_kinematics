@@ -1,5 +1,5 @@
 #include "projectsmanager.h"
-#include "projectCore/projectControllers/serialmanipulatorprojectcontroller.h"
+#include "projectCore/baseprojectcontroller.h"
 
 ProjectsManager& projectsManager = ProjectsManager::getInstance();
 
@@ -16,7 +16,6 @@ ProjectsManager& ProjectsManager::getInstance()
 
 void ProjectsManager::createNewProject(const ProjectType_t type, const QString& name)
 {
-    //TODO make type-class system
     _openedProject = getProjectByType(type);
     if(_openedProject == nullptr)
         return;

@@ -9,6 +9,9 @@
 #include <QDesktopWidget>
 #include <QContextMenuEvent>
 
+using namespace serialMan;
+
+
 glVisualizatorWidget::glVisualizatorWidget(QWidget* parent) : QGLWidget(parent)
 {
     //Get the display resolution to display the model correctly
@@ -71,7 +74,7 @@ void glVisualizatorWidget::paintGL() // рисование
     glRotatef(-90, 1, 0, 0);
     glTranslatef(0, 0, -_cameraZPoint);
 
-    projectVisualizator.visualizate(this);
+    serialMan::projectVisualizator.visualizate(this);
 
 }
 

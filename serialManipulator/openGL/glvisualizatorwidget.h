@@ -5,6 +5,9 @@
 #include <QtMath>
 #include <QtGui>
 
+namespace serialMan
+{
+
 enum class ProjectionMode_t : char
 {
     UNKNOWN = 0,
@@ -85,4 +88,5 @@ private:
     int _displayHeight = 1080;
 };
 
+}
 #endif // GLVISUALIZATORWIDGET_H

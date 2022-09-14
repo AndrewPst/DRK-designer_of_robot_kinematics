@@ -4,6 +4,8 @@
 #include "basecentraldock.h"
 #include "../openGL/glvisualizatorwidget.h"
 
+namespace serialMan {
+
 class glCentralDock : public BaseCentralDock
 {
 public:
@@ -33,4 +35,5 @@ private:
     QAction *_reverseDirection;
 };
 
+}
 #endif // GLCENTRALDOCK_H

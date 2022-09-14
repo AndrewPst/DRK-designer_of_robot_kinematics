@@ -4,6 +4,8 @@
 #include "projectCore/baseprojectcontroller.h"
 
 
+namespace serialMan {
+
 
 class SerialManipulatorProjectController : public BaseProjectController
 {
@@ -13,4 +15,5 @@ public:
 
 };
 
+}
 #endif // SERIALMANIPULATORPROJECTCONTROLLER_H
