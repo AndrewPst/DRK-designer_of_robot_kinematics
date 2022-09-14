@@ -1,7 +1,6 @@
-#include "openGL/glvisualizatorwidget.h"
-//#include "openGL/globjectscontainer.h"
+#include "../openGL/glvisualizatorwidget.h"
 
-#include "openGL/projectvisualizator.h"
+#include "../openGL/projectvisualizator.h"
 
 #include <gl/gl.h>
 #include <gl/glu.h>

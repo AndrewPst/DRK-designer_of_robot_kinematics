@@ -1,5 +1,5 @@
 #include "projectCore/projectsmanager.h"
-#include "projectCore/projectControllers/serialmanipulatorprojectcontroller.h"
+#include "serialManipulator/serialManipulatorController.h"
 
 void ProjectsManager::initAvailableControllers()
 {

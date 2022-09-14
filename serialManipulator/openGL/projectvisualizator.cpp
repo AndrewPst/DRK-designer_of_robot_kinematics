@@ -1,5 +1,5 @@
-#include "projectvisualizator.h"
-#include "openGL/glvisualizatorwidget.h"
+#include "../openGL/projectvisualizator.h"
+#include "../openGL/glvisualizatorwidget.h"
 
 #include <QGLWidget>
 #include <gl/glu.h>
