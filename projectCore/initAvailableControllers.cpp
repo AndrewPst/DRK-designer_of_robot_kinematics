@@ -1,5 +1,5 @@
 #include "projectCore/projectsmanager.h"
-#include "serialManipulator/serialManipulatorController.h"
+#include "serialManipulator/serialManipulatorProject.h"
 
 void ProjectsManager::initAvailableControllers()
 {
@@ -10,7 +10,7 @@ BaseProjectController* ProjectsManager::getProjectByType(const ProjectType_t typ
 {
     switch (type) {
     case ProjectType_t::PROJECT_SERIAL_MANIPULATOR:
-        return new serialMan::SerialManipulatorProjectController();
+        return new serialMan::SerialManipulatorProject();
     default:
         return nullptr;
     }

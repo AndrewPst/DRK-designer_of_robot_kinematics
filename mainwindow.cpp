@@ -2,6 +2,7 @@
 #include "centralwindow.h"
 #include "basedock.h"
 #include "messageWindows/newprojectconstructorwidget.h"
+#include "messageWindows/ConfirmActionDialog.h"
 #include "projectCore/projectsmanager.h"
 #include "projectCore/baseprojectcontroller.h"
 
@@ -179,7 +180,18 @@ void MainWindow::actionNewProjectSlot()
     if(contructor.exec() == true)
     {
         if(projectsManager.getOpenedProject())
-            projectsManager.closeProject();
+        {
+            ConfirmActionDialog closeProjDialog;
+            closeProjDialog.setMessage(tr("Save current project?"));
+            closeProjDialog.setYesButtonText(tr("Yes"));
+            closeProjDialog.setNoButtonText(tr("No"));
+            closeProjDialog.show();
+            if(closeProjDialog.exec() == true)
+            {
+                projectsManager.saveProject();
+            }
+        }
+        projectsManager.closeProject();
         projectsManager.createNewProject(contructor.getProjectType(), contructor.getName());
     }
 }

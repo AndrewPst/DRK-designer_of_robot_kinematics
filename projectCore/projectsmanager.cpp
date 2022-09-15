@@ -1,5 +1,6 @@
 #include "projectsmanager.h"
 #include "projectCore/baseprojectcontroller.h"
+#include <QDebug>
 
 ProjectsManager& projectsManager = ProjectsManager::getInstance();
 
@@ -33,6 +34,7 @@ BaseProjectController* ProjectsManager::getOpenedProject() const
 {
     return _openedProject;
 }
+
 void ProjectsManager::closeProject()
 {
     if(!_openedProject)
@@ -40,4 +42,14 @@ void ProjectsManager::closeProject()
     emit onProjectClosed(_openedProject);
     _openedProject->deleteLater();
     _openedProject = NULL;
+}
+
+void ProjectsManager::saveProject()
+{
+    qDebug() << "Save by default path" << '\n';
+}
+
+void ProjectsManager::saveProjectByPath(const QString& path)
+{
+    qDebug() << "Save by " << path << '\n';
 }

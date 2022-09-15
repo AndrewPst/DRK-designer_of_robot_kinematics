@@ -31,6 +31,8 @@ public:
 
     void createNewProject(const ProjectType_t, const QString&);
     void closeProject();
+    void saveProject();
+    void saveProjectByPath(const QString&);
 
     BaseProjectController* getProjectByType(const ProjectType_t);
 
