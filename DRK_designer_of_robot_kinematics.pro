@@ -15,6 +15,7 @@ SOURCES += \
     mainwindow.cpp \
     messageWindows/ConfirmActionDialog.cpp \
     messageWindows/newprojectconstructorwidget.cpp \
+    serialManipulator/docks/manipulatorstructureeditordock.cpp \
     serialManipulator/logic/manipulatorcontroller.cpp \
     serialManipulator/logic/models/joint_t.cpp \
     serialManipulator/openGL/glvisualizatorwidget.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     mainwindow.h \
     messageWindows/ConfirmActionDialog.h \
     messageWindows/newprojectconstructorwidget.h \
+    serialManipulator/docks/manipulatorstructureeditordock.h \
     serialManipulator/logic/manipulatorcontroller.h \
     serialManipulator/logic/models/joint_t.h \
     serialManipulator/openGL/glvisualizatorwidget.h \

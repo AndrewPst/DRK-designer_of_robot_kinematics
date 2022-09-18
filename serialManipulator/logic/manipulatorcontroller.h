@@ -10,6 +10,7 @@ namespace serialMan
 
 class ManipulatorController : public QObject
 {
+    Q_OBJECT
 
 public:
     ManipulatorController();
@@ -21,8 +22,8 @@ public:
 
 signals:
 
-    void jointAdded(Joint_t*);
-    void jointRemoved(Joint_t*);
+    void jointAdded(serialMan::Joint_t*);
+    void jointRemoved(serialMan::Joint_t*);
     void dofChanged(int);
 
 private:

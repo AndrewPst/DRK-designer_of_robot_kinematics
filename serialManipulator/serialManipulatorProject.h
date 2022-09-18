@@ -9,15 +9,19 @@ namespace serialMan {
 
 class SerialManipulatorProject : public BaseProjectController
 {
-public:
-    explicit SerialManipulatorProject();
+    Q_OBJECT
 
-    ManipulatorController& getManipulatorController() const;
+public:
+    SerialManipulatorProject();
+    ~SerialManipulatorProject();
+
+
+    ManipulatorController* getManipulatorController();
 
 
 private:
 
-    ManipulatorController _manipulatorController;
+    ManipulatorController* _manipulatorController;
 
 };
 
