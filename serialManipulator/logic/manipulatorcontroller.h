@@ -18,7 +18,10 @@ public:
     void setDof(const int);
     int getDof() const;
 
-    const QVector<Joint_t>& getJoints() const;
+    const QVector<Joint_t*>& getJoints() const;
+
+    const int DEFAULT_DOF = 5;
+    const int MAX_DOF = 16;
 
 signals:
 
@@ -28,11 +31,9 @@ signals:
 
 private:
 
-    const int _defaultDof = 5;
-
     int _dof;
 
-    QVector<Joint_t> _joints;
+    QVector<Joint_t*> _joints;
 
 };
 

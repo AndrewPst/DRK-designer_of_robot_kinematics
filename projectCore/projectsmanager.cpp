@@ -20,6 +20,7 @@ void ProjectsManager::createNewProject(const ProjectType_t type, const QString& 
     _openedProject = getProjectByType(type);
     if(_openedProject == nullptr)
         return;
+    _openedProject->init();
     _openedProject->setName(name);
     emit onProjectOpened(_openedProject);
 }

@@ -5,10 +5,37 @@
 
 QT_FORWARD_DECLARE_CLASS(QSpinBox);
 QT_FORWARD_DECLARE_CLASS(QPushButton);
+QT_FORWARD_DECLARE_CLASS(QListWidget);
+QT_FORWARD_DECLARE_CLASS(QLabel);
+
+
 
 namespace serialMan {
 
+QT_FORWARD_DECLARE_CLASS(Joint_t);
 QT_FORWARD_DECLARE_CLASS(ManipulatorController);
+
+class JointListElement : public QWidget
+{
+    Q_OBJECT
+
+public:
+
+    explicit JointListElement(serialMan::Joint_t*);
+
+    Joint_t* getJoint();
+
+private slots:
+
+    void onJointValueChanged(int);
+
+private:
+
+    QLabel *_value;
+
+    Joint_t* _joint;
+
+};
 
 class ManipulatorStructureEditorDock : public BaseDock
 {
@@ -21,15 +48,25 @@ public:
 private slots:
 
     void onDofSpinValueChanged(int);
+    void onRebuildClicked();
+
+public slots:
+
+    void onDofChanged(int);
+    void onJointAdded(serialMan::Joint_t*);
+    void onJointRemoved(serialMan::Joint_t*);
+
+private:
+
+    void updateJointsList();
 
 private:
 
     QSpinBox *_dofSpin;
-
     QPushButton *_rebuildProject;
+    QListWidget *_jointsList;
 
     serialMan::ManipulatorController* _manipulator;
-
 
 };
 

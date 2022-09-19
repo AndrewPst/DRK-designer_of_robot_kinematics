@@ -15,8 +15,9 @@ public:
     SerialManipulatorProject();
     ~SerialManipulatorProject();
 
+    void init() override;
 
-    ManipulatorController* getManipulatorController();
+    ManipulatorController* getManipulatorController() const;
 
 
 private:

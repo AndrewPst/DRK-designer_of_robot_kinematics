@@ -45,6 +45,10 @@ public:
 
     virtual ~BaseProjectController();
 
+public:
+
+    virtual void init() = 0;
+
 signals:
 
     void onRenamed(QString);

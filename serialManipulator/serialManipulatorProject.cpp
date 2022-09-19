@@ -8,6 +8,10 @@ using namespace serialMan;
 SerialManipulatorProject::SerialManipulatorProject()
     : BaseProjectController(), _manipulatorController(new ManipulatorController)
 {
+}
+
+void SerialManipulatorProject::init()
+{
     _avaiableCentralDocks << new glCentralDock(tr("Visualization"));
     _avaiableDocks << new ManyButtonsDock(tr("Buttons"));
     _avaiableDocks << new ManipulatorStructureEditorDock(tr("Structure"));
@@ -19,7 +23,7 @@ SerialManipulatorProject::~SerialManipulatorProject()
 }
 
 
-ManipulatorController* SerialManipulatorProject::getManipulatorController()
+ManipulatorController* SerialManipulatorProject::getManipulatorController() const
 {
     return _manipulatorController;
 }
