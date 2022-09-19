@@ -3,9 +3,12 @@
 #include "basecentraldock.h"
 #include <QMenu>
 
+
 BaseProjectController::BaseProjectController()
     : _viewMenu(new QMenu(tr("Views"))), _editMenu(new QMenu(tr("Project")))
 {
+    Version_t ver {1, 0, 0, VersionStage_t::VERSION_ALFA};
+    setVersion(ver);
     _viewMenu->addAction(tr("test"));
     _editMenu->addAction(tr("test"));
 }
@@ -22,14 +25,14 @@ void BaseProjectController::setName(const QString& name)
     emit onRenamed(_projectName);
 }
 
-QString BaseProjectController::getVersion() const
+Version_t BaseProjectController::getVersion() const
 {
-    return "";
+    return _projectVersion;
 }
 
 void BaseProjectController::setVersion(const Version_t& ver)
 {
-    if(ver == _projectVersion) return;
+    if(_projectVersion == ver) return;
     _projectVersion = ver;
     emit onVersionChanged(_projectVersion);
 }

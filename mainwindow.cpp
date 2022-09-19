@@ -150,7 +150,7 @@ void MainWindow::actionSetDockOptionsSlot()
 
 void MainWindow::onProjectOpened(BaseProjectController* const proj)
 {
-    setWindowTitle(tr("%1 (%2) - %3").arg(proj->getName(),proj->getVersion(), QCoreApplication::applicationName()));
+    setWindowTitle(tr("%1 (%2) - %3").arg(proj->getName(),proj->getVersion().toStr(), QCoreApplication::applicationName()));
 
     _viewMenu = proj->getViewTitlebarMenu();
     _projectMenu = proj->getEditTitlebarMenu();

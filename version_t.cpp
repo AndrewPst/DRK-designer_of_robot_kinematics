@@ -1,5 +1,7 @@
 #include "version_t.h"
 
+#include <QString>
+
 bool Version_t::operator==(const Version_t& v)
 {
     return major == v.major && minor == v.minor && v.micro == micro && stage == v.stage;

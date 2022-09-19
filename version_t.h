@@ -1,7 +1,7 @@
 #ifndef VERSION_T_H
 #define VERSION_T_H
 
-#include <QString>
+class QString;
 
 enum class VersionStage_t
 {

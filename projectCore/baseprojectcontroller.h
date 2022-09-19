@@ -2,9 +2,9 @@
 #define BASEPROJECTCONTROLLER_H
 
 #include "basecentraldock.h"
+#include "version_t.h"
 
 #include <QObject>
-
 
 
 QT_FORWARD_DECLARE_CLASS(BaseDock)
@@ -16,8 +16,6 @@ QT_FORWARD_DECLARE_STRUCT(ProjectSource_t);
 class BaseProjectController : public QObject
 {
     Q_OBJECT
-
-    typedef QString Version_t;
 
 public:
     explicit BaseProjectController();
@@ -50,7 +48,7 @@ public:
 signals:
 
     void onRenamed(QString);
-    void onVersionChanged(BaseProjectController::Version_t);
+    void onVersionChanged(Version_t);
 
 protected:
 
