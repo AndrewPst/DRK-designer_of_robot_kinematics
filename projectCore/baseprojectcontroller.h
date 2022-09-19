@@ -10,9 +10,8 @@
 QT_FORWARD_DECLARE_CLASS(BaseDock)
 QT_FORWARD_DECLARE_STRUCT(ProjectSource_t);
 
-//#include "projectCore/templateTisBase.h"
 
-
+//Base class for projects.
 class BaseProjectController : public QObject
 {
     Q_OBJECT
@@ -25,6 +24,8 @@ public:
     QMenu* getEditTitlebarMenu() const;
     QMenu* getViewTitlebarMenu() const;
 
+
+    //Creating central widgets only through this method
     template <typename T,
               typename = typename std::enable_if_t<std::is_base_of_v<BaseCentralDock, T>>>
     T * getNewCentralDock()
@@ -36,6 +37,7 @@ public:
 
     void deleteCentralDock(BaseCentralDock*);
 
+    //---Getters and setters---
 
     QString getName() const;
     void setName(const QString&);
@@ -47,6 +49,7 @@ public:
 
 public:
 
+    //Widgets must be initialized inside this function. Otherwise, a SIGSEGV error occurs.
     virtual void init() = 0;
 
 signals:

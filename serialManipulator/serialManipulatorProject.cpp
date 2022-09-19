@@ -12,6 +12,7 @@ SerialManipulatorProject::SerialManipulatorProject()
 
 void SerialManipulatorProject::init()
 {
+    //Init widgets here!!
     _avaiableCentralDocks << new glCentralDock(tr("Visualization"));
     _avaiableDocks << new ManyButtonsDock(tr("Buttons"));
     _avaiableDocks << new ManipulatorStructureEditorDock(tr("Structure"));

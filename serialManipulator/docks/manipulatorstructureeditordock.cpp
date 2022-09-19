@@ -19,6 +19,7 @@ using namespace serialMan;
 
 JointListElement::JointListElement(serialMan::Joint_t* joint) : QWidget(), _joint(joint)
 {
+    setMinimumHeight(30);
     _value = new QLabel();
     _value->setText(tr("%1").arg(joint->getValue()));
 
@@ -69,6 +70,7 @@ ManipulatorStructureEditorDock::ManipulatorStructureEditorDock(const QString& ti
 
 
     _jointsList = new QListWidget();
+    _jointsList->setSpacing(5);
     updateJointsList();
     connect(_manipulator, &ManipulatorController::jointAdded, this, &ManipulatorStructureEditorDock::onJointAdded);
     connect(_manipulator, &ManipulatorController::jointRemoved, this, &ManipulatorStructureEditorDock::onJointRemoved);
@@ -77,7 +79,7 @@ ManipulatorStructureEditorDock::ManipulatorStructureEditorDock(const QString& ti
     vbl->addWidget(_dofSpin);
     vbl->addWidget(_rebuildProject);
     vbl->addWidget(_jointsList);
-    vbl->setAlignment(Qt::AlignmentFlag::AlignTop);
+    //vbl->setAlignment(Qt::AlignmentFlag::AlignTop);
 
     QWidget* main = new QWidget(this);
     main->setLayout(vbl);

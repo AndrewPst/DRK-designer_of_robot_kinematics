@@ -11,11 +11,12 @@ enum class VersionStage_t
     VERSION_PRODUCTION
 };
 
+
+
 struct Version_t
 {
     int major, minor, micro;
     VersionStage_t stage;
-
 
     QString toStr();
     bool operator==(const Version_t&);

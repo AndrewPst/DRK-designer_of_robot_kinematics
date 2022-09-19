@@ -1,8 +1,11 @@
 #include "projectCore/projectsmanager.h"
 #include "serialManipulator/serialManipulatorProject.h"
 
+//Add your project controller here!!!
+
 void ProjectsManager::initAvailableControllers()
 {
+    //Adding to dictionary availables projects
     _projectsDictionary[ProjectType_t::PROJECT_SERIAL_MANIPULATOR] = tr("Serial manipulator");
 }
 

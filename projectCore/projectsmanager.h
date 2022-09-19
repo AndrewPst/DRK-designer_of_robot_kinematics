@@ -11,10 +11,14 @@
 
 QT_FORWARD_DECLARE_CLASS(BaseProjectController);
 
+
+//This class manages projects (Amazing!)
 class ProjectsManager : public QObject
 {
     Q_OBJECT
 private:
+
+    //Singleton
     ProjectsManager();
     ProjectsManager(const ProjectsManager&) = delete;
     ProjectsManager& operator=(const ProjectsManager&) = delete;
@@ -24,7 +28,7 @@ private:
     void initAvailableControllers();
 
 public:
-
+    //get instance of class
     static ProjectsManager& getInstance();
 
     BaseProjectController* getOpenedProject() const;
@@ -36,6 +40,7 @@ public:
 
     BaseProjectController* getProjectByType(const ProjectType_t);
 
+    //Map of project types and its names
     const QMap<ProjectType_t, QString>& getAvailablesControllers() const;
 
 signals:

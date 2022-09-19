@@ -7,6 +7,7 @@ using namespace serialMan;
 ManipulatorController::ManipulatorController():
     _dof(DEFAULT_DOF), _joints(DEFAULT_DOF)
 {
+    //init joints
     for(int i = 0; i< DEFAULT_DOF; i++)
     {
         _joints[i] = new Joint_t();
@@ -23,6 +24,7 @@ void ManipulatorController::setDof(const int value)
     if(value == _dof || value < 1)
         return;
     if(value > _dof){
+        //Saving first joints and add new
         for(int i = 0; i < value - _dof; i++)
         {
             Joint_t* newj = new Joint_t();
@@ -30,6 +32,7 @@ void ManipulatorController::setDof(const int value)
             _joints.append(newj);
         }
     } else {
+        //delete last joints
         for(int i = 0; i < _dof - value; i++)
         {
             Joint_t* toDel = _joints.last();

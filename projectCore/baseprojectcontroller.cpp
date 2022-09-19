@@ -7,11 +7,20 @@
 BaseProjectController::BaseProjectController()
     : _viewMenu(new QMenu(tr("Views"))), _editMenu(new QMenu(tr("Project")))
 {
-    Version_t ver {1, 0, 0, VersionStage_t::VERSION_ALFA};
+    Version_t ver {1, 0, 0, VersionStage_t::VERSION_ALFA};//default version
     setVersion(ver);
+    //TEMP
     _viewMenu->addAction(tr("test"));
     _editMenu->addAction(tr("test"));
 }
+
+
+void BaseProjectController::deleteCentralDock(BaseCentralDock* dock)
+{
+    _avaiableCentralDocks.removeOne(dock);
+}
+
+//----Getters and setters------
 
 QString BaseProjectController::getName() const
 {
@@ -74,9 +83,5 @@ BaseProjectController::~BaseProjectController()
     }
 }
 
-void BaseProjectController::deleteCentralDock(BaseCentralDock* dock)
-{
-    _avaiableCentralDocks.removeOne(dock);
-}
 
 

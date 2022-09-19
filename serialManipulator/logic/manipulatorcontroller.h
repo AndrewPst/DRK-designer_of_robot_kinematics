@@ -8,6 +8,7 @@
 namespace serialMan
 {
 
+//This class controls joints and other maniulators attribute
 class ManipulatorController : public QObject
 {
     Q_OBJECT
@@ -31,6 +32,7 @@ signals:
 
 private:
 
+    //Count of degree of freedom
     int _dof;
 
     QVector<Joint_t*> _joints;
