@@ -7,7 +7,10 @@ using namespace serialMan;
 ManipulatorController::ManipulatorController():
     _dof(DEFAULT_DOF), _joints(DEFAULT_DOF)
 {
-
+    for(int i = 0; i< DEFAULT_DOF; i++)
+    {
+        _joints[i] = new Joint_t();
+    }
 }
 
 int ManipulatorController::getDof() const

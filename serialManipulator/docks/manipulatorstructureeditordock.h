@@ -23,11 +23,11 @@ public:
 
     explicit JointListElement(serialMan::Joint_t*);
 
-    Joint_t* getJoint();
+    Joint_t* getJoint() const;
 
 private slots:
 
-    void onJointValueChanged(int);
+    void onJointValueChanged(double);
 
 private:
 

@@ -11,7 +11,7 @@
 #include <QVBoxLayout>
 #include <QListWidget>
 #include <QLabel>
-#include <QListWidgetItem>>
+#include <QListWidgetItem>
 
 using namespace serialMan;
 
@@ -20,17 +20,26 @@ using namespace serialMan;
 JointListElement::JointListElement(serialMan::Joint_t* joint) : QWidget(), _joint(joint)
 {
     _value = new QLabel();
-    _value->setText(tr("%1").arg(_joint->getValue()));
+    _value->setText(tr("%1").arg(joint->getValue()));
 
-    QVBoxLayout *_mainL = new QVBoxLayout();
-    _mainL->addWidget(_value);
+    connect(joint, &Joint_t::valueChanged, this, &JointListElement::onJointValueChanged);
 
-    setLayout(_mainL);
+    QVBoxLayout *mainL = new QVBoxLayout();
+    mainL->addWidget(_value);
+
+    QWidget *mainW = new QWidget(this);
+    mainW->setLayout(mainL);
+
 }
 
-void JointListElement::onJointValueChanged(int value)
+void JointListElement::onJointValueChanged(double value)
 {
     _value->setText(tr("%1").arg(value));
+}
+
+Joint_t* JointListElement::getJoint() const
+{
+    return _joint;
 }
 
 
@@ -61,6 +70,8 @@ ManipulatorStructureEditorDock::ManipulatorStructureEditorDock(const QString& ti
 
     _jointsList = new QListWidget();
     updateJointsList();
+    connect(_manipulator, &ManipulatorController::jointAdded, this, &ManipulatorStructureEditorDock::onJointAdded);
+    connect(_manipulator, &ManipulatorController::jointRemoved, this, &ManipulatorStructureEditorDock::onJointRemoved);
 
     QVBoxLayout* vbl = new QVBoxLayout();
     vbl->addWidget(_dofSpin);
@@ -79,9 +90,9 @@ void ManipulatorStructureEditorDock::updateJointsList()
     auto list = _manipulator->getJoints();
     Q_FOREACH(auto& i, list)
     {
-        _jointsList->addItem(tr("%1").arg(i->getValue()));
         QListWidgetItem* _listItem = new QListWidgetItem();
         JointListElement *jli = new JointListElement(i);
+        _jointsList->addItem(_listItem);
         _jointsList->setItemWidget(_listItem, jli);
     }
 }
@@ -109,10 +120,22 @@ void ManipulatorStructureEditorDock::onJointAdded(serialMan::Joint_t* joint)
 {
     QListWidgetItem* _listItem = new QListWidgetItem();
     JointListElement *jli = new JointListElement(joint);
+    _jointsList->addItem(_listItem);
     _jointsList->setItemWidget(_listItem, jli);
 }
 
 void ManipulatorStructureEditorDock::onJointRemoved(serialMan::Joint_t* joint)
 {
-
+    for(int i = 0; i < _jointsList->count(); i++)
+    {
+        auto elem = _jointsList->item(i);
+        auto w = qobject_cast<JointListElement*>( _jointsList->itemWidget(elem));
+        if(w->getJoint() == joint)
+        {
+            _jointsList->removeItemWidget(elem);
+            delete _jointsList->takeItem(i);
+            w->deleteLater();
+            return;
+        }
+    }
 }
