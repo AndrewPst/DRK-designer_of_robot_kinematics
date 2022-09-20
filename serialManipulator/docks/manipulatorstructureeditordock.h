@@ -15,6 +15,7 @@ namespace serialMan {
 QT_FORWARD_DECLARE_CLASS(Joint_t);
 QT_FORWARD_DECLARE_CLASS(ManipulatorController);
 
+//Class for list of joints
 class JointListElement : public QWidget
 {
     Q_OBJECT
@@ -22,21 +23,24 @@ class JointListElement : public QWidget
 public:
 
     explicit JointListElement(serialMan::Joint_t*);
-
     Joint_t* getJoint() const;
 
 private slots:
 
-    void onJointValueChanged(double);
+
+
+private:
+
+    void updateValues();
 
 private:
 
     QLabel *_value;
-
     Joint_t* _joint;
-
 };
 
+
+//Dock widget for editing and monitoring manipulators structure
 class ManipulatorStructureEditorDock : public BaseDock
 {
     Q_OBJECT
@@ -47,11 +51,13 @@ public:
 
 private slots:
 
+    //Slots for internal widgets
     void onDofSpinValueChanged(int);
     void onRebuildClicked();
 
 public slots:
 
+    //Slots for external signals
     void onDofChanged(int);
     void onJointAdded(serialMan::Joint_t*);
     void onJointRemoved(serialMan::Joint_t*);
@@ -67,7 +73,6 @@ private:
     QListWidget *_jointsList;
 
     serialMan::ManipulatorController* _manipulator;
-
 };
 
 }

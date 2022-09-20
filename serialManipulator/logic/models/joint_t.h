@@ -8,12 +8,22 @@
 namespace serialMan
 {
 
+enum class JointType_t
+{
+    JOINT_UNKNOWN = 0,
+    JOINT_ROTATION,
+    JOINT_LINEAR
+};
+
 class Joint_t : public ::QObject
 {
     Q_OBJECT
 
 public:
-    Joint_t();
+    explicit Joint_t();
+
+    JointType_t getType() const;
+    void setType(const JointType_t&);
 
     QVector3D getPosition() const;
     void setPosition(const QVector3D&);
@@ -32,6 +42,7 @@ public:
 
 signals:
 
+    void typeChanged(serialMan::JointType_t);
     void positionChanged(QVector3D);
     void rotationChanged(QVector3D);
     void valueChanged(double);
@@ -39,6 +50,8 @@ signals:
     void maxValueChanged(double);
 
 private:
+
+    JointType_t _type;
 
     QVector3D _position;
     QVector3D _rotation;

@@ -19,24 +19,27 @@ using namespace serialMan;
 
 JointListElement::JointListElement(serialMan::Joint_t* joint) : QWidget(), _joint(joint)
 {
-    setMinimumHeight(30);
     _value = new QLabel();
-    _value->setText(tr("%1").arg(joint->getValue()));
 
-    connect(joint, &Joint_t::valueChanged, this, &JointListElement::onJointValueChanged);
+    connect(joint, &Joint_t::valueChanged, this, &JointListElement::updateValues);
+    connect(joint, &Joint_t::typeChanged, this, &JointListElement::updateValues);
+
+    updateValues();
 
     QVBoxLayout *mainL = new QVBoxLayout();
     mainL->addWidget(_value);
 
-    QWidget *mainW = new QWidget(this);
-    mainW->setLayout(mainL);
+    setLayout(mainL);
 
 }
 
-void JointListElement::onJointValueChanged(double value)
+void JointListElement::updateValues()
 {
-    _value->setText(tr("%1").arg(value));
+    _value->setText(tr("Type: %1\tValue: %2")
+                    .arg(_joint->getType() == JointType_t::JOINT_ROTATION ? "Rotation" : "Linear")
+                    .arg(_joint->getValue()));
 }
+
 
 Joint_t* JointListElement::getJoint() const
 {
@@ -70,6 +73,8 @@ ManipulatorStructureEditorDock::ManipulatorStructureEditorDock(const QString& ti
 
 
     _jointsList = new QListWidget();
+    _jointsList->setSizeAdjustPolicy(QListWidget::AdjustToContents);
+    _jointsList->setResizeMode(QListWidget::ResizeMode::Adjust);
     _jointsList->setSpacing(5);
     updateJointsList();
     connect(_manipulator, &ManipulatorController::jointAdded, this, &ManipulatorStructureEditorDock::onJointAdded);
@@ -81,7 +86,7 @@ ManipulatorStructureEditorDock::ManipulatorStructureEditorDock(const QString& ti
     vbl->addWidget(_jointsList);
     //vbl->setAlignment(Qt::AlignmentFlag::AlignTop);
 
-    QWidget* main = new QWidget(this);
+    QWidget* main = new QWidget();
     main->setLayout(vbl);
 
     setWidget(main);
@@ -90,12 +95,9 @@ ManipulatorStructureEditorDock::ManipulatorStructureEditorDock(const QString& ti
 void ManipulatorStructureEditorDock::updateJointsList()
 {
     auto list = _manipulator->getJoints();
-    Q_FOREACH(auto& i, list)
+    Q_FOREACH(Joint_t* i, list)
     {
-        QListWidgetItem* _listItem = new QListWidgetItem();
-        JointListElement *jli = new JointListElement(i);
-        _jointsList->addItem(_listItem);
-        _jointsList->setItemWidget(_listItem, jli);
+        onJointAdded(i);
     }
 }
 
@@ -123,6 +125,7 @@ void ManipulatorStructureEditorDock::onJointAdded(serialMan::Joint_t* joint)
     QListWidgetItem* _listItem = new QListWidgetItem();
     JointListElement *jli = new JointListElement(joint);
     _jointsList->addItem(_listItem);
+    _listItem->setSizeHint(jli->sizeHint() );
     _jointsList->setItemWidget(_listItem, jli);
 }
 

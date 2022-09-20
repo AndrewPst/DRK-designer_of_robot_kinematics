@@ -2,9 +2,29 @@
 
 using namespace serialMan;
 
-Joint_t::Joint_t() : QObject()
+Joint_t::Joint_t()
+    : QObject(),
+    _type(JointType_t::JOINT_ROTATION),
+    _position({0, 0, 0}),
+    _rotation({0, 0, 0}),
+    _value(0),
+    _minValue(0),
+    _maxValue(0)
 {
 
+}
+
+JointType_t Joint_t::getType() const
+{
+    return _type;
+}
+
+void Joint_t::setType(const JointType_t& type)
+{
+    if(_type == type)
+        return;
+    _type = type;
+    emit typeChanged(_type);
 }
 
 QVector3D Joint_t::getPosition() const
