@@ -38,6 +38,7 @@ HEADERS += \
     serialManipulator/docks/manipulatorstructureeditordock.h \
     serialManipulator/logic/manipulatorcontroller.h \
     serialManipulator/logic/models/joint_t.h \
+    serialManipulator/logic/models/units_t.h \
     serialManipulator/openGL/glvisualizatorwidget.h \
     serialManipulator/openGL/projectvisualizator.h \
     projectCore/baseprojectcontroller.h \

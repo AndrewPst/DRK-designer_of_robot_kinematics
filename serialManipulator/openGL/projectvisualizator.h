@@ -41,6 +41,8 @@ private:
 
     glVisualizatorWidget* _currentContext;
 
+    float _koef = 10;
+
 };
 
 extern ProjectVisualizator& projectVisualizator;

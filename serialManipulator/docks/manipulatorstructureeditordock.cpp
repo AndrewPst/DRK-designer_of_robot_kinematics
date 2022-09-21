@@ -15,6 +15,7 @@
 #include <QComboBox>
 #include <QFormLayout>
 #include <QGroupBox>
+#include <QScrollArea>
 
 using namespace serialMan;
 
@@ -265,6 +266,7 @@ ManipulatorStructureEditorDock::ManipulatorStructureEditorDock(const QString& ti
 
 
     _jointsList = new QListWidget();
+    _jointsList->setMinimumSize(200, 400);
     _jointsList->setSizeAdjustPolicy(QListWidget::AdjustToContents);
     _jointsList->setResizeMode(QListWidget::ResizeMode::Adjust);
     _jointsList->setSpacing(0);
