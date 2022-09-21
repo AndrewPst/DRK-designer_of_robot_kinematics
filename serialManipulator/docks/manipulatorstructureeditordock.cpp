@@ -12,8 +12,200 @@
 #include <QListWidget>
 #include <QLabel>
 #include <QListWidgetItem>
+#include <QComboBox>
+#include <QFormLayout>
+#include <QGroupBox>
 
 using namespace serialMan;
+
+//---------Joint detailed widget--------
+
+JointDetailedWidget::JointDetailedWidget() : ::QWidget()
+{
+    setMinimumSize(100, 300);
+
+    setEnabled(false);
+
+    _currentValue = new QDoubleSpinBox();
+    connect(_currentValue, SIGNAL(valueChanged(double)), this, SLOT(onCurrentValueChanged(double)));
+
+    _minValue = new QDoubleSpinBox();
+    _minValue->setRange(-360, 360);
+    connect(_minValue, SIGNAL(valueChanged(double)), this, SLOT(onMinValueChanged(double)));
+
+    _maxValue = new QDoubleSpinBox();
+    _maxValue->setRange(-360, 360);
+    connect(_maxValue, SIGNAL(valueChanged(double)), this, SLOT(onMaxValueChanged(double)));
+
+    _typeJointBox = new QComboBox();
+    _typeJointBox->addItem(tr("Linear"), (int)(JointType_t::JOINT_LINEAR));
+    _typeJointBox->addItem(tr("Rotation"), (int)(JointType_t::JOINT_ROTATION));
+    connect(_typeJointBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeUpdated(int)));
+
+    QGroupBox *posGroup = new QGroupBox(tr("Position"));
+
+    _posX = new QDoubleSpinBox();
+    _posX->setRange(INT_MIN, INT_MAX);
+    _posY = new QDoubleSpinBox();
+    _posY->setRange(INT_MIN, INT_MAX);
+    _posZ = new QDoubleSpinBox();
+    _posZ->setRange(INT_MIN, INT_MAX);
+    connect(_posX, SIGNAL(valueChanged(double)), this, SLOT(onPosUpdated()));
+    connect(_posY, SIGNAL(valueChanged(double)), this, SLOT(onPosUpdated()));
+    connect(_posZ, SIGNAL(valueChanged(double)), this, SLOT(onPosUpdated()));
+
+    QFormLayout *formPos = new QFormLayout();
+    formPos->addRow(tr("X coordinate"), _posX);
+    formPos->addRow(tr("Y coordinate"), _posY);
+    formPos->addRow(tr("Z coordinate"), _posZ);
+    posGroup->setLayout(formPos);
+
+    QGroupBox *rotGroup = new QGroupBox(tr("Rotation"));
+
+    _rotX = new QDoubleSpinBox();
+    _rotX->setRange(INT_MIN, INT_MAX);
+    _rotY = new QDoubleSpinBox();
+    _rotY->setRange(INT_MIN, INT_MAX);
+    _rotZ = new QDoubleSpinBox();
+    _rotZ->setRange(INT_MIN, INT_MAX);
+    connect(_rotX, SIGNAL(valueChanged(double)), this, SLOT(onRotUpdated()));
+    connect(_rotY, SIGNAL(valueChanged(double)), this, SLOT(onRotUpdated()));
+    connect(_rotZ, SIGNAL(valueChanged(double)), this, SLOT(onRotUpdated()));
+
+    QFormLayout *formRot = new QFormLayout();
+    formRot->addRow(tr("X angle"), _rotX);
+    formRot->addRow(tr("Y angle"), _rotY);
+    formRot->addRow(tr("Z angle"), _rotZ);
+    rotGroup->setLayout(formRot);
+
+    QFormLayout *fl = new QFormLayout();
+    fl->addRow(tr("Current value:"), _currentValue);
+    fl->addRow(tr("Maximum value:"), _maxValue);
+    fl->addRow(tr("Minimum value:"), _minValue);
+    fl->addRow(tr("Joints type:"), _typeJointBox);
+    fl->addRow(posGroup);
+    fl->addRow(rotGroup);
+    fl->setSizeConstraint(QFormLayout::SizeConstraint::SetFixedSize);
+    fl->setSpacing(4);
+    fl->setFormAlignment(Qt::AlignmentFlag::AlignCenter);
+    fl->setAlignment(Qt::AlignmentFlag::AlignCenter);
+
+    setLayout(fl);
+}
+
+Joint_t* JointDetailedWidget::getJoint() const
+{
+    return _joint;
+}
+
+void JointDetailedWidget::setJoint(Joint_t* j)
+{
+    if(j == _joint) return;
+    if(j == NULL)
+    {
+        setEnabled(false);
+        return;
+    }
+
+    resetConnections();
+    _joint = j;
+    createConnections();
+
+    updateWidgets();
+
+}
+
+void JointDetailedWidget::createConnections()
+{
+    _connections << connect(_joint, &Joint_t::valueChanged, this, &JointDetailedWidget::onCurrentValueChanged);
+    _connections << connect(_joint, &Joint_t::maxValueChanged, this, &JointDetailedWidget::onMaxValueChanged);
+    _connections << connect(_joint, &Joint_t::minValueChanged, this, &JointDetailedWidget::onMinValueChanged);
+    _connections << connect(_joint, &Joint_t::typeChanged, this, &JointDetailedWidget::onTypeChanged);
+    _connections << connect(_joint, &Joint_t::positionChanged, this, &JointDetailedWidget::onPositionChanged);
+    _connections << connect(_joint, &Joint_t::rotationChanged, this, &JointDetailedWidget::onRotationChanged);
+}
+
+void JointDetailedWidget::resetConnections()
+{
+    Q_FOREACH(auto c, _connections)
+    {
+        disconnect(c);
+    }
+}
+
+void JointDetailedWidget::updateWidgets()
+{
+    if(_joint == NULL) return;
+    _currentValue->setRange(_joint->getMinValue(), _joint->getMaxValue());
+    _currentValue->setValue(_joint->getValue());
+    _minValue->setValue(_joint->getMinValue());
+    _maxValue->setValue(_joint->getMaxValue());
+    _typeJointBox->setCurrentIndex((int)_joint->getType());
+    onPositionChanged(_joint->getPosition());
+    onRotationChanged(_joint->getRotation());
+}
+
+void JointDetailedWidget::onCurrentValueChanged(double value)
+{
+    _currentValue->setValue(value);
+    _joint->setValue(value);
+}
+
+void JointDetailedWidget::onMinValueChanged(double v)
+{
+    _minValue->setValue(v);
+    _maxValue->setMinimum(v);
+    _currentValue->setMinimum(v);
+    _joint->setMinValue(v);
+}
+
+void JointDetailedWidget::onMaxValueChanged(double v)
+{
+    _maxValue->setValue(v);
+    _minValue->setMaximum(v);
+    _currentValue->setMaximum(v);
+    _joint->setMaxValue(v);
+}
+
+void JointDetailedWidget::onTypeChanged(JointType_t type)
+{
+    _typeJointBox->setCurrentIndex((int)type);
+}
+
+void JointDetailedWidget::onTypeUpdated(int t)
+{
+    _joint->setType(static_cast<serialMan::JointType_t>(t));
+}
+
+void JointDetailedWidget::onPositionChanged(QVector3D pos)
+{
+    _posX->setValue(pos.x());
+    _posY->setValue(pos.y());
+    _posZ->setValue(pos.z());
+}
+
+void JointDetailedWidget::onRotationChanged(QVector3D rot)
+{
+    _rotX->setValue(rot.x());
+    _rotY->setValue(rot.y());
+    _rotZ->setValue(rot.z());
+}
+
+void JointDetailedWidget::onPosUpdated()
+{
+    //QVector3D consists of float. TODO: Make a vector from a double
+    _joint->setPosition({static_cast<float>(_posX->value()),
+                         static_cast<float>(_posY->value()),
+                         static_cast<float>(_posZ->value())});
+}
+
+void JointDetailedWidget::onRotUpdated()
+{
+    _joint->setRotation({static_cast<float>(_rotX->value()),
+                         static_cast<float>(_rotY->value()),
+                         static_cast<float>(_rotZ->value())});
+}
+
 
 //------------JointListElement------
 
@@ -77,13 +269,18 @@ ManipulatorStructureEditorDock::ManipulatorStructureEditorDock(const QString& ti
     _jointsList->setResizeMode(QListWidget::ResizeMode::Adjust);
     _jointsList->setSpacing(0);
     updateJointsList();
+    connect(_jointsList, &QListWidget::currentItemChanged, this, &ManipulatorStructureEditorDock::jointSelected);
     connect(_manipulator, &ManipulatorController::jointAdded, this, &ManipulatorStructureEditorDock::onJointAdded);
     connect(_manipulator, &ManipulatorController::jointRemoved, this, &ManipulatorStructureEditorDock::onJointRemoved);
+
+    _detailed = new JointDetailedWidget();
+
 
     QVBoxLayout* vbl = new QVBoxLayout();
     vbl->addWidget(_dofSpin);
     vbl->addWidget(_rebuildProject);
     vbl->addWidget(_jointsList);
+    vbl->addWidget(_detailed);
     //vbl->setAlignment(Qt::AlignmentFlag::AlignTop);
 
     QWidget* main = new QWidget();
@@ -143,4 +340,11 @@ void ManipulatorStructureEditorDock::onJointRemoved(serialMan::Joint_t* joint)
             return;
         }
     }
+}
+
+void ManipulatorStructureEditorDock::jointSelected()
+{
+    auto t = ((JointListElement*)(_jointsList->itemWidget(_jointsList->currentItem())))->getJoint();
+    _detailed->setJoint(t);
+    _detailed->setEnabled(true);
 }

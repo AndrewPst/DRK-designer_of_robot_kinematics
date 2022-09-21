@@ -37,7 +37,7 @@ void Joint_t::setPosition(const QVector3D& pos)
     if(pos == _position)
         return;
     _position = pos;
-    emit positionChanged(pos);
+    emit positionChanged(_position);
 }
 
 QVector3D Joint_t::getRotation() const
@@ -50,7 +50,7 @@ void Joint_t::setRotation(const QVector3D& rot)
     if(rot == _rotation)
         return;
     _rotation = rot;
-    emit rotationChanged(rot);
+    emit rotationChanged(_rotation);
 }
 
 double Joint_t::getValue() const
