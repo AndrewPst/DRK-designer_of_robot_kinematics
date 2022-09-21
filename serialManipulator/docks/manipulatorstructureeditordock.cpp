@@ -35,7 +35,7 @@ JointListElement::JointListElement(serialMan::Joint_t* joint) : QWidget(), _join
 
 void JointListElement::updateValues()
 {
-    _value->setText(tr("Type: %1\tValue: %2")
+    _value->setText(tr("Type: %1\nValue: %2")
                     .arg(_joint->getType() == JointType_t::JOINT_ROTATION ? "Rotation" : "Linear")
                     .arg(_joint->getValue()));
 }
@@ -75,7 +75,7 @@ ManipulatorStructureEditorDock::ManipulatorStructureEditorDock(const QString& ti
     _jointsList = new QListWidget();
     _jointsList->setSizeAdjustPolicy(QListWidget::AdjustToContents);
     _jointsList->setResizeMode(QListWidget::ResizeMode::Adjust);
-    _jointsList->setSpacing(5);
+    _jointsList->setSpacing(0);
     updateJointsList();
     connect(_manipulator, &ManipulatorController::jointAdded, this, &ManipulatorStructureEditorDock::onJointAdded);
     connect(_manipulator, &ManipulatorController::jointRemoved, this, &ManipulatorStructureEditorDock::onJointRemoved);

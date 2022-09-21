@@ -15,6 +15,27 @@ namespace serialMan {
 QT_FORWARD_DECLARE_CLASS(Joint_t);
 QT_FORWARD_DECLARE_CLASS(ManipulatorController);
 
+class JointDetailedWidget : public QWidget
+{
+    Q_OBJECT
+
+public:
+
+    explicit JointDetailedWidget();
+
+    Joint_t* getJoint() const;
+    void setJoint();
+
+public slots:
+
+private slots:
+
+private:
+
+    Joint_t *_joint;
+
+};
+
 //Class for list of joints
 class JointListElement : public QWidget
 {
