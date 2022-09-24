@@ -2,23 +2,20 @@
 #define PROJECTVISUALIZATOR_H
 
 #include <QObject>
-#include "../openGL/glvisualizatorwidget.h"
+
 
 namespace serialMan
 {
 
-class ProjectVisualizator : public ::QObject
-{
+QT_FORWARD_DECLARE_CLASS(glVisualizatorWidget);
 
+class ProjectVisualizator : public QObject
+{
     Q_OBJECT
-private:
-    ProjectVisualizator() = default;
-    ProjectVisualizator(const ProjectVisualizator&) = delete;
-    ProjectVisualizator& operator=(const ProjectVisualizator&) =  delete;
 
 public:
 
-    static ProjectVisualizator& getInstance();
+    ProjectVisualizator() = default;
 
     void visualizate(serialMan::glVisualizatorWidget*);
 
@@ -34,6 +31,10 @@ private:
 
     void drawField();
     void drawAxis();
+    void drawManipulator();
+
+    void drawRotationJoint();
+    void drawLinearJoint();
 
     void drawCustomObjects();
 
@@ -41,12 +42,9 @@ private:
 
     glVisualizatorWidget* _currentContext;
 
-    float _koef = 10;
+    float _fieldkKoef = 10;
 
 };
-
-extern ProjectVisualizator& projectVisualizator;
-
 
 }
 #endif // PROJECTVISUALIZATOR_H

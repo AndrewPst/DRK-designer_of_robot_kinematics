@@ -16,6 +16,7 @@
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QScrollArea>
+#include <QDebug>
 
 using namespace serialMan;
 
@@ -39,8 +40,8 @@ JointDetailedWidget::JointDetailedWidget() : ::QWidget()
     connect(_maxValue, SIGNAL(valueChanged(double)), this, SLOT(onMaxValueChanged(double)));
 
     _typeJointBox = new QComboBox();
-    _typeJointBox->addItem(tr("Linear"), (int)(JointType_t::JOINT_LINEAR));
     _typeJointBox->addItem(tr("Rotation"), (int)(JointType_t::JOINT_ROTATION));
+    _typeJointBox->addItem(tr("Linear"), (int)(JointType_t::JOINT_LINEAR));
     connect(_typeJointBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onTypeUpdated(int)));
 
     QGroupBox *posGroup = new QGroupBox(tr("Position"));
@@ -144,7 +145,7 @@ void JointDetailedWidget::updateWidgets()
     _currentValue->setValue(_joint->getValue());
     _minValue->setValue(_joint->getMinValue());
     _maxValue->setValue(_joint->getMaxValue());
-    _typeJointBox->setCurrentIndex((int)_joint->getType());
+    _typeJointBox->setCurrentIndex(((int)_joint->getType())-1);
     onPositionChanged(_joint->getPosition());
     onRotationChanged(_joint->getRotation());
 }
@@ -173,12 +174,12 @@ void JointDetailedWidget::onMaxValueChanged(double v)
 
 void JointDetailedWidget::onTypeChanged(JointType_t type)
 {
-    _typeJointBox->setCurrentIndex((int)type);
+    _typeJointBox->setCurrentIndex(((int)type)-1);
 }
 
 void JointDetailedWidget::onTypeUpdated(int t)
 {
-    _joint->setType(static_cast<serialMan::JointType_t>(t));
+    _joint->setType(static_cast<serialMan::JointType_t>(t+1));
 }
 
 void JointDetailedWidget::onPositionChanged(QVector3D pos)

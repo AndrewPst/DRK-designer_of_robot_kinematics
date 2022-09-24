@@ -49,6 +49,8 @@ signals:
     void minValueChanged(double);
     void maxValueChanged(double);
 
+    void changed();
+
 private:
 
     JointType_t _type;

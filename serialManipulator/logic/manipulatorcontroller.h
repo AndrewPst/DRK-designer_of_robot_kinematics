@@ -29,6 +29,7 @@ signals:
     void jointAdded(serialMan::Joint_t*);
     void jointRemoved(serialMan::Joint_t*);
     void dofChanged(int);
+    void structureChanged();
 
 private:
 

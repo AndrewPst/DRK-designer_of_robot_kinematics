@@ -5,13 +5,9 @@
 using namespace serialMan;
 
 ManipulatorController::ManipulatorController():
-    _dof(DEFAULT_DOF), _joints(DEFAULT_DOF)
+    _dof(0), _joints()
 {
-    //init joints
-    for(int i = 0; i< DEFAULT_DOF; i++)
-    {
-        _joints[i] = new Joint_t();
-    }
+    setDof(DEFAULT_DOF);
 }
 
 int ManipulatorController::getDof() const
@@ -28,8 +24,9 @@ void ManipulatorController::setDof(const int value)
         for(int i = 0; i < value - _dof; i++)
         {
             Joint_t* newj = new Joint_t();
-            emit jointAdded(newj);
             _joints.append(newj);
+            connect(newj, &Joint_t::changed, this, &ManipulatorController::structureChanged);
+            emit jointAdded(newj);
         }
     } else {
         //delete last joints
@@ -43,6 +40,7 @@ void ManipulatorController::setDof(const int value)
     }
     _dof = value;
     emit dofChanged(_dof);
+    emit structureChanged();
 }
 
 const QVector<Joint_t*>& ManipulatorController::getJoints() const

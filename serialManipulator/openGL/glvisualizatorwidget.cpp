@@ -1,6 +1,9 @@
 #include "../openGL/glvisualizatorwidget.h"
 
 #include "../openGL/projectvisualizator.h"
+#include "serialManipulator/serialManipulatorProject.h"
+#include "../logic/manipulatorcontroller.h"
+#include "projectCore/projectsmanager.h"
 
 #include <gl/gl.h>
 #include <gl/glu.h>
@@ -12,11 +15,15 @@
 using namespace serialMan;
 
 
-glVisualizatorWidget::glVisualizatorWidget(QWidget* parent) : QGLWidget(parent)
+glVisualizatorWidget::glVisualizatorWidget(serialMan::ProjectVisualizator* visualizator, QWidget* parent) :
+    QGLWidget(parent),
+    _visualizator(visualizator)
 {
     //Get the display resolution to display the model correctly
     _displayWidth = QApplication::desktop()->geometry().width();
     _displayHeight = QApplication::desktop()->geometry().height();
+
+    connect(((serialMan::SerialManipulatorProject*)(projectsManager.getOpenedProject()))->getManipulatorController(), SIGNAL(structureChanged()), this, SLOT(updateGL()));
 
     //installEventFilter(this);
     //Pass the context menu event to the parent widget
@@ -74,8 +81,7 @@ void glVisualizatorWidget::paintGL() // рисование
     glRotatef(-90, 1, 0, 0);
     glTranslatef(0, 0, -_cameraZPoint);
 
-    serialMan::projectVisualizator.visualizate(this);
-
+    _visualizator->visualizate(this);
 }
 
 

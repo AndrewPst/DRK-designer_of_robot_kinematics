@@ -5,8 +5,11 @@
 #include <QtMath>
 #include <QtGui>
 
+
 namespace serialMan
 {
+
+QT_FORWARD_DECLARE_CLASS(ProjectVisualizator);
 
 enum class ProjectionMode_t : char
 {
@@ -20,7 +23,7 @@ class glVisualizatorWidget : public QGLWidget
     Q_OBJECT
 
 public:
-    glVisualizatorWidget(QWidget* parent = nullptr);
+    glVisualizatorWidget(ProjectVisualizator* visualizator, QWidget* parent = nullptr);
 
 
     //---Getters---
@@ -58,6 +61,8 @@ protected:
 private:
 
     ProjectionMode_t _projectionMode = ProjectionMode_t::PR_ORTHOGONAL;
+
+    ProjectVisualizator* _visualizator;
 
     float _distance = 60;
     float _angleX = M_PI/5.0, _angleY = 0;

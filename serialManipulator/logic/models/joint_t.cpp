@@ -25,6 +25,7 @@ void Joint_t::setType(const JointType_t& type)
         return;
     _type = type;
     emit typeChanged(_type);
+    emit changed();
 }
 
 QVector3D Joint_t::getPosition() const
@@ -38,6 +39,7 @@ void Joint_t::setPosition(const QVector3D& pos)
         return;
     _position = pos;
     emit positionChanged(_position);
+    emit changed();
 }
 
 QVector3D Joint_t::getRotation() const
@@ -51,6 +53,7 @@ void Joint_t::setRotation(const QVector3D& rot)
         return;
     _rotation = rot;
     emit rotationChanged(_rotation);
+    emit changed();
 }
 
 double Joint_t::getValue() const
@@ -64,6 +67,7 @@ void Joint_t::setValue(double value)
         return;
     _value = value;
     emit valueChanged(value);
+    emit changed();
 }
 
 double Joint_t::getMinValue() const
@@ -77,6 +81,7 @@ void Joint_t::setMinValue(double min)
         return;
     _minValue = min;
     emit minValueChanged(min);
+    emit changed();
 }
 
 double Joint_t::getMaxValue() const
@@ -90,4 +95,5 @@ void Joint_t::setMaxValue(double max)
         return;
     _maxValue = max;
     emit maxValueChanged(max);
+    emit changed();
 }

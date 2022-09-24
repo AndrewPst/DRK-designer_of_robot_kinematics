@@ -1,6 +1,9 @@
 #ifndef UNITS_T_H
 #define UNITS_T_H
 
+namespace serialMan
+{
+
 struct Unit
 {
     const static Unit millimeters;
@@ -19,4 +22,6 @@ const Unit Unit::millimeters = Unit(1.0);
 const Unit Unit::centimeters = Unit(10.0);
 const Unit Unit::metres = Unit(100.0);
 
+
+}
 #endif // UNITS_T_H
