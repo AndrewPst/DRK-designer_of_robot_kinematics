@@ -28,9 +28,9 @@ NewProjectConstructorWidget::NewProjectConstructorWidget(QWidget* parent)
 
     _availabledProjects = new QComboBox();
     auto map = projectsManager.getAvailablesControllers();
-    Q_FOREACH(QString i, map)
+    Q_FOREACH(auto& i, map)
     {
-        _availabledProjects->addItem(i);
+        _availabledProjects->addItem(i.Name);
     }
 
     QHBoxLayout *bl = new QHBoxLayout();
@@ -66,7 +66,7 @@ QString NewProjectConstructorWidget::getName() const
     return _projectName->text();
 }
 
-ProjectType_t NewProjectConstructorWidget::getProjectType() const
+int NewProjectConstructorWidget::getProjectType() const
 {
-    return projectsManager.getAvailablesControllers().key(_availabledProjects->currentText());
+    return _availabledProjects->currentIndex();
 }

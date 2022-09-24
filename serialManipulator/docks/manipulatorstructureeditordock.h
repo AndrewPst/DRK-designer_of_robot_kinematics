@@ -108,6 +108,7 @@ class ManipulatorStructureEditorDock : public BaseDock
 public:
     explicit ManipulatorStructureEditorDock(const QString&);
 
+    Qt::DockWidgetArea getDefaultArea() const override;
 
 private slots:
 

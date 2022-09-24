@@ -192,7 +192,7 @@ void MainWindow::actionNewProjectSlot()
             }
         }
         projectsManager.closeProject();
-        projectsManager.createNewProject(contructor.getProjectType(), contructor.getName());
+        projectsManager.createNewProject(projectsManager.getAvailablesControllers()[(int)contructor.getProjectType()], contructor.getName());
     }
 }
 

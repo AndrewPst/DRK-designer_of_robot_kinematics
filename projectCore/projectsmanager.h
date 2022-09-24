@@ -3,10 +3,12 @@
 
 #include "projectCore/projectType.h"
 
+//#include "projectGenerator.h"
+#include "projectMetadata.h"
+
 #include <QObject>
 #include <QString>
 #include <QMap>
-
 
 
 QT_FORWARD_DECLARE_CLASS(BaseProjectController);
@@ -23,9 +25,7 @@ private:
     ProjectsManager(const ProjectsManager&) = delete;
     ProjectsManager& operator=(const ProjectsManager&) = delete;
 
-    QMap<ProjectType_t, QString> _projectsDictionary;
-
-    void initAvailableControllers();
+    static QVector<ProjectMetadata> _projectsContollers;
 
 public:
     //get instance of class
@@ -33,15 +33,13 @@ public:
 
     BaseProjectController* getOpenedProject() const;
 
-    void createNewProject(const ProjectType_t, const QString&);
+    void createNewProject(const ProjectMetadata&, const QString&);
     void closeProject();
     void saveProject();
     void saveProjectByPath(const QString&);
 
-    BaseProjectController* getProjectByType(const ProjectType_t);
-
     //Map of project types and its names
-    const QMap<ProjectType_t, QString>& getAvailablesControllers() const;
+    const QVector<ProjectMetadata>& getAvailablesControllers() const;
 
 signals:
 

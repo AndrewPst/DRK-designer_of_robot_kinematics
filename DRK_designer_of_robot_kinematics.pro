@@ -35,6 +35,8 @@ HEADERS += \
     mainwindow.h \
     messageWindows/ConfirmActionDialog.h \
     messageWindows/newprojectconstructorwidget.h \
+    projectCore/projectGenerator.h \
+    projectCore/projectMetadata.h \
     serialManipulator/docks/manipulatorstructureeditordock.h \
     serialManipulator/logic/manipulatorcontroller.h \
     serialManipulator/logic/models/joint_t.h \

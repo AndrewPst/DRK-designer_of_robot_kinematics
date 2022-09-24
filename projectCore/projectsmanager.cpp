@@ -6,7 +6,7 @@ ProjectsManager& projectsManager = ProjectsManager::getInstance();
 
 ProjectsManager::ProjectsManager()
 {
-    initAvailableControllers();
+
 }
 
 ProjectsManager& ProjectsManager::getInstance()
@@ -15,9 +15,9 @@ ProjectsManager& ProjectsManager::getInstance()
     return pm;
 }
 
-void ProjectsManager::createNewProject(const ProjectType_t type, const QString& name)
+void ProjectsManager::createNewProject(const ProjectMetadata& meta, const QString& name)
 {
-    _openedProject = getProjectByType(type);
+    _openedProject = meta.generate();
     if(_openedProject == nullptr)
         return;
     _openedProject->init();
@@ -25,9 +25,9 @@ void ProjectsManager::createNewProject(const ProjectType_t type, const QString& 
     emit onProjectOpened(_openedProject);
 }
 
-const QMap<ProjectType_t, QString>& ProjectsManager::getAvailablesControllers() const
+const QVector<ProjectMetadata>& ProjectsManager::getAvailablesControllers() const
 {
-    return _projectsDictionary;
+    return _projectsContollers;
 }
 
 

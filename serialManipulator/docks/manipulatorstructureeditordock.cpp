@@ -94,6 +94,9 @@ JointDetailedWidget::JointDetailedWidget() : ::QWidget()
     setLayout(fl);
 }
 
+
+
+
 Joint_t* JointDetailedWidget::getJoint() const
 {
     return _joint;
@@ -342,6 +345,11 @@ void ManipulatorStructureEditorDock::onJointRemoved(serialMan::Joint_t* joint)
             return;
         }
     }
+}
+
+Qt::DockWidgetArea ManipulatorStructureEditorDock::getDefaultArea() const
+{
+    return Qt::LeftDockWidgetArea;
 }
 
 void ManipulatorStructureEditorDock::jointSelected()

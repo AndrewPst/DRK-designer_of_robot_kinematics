@@ -1,7 +1,7 @@
 #ifndef NEWPROJECTCONSTRUCTORWIDGET_H
 #define NEWPROJECTCONSTRUCTORWIDGET_H
 
-#include "projectCore/projectType.h"
+//#include "projectCore/projectType.h"
 
 #include <QDialog>
 #include <QWidget>
@@ -17,7 +17,7 @@ public:
     explicit NewProjectConstructorWidget(QWidget* parent = nullptr);
 
     QString getName() const;
-    ProjectType_t getProjectType() const;
+    int getProjectType() const;
 
 private slots:
 

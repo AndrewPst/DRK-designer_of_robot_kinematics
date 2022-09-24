@@ -3,15 +3,16 @@
 
 struct Unit
 {
-    explicit Unit(float f) : factor(f)
+    const static Unit millimeters;
+    const static Unit centimeters;
+    const static Unit metres;
+
+    explicit Unit(float f)
+        : factor(f)
     {
     }
 
     const float factor;
-
-    const static Unit millimeters;
-    const static Unit centimeters;
-    const static Unit metres;
 };
 
 const Unit Unit::millimeters = Unit(1.0);
