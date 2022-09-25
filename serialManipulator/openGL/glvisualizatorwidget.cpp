@@ -145,6 +145,11 @@ float glVisualizatorWidget::getAngleY()
     return _angleY;
 }
 
+float glVisualizatorWidget::getCameraZ()
+{
+    return _cameraZPoint;
+}
+
 
 //-------------Setters---------------
 
@@ -170,6 +175,12 @@ void glVisualizatorWidget::setAngleX(float a)
 void glVisualizatorWidget::setAngleY(float a)
 {
     _angleY = a;
+    updateGL();
+}
+
+void glVisualizatorWidget::setCameraZ(float z)
+{
+    _cameraZPoint = z;
     updateGL();
 }
 

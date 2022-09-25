@@ -6,6 +6,8 @@
 
 #include <QGLWidget>
 #include <gl/glu.h>
+#include <gl/glcorearb.h>
+#include <gl/glaux.h>
 #include <gl/gl.h>
 
 using namespace serialMan;
@@ -31,6 +33,8 @@ void serialMan::ProjectVisualizator::drawField()
     QFont font;
     font.setFamily(font.defaultFamily());
     font.setPointSize(3.0 * _fieldkKoef / (_currentContext->getDistance() * 0.01) + 1);
+    font.setFamily("Arial");
+    font.setHintingPreference(QFont::HintingPreference::PreferNoHinting);
     glLineWidth(2);
 
     QColor lightColor = QColor({200, 200, 200});
@@ -43,7 +47,7 @@ void serialMan::ProjectVisualizator::drawField()
         if (i == 0)
             glColor3f(0, 1, 0);
         else
-            _currentContext->qglColor(fmod(i, 2) == 0.0 ? darkColor : lightColor );
+            _currentContext->qglColor(i % 2 == 0 ? darkColor : lightColor );
         float pos = i * _fieldkKoef;
         glPushMatrix();
         glTranslatef((float)pos, -field_h / 2.f * _fieldkKoef, 0);
@@ -54,10 +58,15 @@ void serialMan::ProjectVisualizator::drawField()
         _currentContext->qglColor(textColor);
         //Render values and calculate text width for projection in center
         QString text = QString("%1").arg(pos);
-        _currentContext->renderText(-(text.length()/2.0*(font.pointSize()*0.005)) * _fieldkKoef,
-                                    (-0.5 + (angle_pos_S > 0 ? field_h + 1 : 0)) * _fieldkKoef,
-                                    -0.5 * _fieldkKoef,
-                                    text, font);
+
+        float tx = -(text.length()/2.0*(font.pointSize()*0.005)) * _fieldkKoef;
+        float ty = (-0.5 + (angle_pos_S > 0 ? field_h + 1 : 0)) * _fieldkKoef;
+        float tz = -0.5 * _fieldkKoef;
+
+        //Depth buffer not working with function renderText, so we dont drawing text, if its distance < then camera distance
+        float dist = sqrt(pow(i+tx, 2) + pow(-field_h / 2.f * _fieldkKoef, 2) + pow(_currentContext->getCameraZ() + tz, 2));
+        if(dist < _currentContext->getDistance() || _currentContext->getProjectionMode() == ProjectionMode_t::PR_ORTHOGONAL)
+            _currentContext->renderText(tx, ty, tz, text, font);
         glPopMatrix();
     }
     for (int i = -field_h / 2.0; i <= field_h / 2.0; i+=1)
@@ -75,10 +84,17 @@ void serialMan::ProjectVisualizator::drawField()
         glEnd();
         _currentContext->qglColor(textColor);
         QString text = QString("%1").arg(pos);
-        _currentContext->renderText((-0.5 + (angle_pos_C < 0 ? field_h + 1 : 0)) * _fieldkKoef,
-                                    -(text.length()/2.0*((font.pointSize()-1)*0.005)) * _fieldkKoef,
-                                    -0.5 * _fieldkKoef,
-                                    text, font);
+
+
+        float tx = (-0.5 + (angle_pos_C < 0 ? field_h + 1 : 0)) * _fieldkKoef;
+        float ty = -(text.length()/2.0*((font.pointSize()-1)*0.005)) * _fieldkKoef;
+        float tz = -0.5 * _fieldkKoef;
+
+
+        //Depth buffer not working with function renderText, so we dont drawing text, if its distance < then camera distance
+        float dist = sqrt(pow(i+tx, 2) + pow(-field_h / 2.f * _fieldkKoef, 2) + pow(_currentContext->getCameraZ() + tz, 2));
+        if(dist < _currentContext->getDistance() || _currentContext->getProjectionMode() == ProjectionMode_t::PR_ORTHOGONAL)
+            _currentContext->renderText(tx, ty, tz, text, font);
         glPopMatrix();
     }
     glPopMatrix();
@@ -100,6 +116,7 @@ void serialMan::ProjectVisualizator::drawField()
         //Render values and calculate text width for projection in center
         _currentContext->qglColor(textColor);
         QString text = QString("%1").arg(pos);
+
         _currentContext->renderText(0.1 * _fieldkKoef,
                                     (-0.5 + (angle_pos_S > 0 ? field_h + 1 : 0))*_fieldkKoef,
                                     0.5 * angle_pos_C * _fieldkKoef,
@@ -208,20 +225,94 @@ void serialMan::ProjectVisualizator::drawManipulator()
 
 void serialMan::ProjectVisualizator::drawRotationJoint()
 {
-    glPointSize(20);
-    glBegin(GL_POINTS);
+//    glPointSize(20);
+//    glBegin(GL_POINTS);
+//    glColor3f(1, 0, 0);
+//    glVertex3f(0, 0, 0);
+//    glEnd();
+    glPushMatrix();
+    glTranslatef(0, 0, -1.5*_jointKoef);
+    GLUquadricObj *q = gluNewQuadric();
+
+    gluQuadricDrawStyle(q, GLU_LINE );
     glColor3f(1, 0, 0);
-    glVertex3f(0, 0, 0);
-    glEnd();
+    gluCylinder(q, 1.f*_jointKoef, 1.f*_jointKoef, 3.f*_jointKoef, _jointResolution, 1);
+
+    gluQuadricDrawStyle(q, GLU_FILL );
+    glColor3f(0.5, 0.5, 0.5);
+    gluCylinder(q, 1.f*_jointKoef, 1.f*_jointKoef, 3.f*_jointKoef, _jointResolution, 1);
+    gluDisk(q, 0, 1.0*_jointKoef, _jointResolution, 1);
+    glTranslatef(0, 0, 3*_jointKoef);
+    gluDisk(q, 0, 1.0*_jointKoef, _jointResolution, 1);
+
+    gluDeleteQuadric(q);
+    glPopMatrix();
+
 }
 
 void serialMan::ProjectVisualizator::drawLinearJoint()
 {
-    glPointSize(20);
-    glBegin(GL_POINTS);
-    glColor3f(0, 1, 0);
+//    glPointSize(20);
+//    glBegin(GL_POINTS);
+//    glColor3f(0, 1, 0);
+//    glVertex3f(0, 0, 0);
+//    glEnd();
+
+    const static int modes[] {GL_QUADS, GL_LINE_LOOP};
+    const static QColor colors[] {Qt::darkGray, Qt::red};
+
+    glPushMatrix();
+    glScalef(_jointKoef, _jointKoef, _jointKoef);
+    for(size_t i  =0; i < sizeof(modes) / sizeof(modes[0]); i++)
+    {
+    _currentContext->qglColor(colors[i]);
+
+    //Down
+    glBegin(modes[i]);
     glVertex3f(0, 0, 0);
+    glVertex3f(1, 0, 0);
+    glVertex3f(1, 1, 0);
+    glVertex3f(0, 1, 0);
     glEnd();
+
+    //Up
+    glBegin(modes[i]);
+    glVertex3f(0, 0, 1);
+    glVertex3f(1, 0, 1);
+    glVertex3f(1, 1, 1);
+    glVertex3f(0, 1, 1);
+    glEnd();
+
+    glBegin(modes[i]);
+    glVertex3f(0, 0, 0);
+    glVertex3f(0, 0, 1);
+    glVertex3f(0, 1, 1);
+    glVertex3f(0, 1, 0);
+    glEnd();
+
+    glBegin(modes[i]);
+    glVertex3f(1, 0, 0);
+    glVertex3f(1, 0, 1);
+    glVertex3f(1, 1, 1);
+    glVertex3f(1, 1, 0);
+    glEnd();
+
+    glBegin(modes[i]);
+    glVertex3f(0, 0, 0);
+    glVertex3f(1, 0, 0);
+    glVertex3f(1, 0, 1);
+    glVertex3f(0, 0, 1);
+    glEnd();
+
+    glBegin(modes[i]);
+    glVertex3f(0, 1, 0);
+    glVertex3f(1, 1, 0);
+    glVertex3f(1, 1, 1);
+    glVertex3f(0, 1, 1);
+    glEnd();
+
+    }
+    glPopMatrix();
 }
 
 void serialMan::ProjectVisualizator::drawCustomObjects()

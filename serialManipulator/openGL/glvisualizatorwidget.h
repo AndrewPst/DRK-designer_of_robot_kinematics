@@ -31,6 +31,7 @@ public:
     float getDistance();
     float getAngleX();
     float getAngleY();
+    float getCameraZ();
 
     //---Setters---
 
@@ -38,6 +39,7 @@ public:
     void setDistance(float);
     void setAngleX(float);
     void setAngleY(float);
+    void setCameraZ(float);
 
     //---GL methods---
     void initializeGL() override;

@@ -44,7 +44,6 @@ HEADERS += \
     serialManipulator/openGL/glvisualizatorwidget.h \
     serialManipulator/openGL/projectvisualizator.h \
     projectCore/baseprojectcontroller.h \
-    projectCore/projectType.h \
     projectCore/projectsmanager.h \
     serialManipulator/centralDocks/glcentraldock.h \
     serialManipulator/docks/manybuttonsdock.h \

@@ -42,7 +42,10 @@ private:
 
     glVisualizatorWidget* _currentContext;
 
-    float _fieldkKoef = 10;
+    float _fieldkKoef = 10.f;
+
+    float _jointKoef = 1.f;
+    int _jointResolution = 16;
 
 };
 

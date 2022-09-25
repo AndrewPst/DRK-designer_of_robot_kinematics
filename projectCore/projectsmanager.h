@@ -1,8 +1,6 @@
 #ifndef PROJECTSMANAGER_H
 #define PROJECTSMANAGER_H
 
-#include "projectCore/projectType.h"
-
 //#include "projectGenerator.h"
 #include "projectMetadata.h"
 
