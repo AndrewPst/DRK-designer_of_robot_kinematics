@@ -178,8 +178,9 @@ void serialMan::ProjectVisualizator::drawField()
 void serialMan::ProjectVisualizator::drawAxis()
 {
     glPushMatrix();
-    glLineWidth(4);
+    glLineWidth(2);
     glTranslatef(0, 0, 0);
+    glScalef(10, 10, 10);
     glBegin(GL_LINES);
 
     glColor3f(1, 0, 0);
@@ -267,6 +268,8 @@ void serialMan::ProjectVisualizator::drawManipulator()
         glRotatef(j->getRotation().x(), 1, 0, 0);
         glRotatef(j->getRotation().y(), 0, 1, 0);
         glRotatef(j->getRotation().z(), 0, 0, 1);
+
+        drawAxis();
 
         if(j->getType() == JointType_t::JOINT_ROTATION)
         {
