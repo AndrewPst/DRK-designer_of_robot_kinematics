@@ -18,7 +18,7 @@ void serialMan::ProjectVisualizator::visualizate(serialMan::glVisualizatorWidget
     _currentContext = glv;
     drawField();
     drawManipulator();
-//    drawAxis();
+    //    drawAxis();
     drawCustomObjects();
 }
 
@@ -198,6 +198,42 @@ void serialMan::ProjectVisualizator::drawAxis()
     glPopMatrix();
 }
 
+
+void drawCube()
+{
+    glBegin(GL_QUADS);
+    glVertex3f(0, 0, 0);
+    glVertex3f(1, 0, 0);
+    glVertex3f(1, 1, 0);
+    glVertex3f(0, 1, 0);
+    //Up
+    glVertex3f(0, 0, 1);
+    glVertex3f(1, 0, 1);
+    glVertex3f(1, 1, 1);
+    glVertex3f(0, 1, 1);
+
+    glVertex3f(0, 0, 0);
+    glVertex3f(0, 0, 1);
+    glVertex3f(0, 1, 1);
+    glVertex3f(0, 1, 0);
+
+    glVertex3f(1, 0, 0);
+    glVertex3f(1, 0, 1);
+    glVertex3f(1, 1, 1);
+    glVertex3f(1, 1, 0);
+
+    glVertex3f(0, 0, 0);
+    glVertex3f(1, 0, 0);
+    glVertex3f(1, 0, 1);
+    glVertex3f(0, 0, 1);
+
+    glVertex3f(0, 1, 0);
+    glVertex3f(1, 1, 0);
+    glVertex3f(1, 1, 1);
+    glVertex3f(0, 1, 1);
+    glEnd();
+}
+
 void serialMan::ProjectVisualizator::drawManipulator()
 {
     auto joints = ((SerialManipulatorProject*)projectsManager.getOpenedProject())->getManipulatorController()->getJoints();
@@ -205,10 +241,33 @@ void serialMan::ProjectVisualizator::drawManipulator()
 
     Q_FOREACH(auto j, joints)
     {
+
+        glPushMatrix();
+        glColor3f(1, 0, 0);
+        glTranslatef(-0.25, -0.25, -0.25);
+        glScalef(0.5, 0.5, j->getPosition().z()+0.5*(j->getPosition().z() > 0));
+        drawCube();
+        glPopMatrix();
+
+        glPushMatrix();
+        glColor3f(1, 0, 0);
+        glTranslatef(-0.25, -0.25, j->getPosition().z()-0.25);
+        glScalef(j->getPosition().x()+0.5*(j->getPosition().x() > 0), 0.5, 0.5);
+        drawCube();
+        glPopMatrix();
+
+        glPushMatrix();
+        glColor3f(1, 0, 0);
+        glTranslatef(j->getPosition().x()-0.25, -0.25, j->getPosition().z()-0.25);
+        glScalef(0.5, j->getPosition().y()+0.5*(j->getPosition().y() > 0), 0.5);
+        drawCube();
+        glPopMatrix();
+
         glTranslatef(j->getPosition().x(), j->getPosition().y(), j->getPosition().z());
         glRotatef(j->getRotation().x(), 1, 0, 0);
         glRotatef(j->getRotation().y(), 0, 1, 0);
         glRotatef(j->getRotation().z(), 0, 0, 1);
+
         if(j->getType() == JointType_t::JOINT_ROTATION)
         {
             drawRotationJoint();
@@ -217,6 +276,14 @@ void serialMan::ProjectVisualizator::drawManipulator()
         else if(j->getType() == JointType_t::JOINT_LINEAR)
         {
             drawLinearJoint();
+
+            glPushMatrix();
+            glColor3f(1, 0.8, 0);
+            glTranslatef(-0.3, -0.3, -0.3);
+            glScalef(0.6, 0.6, j->getValue()+0.6*(j->getValue() > 0));
+            drawCube();
+            glPopMatrix();
+
             glTranslatef(0, 0, j->getValue());
         }
     }
@@ -225,21 +292,21 @@ void serialMan::ProjectVisualizator::drawManipulator()
 
 void serialMan::ProjectVisualizator::drawRotationJoint()
 {
-//    glPointSize(20);
-//    glBegin(GL_POINTS);
-//    glColor3f(1, 0, 0);
-//    glVertex3f(0, 0, 0);
-//    glEnd();
+    //    glPointSize(20);
+    //    glBegin(GL_POINTS);
+    //    glColor3f(1, 0, 0);
+    //    glVertex3f(0, 0, 0);
+    //    glEnd();
     glPushMatrix();
     glTranslatef(0, 0, -1.5*_jointKoef);
     GLUquadricObj *q = gluNewQuadric();
-
+    glLineWidth(1);
     gluQuadricDrawStyle(q, GLU_LINE );
-    glColor3f(1, 0, 0);
+    glColor3f(0, 0, 0);
     gluCylinder(q, 1.f*_jointKoef, 1.f*_jointKoef, 3.f*_jointKoef, _jointResolution, 1);
 
     gluQuadricDrawStyle(q, GLU_FILL );
-    glColor3f(0.5, 0.5, 0.5);
+    glColor3f(0.8, 0.8, 0);
     gluCylinder(q, 1.f*_jointKoef, 1.f*_jointKoef, 3.f*_jointKoef, _jointResolution, 1);
     gluDisk(q, 0, 1.0*_jointKoef, _jointResolution, 1);
     glTranslatef(0, 0, 3*_jointKoef);
@@ -252,64 +319,74 @@ void serialMan::ProjectVisualizator::drawRotationJoint()
 
 void serialMan::ProjectVisualizator::drawLinearJoint()
 {
-//    glPointSize(20);
-//    glBegin(GL_POINTS);
-//    glColor3f(0, 1, 0);
-//    glVertex3f(0, 0, 0);
-//    glEnd();
+    //    glPointSize(20);
+    //    glBegin(GL_POINTS);
+    //    glColor3f(0, 1, 0);
+    //    glVertex3f(0, 0, 0);
+    //    glEnd();
 
     const static int modes[] {GL_QUADS, GL_LINE_LOOP};
     const static QColor colors[] {Qt::darkGray, Qt::red};
 
     glPushMatrix();
+    glLineWidth(2);
     glScalef(_jointKoef, _jointKoef, _jointKoef);
+    glTranslatef(-0.5, -0.5, -0.5);
     for(size_t i  =0; i < sizeof(modes) / sizeof(modes[0]); i++)
     {
-    _currentContext->qglColor(colors[i]);
+        _currentContext->qglColor(colors[i]);
 
-    //Down
-    glBegin(modes[i]);
-    glVertex3f(0, 0, 0);
-    glVertex3f(1, 0, 0);
-    glVertex3f(1, 1, 0);
-    glVertex3f(0, 1, 0);
-    glEnd();
+        //Down
+        glBegin(modes[i]);
+        glVertex3f(0, 0, 0);
+        glVertex3f(1, 0, 0);
+        glVertex3f(1, 1, 0);
+        glVertex3f(0, 1, 0);
+        glEnd();
 
-    //Up
-    glBegin(modes[i]);
-    glVertex3f(0, 0, 1);
-    glVertex3f(1, 0, 1);
-    glVertex3f(1, 1, 1);
-    glVertex3f(0, 1, 1);
-    glEnd();
+        //Up
+        glBegin(modes[i]);
+        glVertex3f(0, 0, 1);
+        glVertex3f(1, 0, 1);
+        glVertex3f(1, 1, 1);
+        glVertex3f(0, 1, 1);
+        glEnd();
 
-    glBegin(modes[i]);
-    glVertex3f(0, 0, 0);
-    glVertex3f(0, 0, 1);
-    glVertex3f(0, 1, 1);
-    glVertex3f(0, 1, 0);
-    glEnd();
+        glBegin(modes[i]);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 0, 1);
+        glVertex3f(0, 1, 1);
+        glVertex3f(0, 1, 0);
+        glEnd();
 
-    glBegin(modes[i]);
-    glVertex3f(1, 0, 0);
-    glVertex3f(1, 0, 1);
-    glVertex3f(1, 1, 1);
-    glVertex3f(1, 1, 0);
-    glEnd();
+        glBegin(modes[i]);
+        glVertex3f(1, 0, 0);
+        glVertex3f(1, 0, 1);
+        glVertex3f(1, 1, 1);
+        glVertex3f(1, 1, 0);
+        glEnd();
 
-    glBegin(modes[i]);
-    glVertex3f(0, 0, 0);
-    glVertex3f(1, 0, 0);
-    glVertex3f(1, 0, 1);
-    glVertex3f(0, 0, 1);
-    glEnd();
+        glBegin(modes[i]);
+        glVertex3f(0, 0, 0);
+        glVertex3f(1, 0, 0);
+        glVertex3f(1, 0, 1);
+        glVertex3f(0, 0, 1);
+        glEnd();
 
-    glBegin(modes[i]);
-    glVertex3f(0, 1, 0);
-    glVertex3f(1, 1, 0);
-    glVertex3f(1, 1, 1);
-    glVertex3f(0, 1, 1);
-    glEnd();
+        glBegin(modes[i]);
+        glVertex3f(0, 1, 0);
+        glVertex3f(1, 1, 0);
+        glVertex3f(1, 1, 1);
+        glVertex3f(0, 1, 1);
+        glEnd();
+
+        //Upper plane
+        glBegin(modes[i]);
+        glVertex3f(0, 0, 1.5);
+        glVertex3f(1, 0, 1.5);
+        glVertex3f(1, 1, 1.5);
+        glVertex3f(0, 1, 1.5);
+        glEnd();
 
     }
     glPopMatrix();

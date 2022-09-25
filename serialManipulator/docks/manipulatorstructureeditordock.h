@@ -13,6 +13,7 @@ QT_FORWARD_DECLARE_CLASS(QLabel);
 QT_FORWARD_DECLARE_CLASS(QDoubleSpinBox);
 QT_FORWARD_DECLARE_CLASS(QComboBox);
 QT_FORWARD_DECLARE_CLASS(QVector3D);
+QT_FORWARD_DECLARE_CLASS(QVBoxLayout);
 
 
 
@@ -27,17 +28,15 @@ class JointDetailedWidget : public ::QWidget
 
 public:
 
-    explicit JointDetailedWidget();
+    explicit JointDetailedWidget(Joint_t*);
 
     Joint_t* getJoint() const;
-    void setJoint(Joint_t*);
 
 private:
 
     void initWidgets();
     void updateWidgets();
 
-    void resetConnections();
     void createConnections();
 
 public slots:
@@ -71,8 +70,6 @@ private:
     QDoubleSpinBox* _rotX;
     QDoubleSpinBox* _rotY;
     QDoubleSpinBox* _rotZ;
-
-    QList<QMetaObject::Connection> _connections;
 };
 
 //Class for list of joints
@@ -134,7 +131,9 @@ private:
     QPushButton *_rebuildProject;
     QListWidget *_jointsList;
 
-    JointDetailedWidget* _detailed;
+    QVBoxLayout* vbl;
+
+    JointDetailedWidget* _detailed = NULL;
 
     serialMan::ManipulatorController* _manipulator;
 };

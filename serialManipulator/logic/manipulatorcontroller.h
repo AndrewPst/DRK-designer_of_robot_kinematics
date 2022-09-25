@@ -21,7 +21,7 @@ public:
 
     const QVector<Joint_t*>& getJoints() const;
 
-    const int DEFAULT_DOF = 5;
+    const int DEFAULT_DOF = 2;
     const int MAX_DOF = 16;
 
 signals:

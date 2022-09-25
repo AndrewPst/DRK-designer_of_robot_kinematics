@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion(_version.toStr());
 
     MainWindow w;
-    w.resize(800, 600);
+    w.resize(1920, 1080);
     w.show();
 
     return a.exec();
