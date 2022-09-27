@@ -180,7 +180,6 @@ void serialMan::ProjectVisualizator::drawAxis()
     glPushMatrix();
     glLineWidth(2);
     glTranslatef(0, 0, 0);
-    glScalef(10, 10, 10);
     glBegin(GL_LINES);
 
     glColor3f(1, 0, 0);
@@ -200,34 +199,45 @@ void serialMan::ProjectVisualizator::drawAxis()
 }
 
 
-void drawCube()
+void drawCube(GLenum mode)
 {
-    glBegin(GL_QUADS);
+    glBegin(mode);
     glVertex3f(0, 0, 0);
     glVertex3f(1, 0, 0);
     glVertex3f(1, 1, 0);
     glVertex3f(0, 1, 0);
+    glEnd();
+
     //Up
+    glBegin(mode);
     glVertex3f(0, 0, 1);
     glVertex3f(1, 0, 1);
     glVertex3f(1, 1, 1);
     glVertex3f(0, 1, 1);
+    glEnd();
 
+    glBegin(mode);
     glVertex3f(0, 0, 0);
     glVertex3f(0, 0, 1);
     glVertex3f(0, 1, 1);
     glVertex3f(0, 1, 0);
+    glEnd();
 
+    glBegin(mode);
     glVertex3f(1, 0, 0);
     glVertex3f(1, 0, 1);
     glVertex3f(1, 1, 1);
     glVertex3f(1, 1, 0);
+    glEnd();
 
+    glBegin(mode);
     glVertex3f(0, 0, 0);
     glVertex3f(1, 0, 0);
     glVertex3f(1, 0, 1);
     glVertex3f(0, 0, 1);
+    glEnd();
 
+    glBegin(mode);
     glVertex3f(0, 1, 0);
     glVertex3f(1, 1, 0);
     glVertex3f(1, 1, 1);
@@ -238,38 +248,43 @@ void drawCube()
 void serialMan::ProjectVisualizator::drawManipulator()
 {
     auto joints = ((SerialManipulatorProject*)projectsManager.getOpenedProject())->getManipulatorController()->getJoints();
-    glPushMatrix();
 
+    glPushMatrix();
     Q_FOREACH(auto j, joints)
     {
 
-        glPushMatrix();
-        glColor3f(1, 0, 0);
-        glTranslatef(-0.25, -0.25, -0.25);
-        glScalef(0.5, 0.5, j->getPosition().z()+0.5*(j->getPosition().z() > 0));
-        drawCube();
-        glPopMatrix();
+        const static int modes[] {GL_QUADS, GL_LINE_LOOP};
+        const static QColor colors[] {Qt::GlobalColor::yellow, Qt::black};
+        for(size_t i  = 0; i < sizeof(modes) / sizeof(modes[0]); i++)
+        {
+            _currentContext->qglColor(colors[i]);
+            glLineWidth(3);
 
-        glPushMatrix();
-        glColor3f(1, 0, 0);
-        glTranslatef(-0.25, -0.25, j->getPosition().z()-0.25);
-        glScalef(j->getPosition().x()+0.5*(j->getPosition().x() > 0), 0.5, 0.5);
-        drawCube();
-        glPopMatrix();
+            glPushMatrix();
+            glTranslatef(-0.25, -0.25, -0.25);
+            glScalef(0.5, 0.5, j->getPosition().z()+0.5*(j->getPosition().z() > 0));
+            drawCube(modes[i]);
+            glPopMatrix();
 
-        glPushMatrix();
-        glColor3f(1, 0, 0);
-        glTranslatef(j->getPosition().x()-0.25, -0.25, j->getPosition().z()-0.25);
-        glScalef(0.5, j->getPosition().y()+0.5*(j->getPosition().y() > 0), 0.5);
-        drawCube();
-        glPopMatrix();
+            glPushMatrix();
+            glTranslatef(-0.25, -0.25, j->getPosition().z()-0.25);
+            glScalef(j->getPosition().x()+0.5*(j->getPosition().x() > 0), 0.5, 0.5);
+            drawCube(modes[i]);
+            glPopMatrix();
+
+            glPushMatrix();
+            glTranslatef(j->getPosition().x()-0.25, -0.25, j->getPosition().z()-0.25);
+            glScalef(0.5, j->getPosition().y()+0.5*(j->getPosition().y() > 0), 0.5);
+            drawCube(modes[i]);
+            glPopMatrix();
+
+        }
 
         glTranslatef(j->getPosition().x(), j->getPosition().y(), j->getPosition().z());
         glRotatef(j->getRotation().x(), 1, 0, 0);
         glRotatef(j->getRotation().y(), 0, 1, 0);
         glRotatef(j->getRotation().z(), 0, 0, 1);
 
-        drawAxis();
 
         if(j->getType() == JointType_t::JOINT_ROTATION)
         {
@@ -279,41 +294,60 @@ void serialMan::ProjectVisualizator::drawManipulator()
         else if(j->getType() == JointType_t::JOINT_LINEAR)
         {
             drawLinearJoint();
-
             glPushMatrix();
             glColor3f(1, 0.8, 0);
             glTranslatef(-0.3, -0.3, -0.3);
             glScalef(0.6, 0.6, j->getValue()+0.6*(j->getValue() > 0));
-            drawCube();
+            drawCube(GL_QUADS);
             glPopMatrix();
 
             glTranslatef(0, 0, j->getValue());
         }
+
+    }
+    glPopMatrix();
+
+    glPushMatrix();
+    Q_FOREACH(auto j, joints)
+    {
+        glTranslatef(j->getPosition().x(), j->getPosition().y(), j->getPosition().z());
+        glRotatef(j->getRotation().x(), 1, 0, 0);
+        glRotatef(j->getRotation().y(), 0, 1, 0);
+        glRotatef(j->getRotation().z(), 0, 0, 1);
+
+        glPushMatrix();
+        glScalef(2*_jointKoef, 2*_jointKoef, 2*_jointKoef);
+        glLineWidth(3);
+        glDisable(GL_DEPTH_TEST);
+        drawAxis();
+        glEnable(GL_DEPTH_TEST);
+        glPopMatrix();
+
+        if(j->getType() == JointType_t::JOINT_ROTATION)
+            glRotatef(j->getValue(), 0 ,0, 1);
+        else if(j->getType() == JointType_t::JOINT_LINEAR)
+            glTranslatef(0, 0, j->getValue());
+
     }
     glPopMatrix();
 }
 
 void serialMan::ProjectVisualizator::drawRotationJoint()
 {
-    //    glPointSize(20);
-    //    glBegin(GL_POINTS);
-    //    glColor3f(1, 0, 0);
-    //    glVertex3f(0, 0, 0);
-    //    glEnd();
     glPushMatrix();
-    glTranslatef(0, 0, -1.5*_jointKoef);
+    glTranslatef(0, 0, -1.f*_jointKoef);
     GLUquadricObj *q = gluNewQuadric();
     glLineWidth(1);
     gluQuadricDrawStyle(q, GLU_LINE );
     glColor3f(0, 0, 0);
-    gluCylinder(q, 1.f*_jointKoef, 1.f*_jointKoef, 3.f*_jointKoef, _jointResolution, 1);
+    gluCylinder(q, 0.5*_jointKoef, 0.5*_jointKoef, 2.f*_jointKoef, _jointResolution, 1);
 
     gluQuadricDrawStyle(q, GLU_FILL );
-    glColor3f(0.8, 0.8, 0);
-    gluCylinder(q, 1.f*_jointKoef, 1.f*_jointKoef, 3.f*_jointKoef, _jointResolution, 1);
-    gluDisk(q, 0, 1.0*_jointKoef, _jointResolution, 1);
-    glTranslatef(0, 0, 3*_jointKoef);
-    gluDisk(q, 0, 1.0*_jointKoef, _jointResolution, 1);
+    glColor3f(0.8, 0.4, 0);
+    gluCylinder(q, 0.5*_jointKoef, 0.5*_jointKoef, 2.f*_jointKoef, _jointResolution, 1);
+    gluDisk(q, 0, 0.5*_jointKoef, _jointResolution, 1);
+    glTranslatef(0, 0, 2*_jointKoef);
+    gluDisk(q, 0, 0.5*_jointKoef, _jointResolution, 1);
 
     gluDeleteQuadric(q);
     glPopMatrix();
@@ -329,7 +363,7 @@ void serialMan::ProjectVisualizator::drawLinearJoint()
     //    glEnd();
 
     const static int modes[] {GL_QUADS, GL_LINE_LOOP};
-    const static QColor colors[] {Qt::darkGray, Qt::red};
+    const static QColor colors[] {QColor(qRgb(200, 100, 0)), Qt::black};
 
     glPushMatrix();
     glLineWidth(2);
