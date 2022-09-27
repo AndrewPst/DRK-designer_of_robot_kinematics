@@ -253,27 +253,32 @@ void serialMan::ProjectVisualizator::drawManipulator()
     Q_FOREACH(auto j, joints)
     {
 
-        const static int modes[] {GL_QUADS, GL_LINE_LOOP};
-        const static QColor colors[] {Qt::GlobalColor::yellow, Qt::black};
+        const static int modes[] {GL_LINE_LOOP, GL_QUADS};
+        const static QColor colors[] {Qt::GlobalColor::black, Qt::yellow};
         for(size_t i  = 0; i < sizeof(modes) / sizeof(modes[0]); i++)
         {
             _currentContext->qglColor(colors[i]);
             glLineWidth(3);
 
             glPushMatrix();
+            glScalef(1 - (float)i*0.1, 1 - (float)i*0.1, 1 - (float)i*0.1);
             glTranslatef(-0.25, -0.25, -0.25);
             glScalef(0.5, 0.5, j->getPosition().z()+0.5*(j->getPosition().z() > 0));
             drawCube(modes[i]);
             glPopMatrix();
 
             glPushMatrix();
-            glTranslatef(-0.25, -0.25, j->getPosition().z()-0.25);
+            glTranslatef(0, 0, j->getPosition().z());
+            glScalef(1 - (float)i*0.1, 1 - (float)i*0.1, 1 - (float)i*0.1);
+            glTranslatef(-0.25, -0.25, -0.25);
             glScalef(j->getPosition().x()+0.5*(j->getPosition().x() > 0), 0.5, 0.5);
             drawCube(modes[i]);
             glPopMatrix();
 
             glPushMatrix();
-            glTranslatef(j->getPosition().x()-0.25, -0.25, j->getPosition().z()-0.25);
+            glTranslatef(j->getPosition().x(), 0, j->getPosition().z());
+            glScalef(1 - (float)i*0.1, 1 - (float)i*0.1, 1 - (float)i*0.1);
+            glTranslatef(-0.25, -0.25, -0.25);
             glScalef(0.5, j->getPosition().y()+0.5*(j->getPosition().y() > 0), 0.5);
             drawCube(modes[i]);
             glPopMatrix();
