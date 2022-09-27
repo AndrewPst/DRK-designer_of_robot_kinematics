@@ -249,27 +249,28 @@ void serialMan::ProjectVisualizator::drawManipulator()
 {
     auto joints = ((SerialManipulatorProject*)projectsManager.getOpenedProject())->getManipulatorController()->getJoints();
 
+    //Draw manipulator
     glPushMatrix();
     Q_FOREACH(auto j, joints)
     {
-
+        //draw the joints of the joints
         const static int modes[] {GL_LINE_LOOP, GL_QUADS};
-        const static QColor colors[] {Qt::GlobalColor::black, Qt::yellow};
+        const static QColor colors[] {Qt::GlobalColor::black, Qt::yellow}; //And border
         for(size_t i  = 0; i < sizeof(modes) / sizeof(modes[0]); i++)
         {
             _currentContext->qglColor(colors[i]);
             glLineWidth(3);
 
             glPushMatrix();
-            glScalef(1 - (float)i*0.1, 1 - (float)i*0.1, 1 - (float)i*0.1);
-            glTranslatef(-0.25, -0.25, -0.25);
-            glScalef(0.5, 0.5, j->getPosition().z()+0.5*(j->getPosition().z() > 0));
+            glScalef(1 - (float)i*0.1, 1 - (float)i*0.1, 1); //This scale needing for correct drawing borders
+            glTranslatef(-0.25, -0.25, -0.25); //Set joint to center
+            glScalef(0.5, 0.5, j->getPosition().z()+0.5*(j->getPosition().z() > 0)); //Scale joint
             drawCube(modes[i]);
             glPopMatrix();
 
             glPushMatrix();
             glTranslatef(0, 0, j->getPosition().z());
-            glScalef(1 - (float)i*0.1, 1 - (float)i*0.1, 1 - (float)i*0.1);
+            glScalef(1, 1 - (float)i*0.1, 1 - (float)i*0.1);
             glTranslatef(-0.25, -0.25, -0.25);
             glScalef(j->getPosition().x()+0.5*(j->getPosition().x() > 0), 0.5, 0.5);
             drawCube(modes[i]);
@@ -312,6 +313,7 @@ void serialMan::ProjectVisualizator::drawManipulator()
     }
     glPopMatrix();
 
+    //rawing joints axes on top of all elements
     glPushMatrix();
     Q_FOREACH(auto j, joints)
     {
@@ -361,11 +363,6 @@ void serialMan::ProjectVisualizator::drawRotationJoint()
 
 void serialMan::ProjectVisualizator::drawLinearJoint()
 {
-    //    glPointSize(20);
-    //    glBegin(GL_POINTS);
-    //    glColor3f(0, 1, 0);
-    //    glVertex3f(0, 0, 0);
-    //    glEnd();
 
     const static int modes[] {GL_QUADS, GL_LINE_LOOP};
     const static QColor colors[] {QColor(qRgb(200, 100, 0)), Qt::black};
