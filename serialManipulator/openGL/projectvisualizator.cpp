@@ -248,11 +248,16 @@ void drawCube(GLenum mode)
 void serialMan::ProjectVisualizator::drawManipulator()
 {
     auto joints = ((SerialManipulatorProject*)projectsManager.getOpenedProject())->getManipulatorController()->getJoints();
-
+    Joint_t* _effector = ((SerialManipulatorProject*)projectsManager.getOpenedProject())->getManipulatorController()->getEffector();
     //Draw manipulator
     glPushMatrix();
-    Q_FOREACH(auto j, joints)
+    for(int i = 0; i <= joints.size(); i++)
     {
+        Joint_t* j;
+        if(i == joints.size())
+            j = _effector;
+        else
+            j = joints[i];
         //draw the joints of the joints
         const static int modes[] {GL_LINE_LOOP, GL_QUADS};
         const static QColor colors[] {Qt::GlobalColor::black, Qt::yellow}; //And border
@@ -278,12 +283,11 @@ void serialMan::ProjectVisualizator::drawManipulator()
 
             glPushMatrix();
             glTranslatef(j->getPosition().x(), 0, j->getPosition().z());
-            glScalef(1 - (float)i*0.1, 1 - (float)i*0.1, 1 - (float)i*0.1);
+            glScalef(1 - (float)i*0.1, 1, 1 - (float)i*0.1);
             glTranslatef(-0.25, -0.25, -0.25);
             glScalef(0.5, j->getPosition().y()+0.5*(j->getPosition().y() > 0), 0.5);
             drawCube(modes[i]);
             glPopMatrix();
-
         }
 
         glTranslatef(j->getPosition().x(), j->getPosition().y(), j->getPosition().z());
@@ -292,12 +296,15 @@ void serialMan::ProjectVisualizator::drawManipulator()
         glRotatef(j->getRotation().z(), 0, 0, 1);
 
 
-        if(j->getType() == JointType_t::JOINT_ROTATION)
+        switch(j->getType())
+        {
+        case JointType_t::JOINT_ROTATION:
         {
             drawRotationJoint();
             glRotatef(j->getValue(), 0 ,0, 1);
+            break;
         }
-        else if(j->getType() == JointType_t::JOINT_LINEAR)
+        case JointType_t::JOINT_LINEAR:
         {
             drawLinearJoint();
             glPushMatrix();
@@ -308,15 +315,33 @@ void serialMan::ProjectVisualizator::drawManipulator()
             glPopMatrix();
 
             glTranslatef(0, 0, j->getValue());
+            break;
         }
-
+        case JointType_t::JOINT_EFFECTOR:
+        {
+            GLUquadricObj *q = gluNewQuadric();
+            glLineWidth(1);
+            gluQuadricDrawStyle(q, GL_FILL );
+            glColor3f(1, 0.2, 0.2);
+            gluSphere(q, 0.5, _jointResolution, _jointResolution);
+            gluDeleteQuadric(q);
+            break;
+        }
+        default:
+            break;
+        }
     }
     glPopMatrix();
 
     //rawing joints axes on top of all elements
     glPushMatrix();
-    Q_FOREACH(auto j, joints)
+    for(int i = 0; i <= joints.size(); i++)
     {
+        Joint_t* j;
+        if(i == joints.size())
+            j = _effector;
+        else
+            j = joints[i];
         glTranslatef(j->getPosition().x(), j->getPosition().y(), j->getPosition().z());
         glRotatef(j->getRotation().x(), 1, 0, 0);
         glRotatef(j->getRotation().y(), 0, 1, 0);
@@ -330,11 +355,21 @@ void serialMan::ProjectVisualizator::drawManipulator()
         glEnable(GL_DEPTH_TEST);
         glPopMatrix();
 
-        if(j->getType() == JointType_t::JOINT_ROTATION)
+        switch(j->getType())
+        {
+        case JointType_t::JOINT_ROTATION:
+        {
             glRotatef(j->getValue(), 0 ,0, 1);
-        else if(j->getType() == JointType_t::JOINT_LINEAR)
+            break;
+        }
+        case JointType_t::JOINT_LINEAR:
+        {
             glTranslatef(0, 0, j->getValue());
-
+            break;
+        }
+        default:
+            break;
+        }
     }
     glPopMatrix();
 }

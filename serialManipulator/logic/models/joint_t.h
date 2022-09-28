@@ -12,7 +12,8 @@ enum class JointType_t
 {
     JOINT_UNKNOWN = 0,
     JOINT_ROTATION,
-    JOINT_LINEAR
+    JOINT_LINEAR,
+    JOINT_EFFECTOR
 };
 
 class Joint_t : public ::QObject

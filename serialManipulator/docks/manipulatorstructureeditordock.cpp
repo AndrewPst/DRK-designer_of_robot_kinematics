@@ -22,7 +22,7 @@ using namespace serialMan;
 
 //---------Joint detailed widget--------
 
-JointDetailedWidget::JointDetailedWidget(Joint_t* j) : ::QWidget()
+JointDetailedWidget::JointDetailedWidget(Joint_t* j) : ::QWidget(), _joint(j)
 {
     setMinimumSize(100, 300);
 
@@ -75,7 +75,8 @@ JointDetailedWidget::JointDetailedWidget(Joint_t* j) : ::QWidget()
     fl->addRow(tr("Current value:"), _currentValue);
     fl->addRow(tr("Maximum value:"), _maxValue);
     fl->addRow(tr("Minimum value:"), _minValue);
-    fl->addRow(tr("Joints type:"), _typeJointBox);
+    if(_joint->getType() != JointType_t::JOINT_EFFECTOR)
+        fl->addRow(tr("Joints type:"), _typeJointBox);
     fl->addRow(posGroup);
     fl->addRow(rotGroup);
     fl->setSizeConstraint(QFormLayout::SizeConstraint::SetFixedSize);
@@ -85,7 +86,6 @@ JointDetailedWidget::JointDetailedWidget(Joint_t* j) : ::QWidget()
 
     setLayout(fl);
 
-    _joint = j;
     updateWidgets();
     createConnections();
 }
@@ -184,13 +184,17 @@ void JointDetailedWidget::onRotationChanged(QVector3D rot)
 void JointDetailedWidget::onPosUpdated()
 {
     //QVector3D consists of float. TODO: Make a vector from a double
-    QVector3D pos = {(float)_posX->value(), (float)_posY->value(), (float)_posZ->value()};
+    QVector3D pos = {static_cast<float>(_posX->value()),
+                     static_cast<float>(_posY->value()),
+                     static_cast<float>(_posZ->value())};
     _joint->setPosition(pos);
 }
 
 void JointDetailedWidget::onRotUpdated()
 {
-    QVector3D rot = {(float)_rotX->value(), (float)_rotY->value(), (float)_rotZ->value()};
+    QVector3D rot = {static_cast<float>(_rotX->value()),
+                     static_cast<float>(_rotY->value()),
+                     static_cast<float>(_rotZ->value())};
     _joint->setRotation(rot);
 }
 
@@ -201,22 +205,23 @@ JointListElement::JointListElement(serialMan::Joint_t* joint) : QWidget(), _join
 {
     _value = new QLabel();
 
-    connect(joint, &Joint_t::valueChanged, this, &JointListElement::updateValues);
-    connect(joint, &Joint_t::typeChanged, this, &JointListElement::updateValues);
-
-    updateValues();
-
     QVBoxLayout *mainL = new QVBoxLayout();
     mainL->addWidget(_value);
 
     setLayout(mainL);
 
+    updateValues();
+
+    connect(joint, &Joint_t::valueChanged, this, &JointListElement::updateValues);
+    connect(joint, &Joint_t::typeChanged, this, &JointListElement::updateValues);
 }
 
 void JointListElement::updateValues()
 {
     _value->setText(tr("Type: %1\nValue: %2")
-                    .arg(_joint->getType() == JointType_t::JOINT_ROTATION ? "Rotation" : "Linear")
+                    .arg(_joint->getType() == JointType_t::JOINT_ROTATION
+                         ? "Rotation" :
+                           _joint->getType() == JointType_t::JOINT_LINEAR ? "Linear" : "Effector")
                     .arg(_joint->getValue()));
 }
 
@@ -233,24 +238,21 @@ ManipulatorStructureEditorDock::ManipulatorStructureEditorDock(const QString& ti
     : BaseDock(title)
 {
     setMinimumSize(200, 200);
-
+    //We can open this widget as window
     drawAsWindow(true);
+    setAllowedAreas(Qt::DockWidgetArea::RightDockWidgetArea | Qt::DockWidgetArea::LeftDockWidgetArea);
 
+    //Get manipulator controller
     auto t = (SerialManipulatorProject*)projectsManager.getOpenedProject();
     _manipulator = t->getManipulatorController();
 
     _dofSpin = new QSpinBox();
     _dofSpin->setRange(1, 16);
     _dofSpin->setValue(_manipulator->getDof());
-    connect(_dofSpin, SIGNAL(valueChanged(int)), this, SLOT(onDofSpinValueChanged(int)));
-
-    connect(_manipulator, SIGNAL(dofChanged(int)), this, SLOT(onDofChanged(int)));
 
     _rebuildProject = new QPushButton();
     _rebuildProject->setText(tr("Rebuild"));
     _rebuildProject->setEnabled(false);
-    connect(_rebuildProject, &QPushButton::clicked, this, &ManipulatorStructureEditorDock::onRebuildClicked);
-
 
     _jointsList = new QListWidget();
     _jointsList->setMinimumSize(200, 400);
@@ -258,25 +260,32 @@ ManipulatorStructureEditorDock::ManipulatorStructureEditorDock(const QString& ti
     _jointsList->setResizeMode(QListWidget::ResizeMode::Adjust);
     _jointsList->setSpacing(0);
     updateJointsList();
-    connect(_jointsList, &QListWidget::currentItemChanged, this, &ManipulatorStructureEditorDock::jointSelected);
-    connect(_manipulator, &ManipulatorController::jointAdded, this, &ManipulatorStructureEditorDock::onJointAdded);
-    connect(_manipulator, &ManipulatorController::jointRemoved, this, &ManipulatorStructureEditorDock::onJointRemoved);
 
     vbl = new QVBoxLayout();
     vbl->addWidget(_dofSpin);
     vbl->addWidget(_rebuildProject);
     vbl->addWidget(_jointsList);
-    //vbl->setAlignment(Qt::AlignmentFlag::AlignTop);
+    vbl->setAlignment(Qt::AlignmentFlag::AlignTop);
 
     QWidget* main = new QWidget();
     main->setLayout(vbl);
-
     setWidget(main);
+
+    connect(_dofSpin, SIGNAL(valueChanged(int)), this, SLOT(onDofSpinValueChanged(int)));
+    connect(_manipulator, SIGNAL(dofChanged(int)), this, SLOT(onDofChanged(int)));
+
+    connect(_rebuildProject, &QPushButton::clicked, this, &ManipulatorStructureEditorDock::onRebuildClicked);
+
+    connect(_jointsList, &QListWidget::currentItemChanged, this, &ManipulatorStructureEditorDock::jointSelected);
+    connect(_manipulator, &ManipulatorController::jointAdded, this, &ManipulatorStructureEditorDock::onJointAdded);
+    connect(_manipulator, &ManipulatorController::jointRemoved, this, &ManipulatorStructureEditorDock::onJointRemoved);
+
 }
 
 void ManipulatorStructureEditorDock::updateJointsList()
 {
     auto list = _manipulator->getJoints();
+    onJointAdded(_manipulator->getEffector());
     Q_FOREACH(Joint_t* i, list)
     {
         onJointAdded(i);
@@ -306,7 +315,7 @@ void ManipulatorStructureEditorDock::onJointAdded(serialMan::Joint_t* joint)
 {
     QListWidgetItem* _listItem = new QListWidgetItem();
     JointListElement *jli = new JointListElement(joint);
-    _jointsList->addItem(_listItem);
+    _jointsList->insertItem(1, _listItem);
     _listItem->setSizeHint(jli->sizeHint() );
     _jointsList->setItemWidget(_listItem, jli);
 }
@@ -342,6 +351,4 @@ void ManipulatorStructureEditorDock::jointSelected()
     }
     _detailed = new JointDetailedWidget(t);
     vbl->addWidget(_detailed);
-    //    _detailed->setJoint(t);
-    //    _detailed->setEnabled(true);
 }

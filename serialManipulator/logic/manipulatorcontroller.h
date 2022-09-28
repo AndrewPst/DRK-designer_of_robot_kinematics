@@ -15,11 +15,13 @@ class ManipulatorController : public QObject
 
 public:
     ManipulatorController();
+    ~ManipulatorController();
 
     void setDof(const int);
     int getDof() const;
 
     const QVector<Joint_t*>& getJoints() const;
+    Joint_t* getEffector() const;
 
     const int DEFAULT_DOF = 2;
     const int MAX_DOF = 16;
@@ -37,7 +39,7 @@ private:
     int _dof;
 
     QVector<Joint_t*> _joints;
-
+    Joint_t* _effector;
 };
 
 }
