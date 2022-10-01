@@ -5,12 +5,13 @@
 
 #include "openGL/projectvisualizator.h"
 #include "logic/manipulatorcontroller.h"
+#include "logic/dhparameterscalculator.h"
 
 using namespace serialMan;
 
 SerialManipulatorProject::SerialManipulatorProject()
     : BaseProjectController(), _manipulatorController(new ManipulatorController),
-      _projectVisualizator(new ProjectVisualizator)
+      _projectVisualizator(new ProjectVisualizator), _dhCalculator(new dhParametersCalculator(this))
 {
 }
 
@@ -38,4 +39,10 @@ ProjectVisualizator* SerialManipulatorProject::getVisualizator() const
 {
     return _projectVisualizator;
 }
+
+dhParametersCalculator* SerialManipulatorProject::getDhCalculator() const
+{
+    return _dhCalculator;
+}
+
 

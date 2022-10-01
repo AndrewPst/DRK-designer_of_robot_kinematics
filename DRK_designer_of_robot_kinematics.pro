@@ -16,6 +16,7 @@ SOURCES += \
     messageWindows/ConfirmActionDialog.cpp \
     messageWindows/newprojectconstructorwidget.cpp \
     serialManipulator/docks/manipulatorstructureeditordock.cpp \
+    serialManipulator/logic/dhparameterscalculator.cpp \
     serialManipulator/logic/manipulatorcontroller.cpp \
     serialManipulator/logic/models/joint_t.cpp \
     serialManipulator/openGL/glvisualizatorwidget.cpp \
@@ -38,6 +39,7 @@ HEADERS += \
     projectCore/projectGenerator.h \
     projectCore/projectMetadata.h \
     serialManipulator/docks/manipulatorstructureeditordock.h \
+    serialManipulator/logic/dhparameterscalculator.h \
     serialManipulator/logic/manipulatorcontroller.h \
     serialManipulator/logic/models/joint_t.h \
     serialManipulator/logic/models/units_t.h \

@@ -10,6 +10,7 @@
 #include <gl/glaux.h>
 #include <gl/gl.h>
 
+
 using namespace serialMan;
 
 void serialMan::ProjectVisualizator::visualizate(serialMan::glVisualizatorWidget* glv)
@@ -294,7 +295,7 @@ void serialMan::ProjectVisualizator::drawManipulator()
         glRotatef(j->getRotation().x(), 1, 0, 0);
         glRotatef(j->getRotation().y(), 0, 1, 0);
         glRotatef(j->getRotation().z(), 0, 0, 1);
-
+        //glRotatef(1, j->getRotation().x(), j->getRotation().y(), j->getRotation().z());
 
         switch(j->getType())
         {

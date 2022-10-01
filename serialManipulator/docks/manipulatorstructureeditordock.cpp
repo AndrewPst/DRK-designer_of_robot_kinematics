@@ -194,6 +194,7 @@ void JointDetailedWidget::onRotUpdated()
 {
     QVector3D rot = {static_cast<float>(_rotX->value()),
                      static_cast<float>(_rotY->value()),
+                     //_joint->getRotation().z()};
                      static_cast<float>(_rotZ->value())};
     _joint->setRotation(rot);
 }

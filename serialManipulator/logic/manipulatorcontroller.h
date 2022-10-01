@@ -2,6 +2,7 @@
 #define MANIPULATORCONTROLLER_H
 
 #include "models/joint_t.h"
+#include "../serialManipulatorProject.h"
 
 #include <QObject>
 
@@ -13,9 +14,15 @@ class ManipulatorController : public QObject
 {
     Q_OBJECT
 
-public:
+    friend class serialMan::SerialManipulatorProject;
+
     ManipulatorController();
     ~ManipulatorController();
+
+    ManipulatorController& operator=(const ManipulatorController&) = delete;
+    ManipulatorController(const ManipulatorController&) = delete;
+
+public:
 
     void setDof(const int);
     int getDof() const;
