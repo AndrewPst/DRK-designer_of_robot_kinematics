@@ -4,6 +4,7 @@
 #include "../serial6dofmanipulator.h"
 #include "models/Effector_t.h"
 #include "models/joint_t.h"
+#include "models/DHTable_t.h"
 
 #include <QObject>
 #include <QVector>
@@ -27,11 +28,13 @@ class ManipulatorController : public QObject
     void initJoints();
 
 public:
+    const static int DEFAULT_DOF = 6;
 
     const QVector<Joint_t*>& getJoints() const;
     const Effector_t& getEffector() const;
+    const DHTable_t<DEFAULT_DOF>& getDHTable() const;
 
-    const int DEFAULT_DOF = 6;
+    void setDHTable(DHTable_t<DEFAULT_DOF>&&);
 
 signals:
 
@@ -41,6 +44,8 @@ private:
 
     QVector<Joint_t*> _joints;
     Effector_t _effector;
+
+    DHTable_t<DEFAULT_DOF> _dhTable;
 };
 
 }

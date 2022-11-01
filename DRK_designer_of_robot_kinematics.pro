@@ -39,6 +39,7 @@ HEADERS += \
     serial6DofManipulator/centralDocks/glcentraldock.h \
     serial6DofManipulator/docks/manybuttonsdock.h \
     serial6DofManipulator/logic/manipulatorcontroller.h \
+    serial6DofManipulator/logic/models/DHTable_t.h \
     serial6DofManipulator/logic/models/Effector_t.h \
     serial6DofManipulator/logic/models/joint_t.h \
     serial6DofManipulator/logic/models/units_t.h \
