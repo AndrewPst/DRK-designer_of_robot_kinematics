@@ -2,7 +2,8 @@
 #include "centralwindow.h"
 #include "projectCore/projectsmanager.h"
 #include "projectCore/baseprojectcontroller.h"
-#include "../serialManipulatorProject.h"
+#include "../serial6dofmanipulator.h"
+#include "../openGL/projectvisualizator.h"
 
 #include <QAction>
 #include <QHBoxLayout>
@@ -23,7 +24,7 @@ glCentralDock::glCentralDock(const QString& title,
     QDockWidget::setMinimumSize(400, 400);
 
     _mainWidget = new QWidget();
-    _glWidget = new glVisualizatorWidget(((SerialManipulatorProject*)projectsManager.getOpenedProject())->getVisualizator(), this);
+    _glWidget = new glVisualizatorWidget(((Serial6DofManipulator*)projectsManager.getOpenedProject())->getVisualizator(), this);
     QHBoxLayout *layout = new QHBoxLayout();
     layout->addWidget(_glWidget);
 

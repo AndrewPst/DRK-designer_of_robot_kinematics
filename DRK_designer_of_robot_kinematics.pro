@@ -15,18 +15,16 @@ SOURCES += \
     mainwindow.cpp \
     messageWindows/ConfirmActionDialog.cpp \
     messageWindows/newprojectconstructorwidget.cpp \
-    serialManipulator/docks/manipulatorstructureeditordock.cpp \
-    serialManipulator/logic/dhparameterscalculator.cpp \
-    serialManipulator/logic/manipulatorcontroller.cpp \
-    serialManipulator/logic/models/joint_t.cpp \
-    serialManipulator/openGL/glvisualizatorwidget.cpp \
-    serialManipulator/openGL/projectvisualizator.cpp \
+    serial6DofManipulator/centralDocks/glcentraldock.cpp \
+    serial6DofManipulator/docks/manybuttonsdock.cpp \
+    serial6DofManipulator/logic/manipulatorcontroller.cpp \
+    serial6DofManipulator/logic/models/joint_t.cpp \
+    serial6DofManipulator/openGL/glvisualizatorwidget.cpp \
+    serial6DofManipulator/openGL/projectvisualizator.cpp \
+    serial6DofManipulator/serial6dofmanipulator.cpp \
     projectCore/baseprojectcontroller.cpp \
     projectCore/initAvailableControllers.cpp \
     projectCore/projectsmanager.cpp \
-    serialManipulator/centralDocks/glcentraldock.cpp \
-    serialManipulator/docks/manybuttonsdock.cpp \
-    serialManipulator/serialManipulatorProject.cpp \
     version_t.cpp
 
 HEADERS += \
@@ -38,18 +36,17 @@ HEADERS += \
     messageWindows/newprojectconstructorwidget.h \
     projectCore/projectGenerator.h \
     projectCore/projectMetadata.h \
-    serialManipulator/docks/manipulatorstructureeditordock.h \
-    serialManipulator/logic/dhparameterscalculator.h \
-    serialManipulator/logic/manipulatorcontroller.h \
-    serialManipulator/logic/models/joint_t.h \
-    serialManipulator/logic/models/units_t.h \
-    serialManipulator/openGL/glvisualizatorwidget.h \
-    serialManipulator/openGL/projectvisualizator.h \
+    serial6DofManipulator/centralDocks/glcentraldock.h \
+    serial6DofManipulator/docks/manybuttonsdock.h \
+    serial6DofManipulator/logic/manipulatorcontroller.h \
+    serial6DofManipulator/logic/models/Effector_t.h \
+    serial6DofManipulator/logic/models/joint_t.h \
+    serial6DofManipulator/logic/models/units_t.h \
+    serial6DofManipulator/openGL/glvisualizatorwidget.h \
+    serial6DofManipulator/openGL/projectvisualizator.h \
+    serial6DofManipulator/serial6dofmanipulator.h \
     projectCore/baseprojectcontroller.h \
     projectCore/projectsmanager.h \
-    serialManipulator/centralDocks/glcentraldock.h \
-    serialManipulator/docks/manybuttonsdock.h \
-    serialManipulator/serialManipulatorProject.h \
     version_t.h
 
 # Default rules for deployment.

@@ -1,10 +1,12 @@
 #ifndef MANIPULATORCONTROLLER_H
 #define MANIPULATORCONTROLLER_H
 
+#include "../serial6dofmanipulator.h"
+#include "models/Effector_t.h"
 #include "models/joint_t.h"
-#include "../serialManipulatorProject.h"
 
 #include <QObject>
+#include <QVector>
 
 namespace serialMan
 {
@@ -14,7 +16,7 @@ class ManipulatorController : public QObject
 {
     Q_OBJECT
 
-    friend class serialMan::SerialManipulatorProject;
+    friend class serialMan::Serial6DofManipulator;
 
     ManipulatorController();
     ~ManipulatorController();
@@ -22,31 +24,23 @@ class ManipulatorController : public QObject
     ManipulatorController& operator=(const ManipulatorController&) = delete;
     ManipulatorController(const ManipulatorController&) = delete;
 
+    void initJoints();
+
 public:
 
-    void setDof(const int);
-    int getDof() const;
-
     const QVector<Joint_t*>& getJoints() const;
-    Joint_t* getEffector() const;
+    const Effector_t& getEffector() const;
 
-    const int DEFAULT_DOF = 2;
-    const int MAX_DOF = 16;
+    const int DEFAULT_DOF = 6;
 
 signals:
 
-    void jointAdded(serialMan::Joint_t*);
-    void jointRemoved(serialMan::Joint_t*);
-    void dofChanged(int);
     void structureChanged();
 
 private:
 
-    //Count of degree of freedom
-    int _dof;
-
     QVector<Joint_t*> _joints;
-    Joint_t* _effector;
+    Effector_t _effector;
 };
 
 }

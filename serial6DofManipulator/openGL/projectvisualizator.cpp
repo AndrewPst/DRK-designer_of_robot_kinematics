@@ -1,8 +1,9 @@
 #include "../openGL/projectvisualizator.h"
 #include "../openGL/glvisualizatorwidget.h"
-#include "../serialManipulatorProject.h"
-#include "projectCore/projectsmanager.h"
+#include "../serial6dofmanipulator.h"
+//#include "../logic/models/Effector_t.h"
 #include "../logic/manipulatorcontroller.h"
+#include "projectCore/projectsmanager.h"
 
 #include <QGLWidget>
 #include <gl/glu.h>
@@ -248,131 +249,76 @@ void drawCube(GLenum mode)
 
 void serialMan::ProjectVisualizator::drawManipulator()
 {
-    auto joints = ((SerialManipulatorProject*)projectsManager.getOpenedProject())->getManipulatorController()->getJoints();
-    Joint_t* _effector = ((SerialManipulatorProject*)projectsManager.getOpenedProject())->getManipulatorController()->getEffector();
-    //Draw manipulator
-    glPushMatrix();
-    for(int i = 0; i <= joints.size(); i++)
-    {
-        Joint_t* j;
-        if(i == joints.size())
-            j = _effector;
-        else
-            j = joints[i];
-        //draw the joints of the joints
-        const static int modes[] {GL_LINE_LOOP, GL_QUADS};
-        const static QColor colors[] {Qt::GlobalColor::black, Qt::yellow}; //And border
-        for(size_t i  = 0; i < sizeof(modes) / sizeof(modes[0]); i++)
-        {
-            _currentContext->qglColor(colors[i]);
-            glLineWidth(3);
+//    auto& joints = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController()->getJoints();
+//    //const Effector_t& _effector = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController()->getEffector();
+//    //Draw manipulator
+//    glPushMatrix();
+//    for(int i = 0; i < joints.size(); i++)
+//    {
+//        const Joint_t& j = joints[i];
+//        //draw the joints of the joints
+//        const static int modes[] {GL_LINE_LOOP, GL_QUADS};
+//        const static QColor colors[] {Qt::GlobalColor::black, Qt::yellow}; //And border
+//        for(size_t i  = 0; i < sizeof(modes) / sizeof(modes[0]); i++)
+//        {
+//            _currentContext->qglColor(colors[i]);
+//            glLineWidth(3);
 
-            glPushMatrix();
-            glScalef(1 - (float)i*0.1, 1 - (float)i*0.1, 1); //This scale needing for correct drawing borders
-            glTranslatef(-0.25, -0.25, -0.25); //Set joint to center
-            glScalef(0.5, 0.5, j->getPosition().z()+0.5*(j->getPosition().z() > 0)); //Scale joint
-            drawCube(modes[i]);
-            glPopMatrix();
+//            glPushMatrix();
+//            glScalef(1 - (float)i*0.1, 1 - (float)i*0.1, 1); //This scale needing for correct drawing borders
+//            glTranslatef(-0.25, -0.25, -0.25); //Set joint to center
+//            glScalef(0.5, 0.5, j.getPosition().z()+0.5*(j.getPosition().z() > 0)); //Scale joint
+//            drawCube(modes[i]);
+//            glPopMatrix();
 
-            glPushMatrix();
-            glTranslatef(0, 0, j->getPosition().z());
-            glScalef(1, 1 - (float)i*0.1, 1 - (float)i*0.1);
-            glTranslatef(-0.25, -0.25, -0.25);
-            glScalef(j->getPosition().x()+0.5*(j->getPosition().x() > 0), 0.5, 0.5);
-            drawCube(modes[i]);
-            glPopMatrix();
+//            glPushMatrix();
+//            glTranslatef(0, 0, j.getPosition().z());
+//            glScalef(1, 1 - (float)i*0.1, 1 - (float)i*0.1);
+//            glTranslatef(-0.25, -0.25, -0.25);
+//            glScalef(j.getPosition().x()+0.5*(j.getPosition().x() > 0), 0.5, 0.5);
+//            drawCube(modes[i]);
+//            glPopMatrix();
 
-            glPushMatrix();
-            glTranslatef(j->getPosition().x(), 0, j->getPosition().z());
-            glScalef(1 - (float)i*0.1, 1, 1 - (float)i*0.1);
-            glTranslatef(-0.25, -0.25, -0.25);
-            glScalef(0.5, j->getPosition().y()+0.5*(j->getPosition().y() > 0), 0.5);
-            drawCube(modes[i]);
-            glPopMatrix();
-        }
+//            glPushMatrix();
+//            glTranslatef(j.getPosition().x(), 0, j.getPosition().z());
+//            glScalef(1 - (float)i*0.1, 1, 1 - (float)i*0.1);
+//            glTranslatef(-0.25, -0.25, -0.25);
+//            glScalef(0.5, j.getPosition().y()+0.5*(j.getPosition().y() > 0), 0.5);
+//            drawCube(modes[i]);
+//            glPopMatrix();
+//        }
 
-        glTranslatef(j->getPosition().x(), j->getPosition().y(), j->getPosition().z());
-        glRotatef(j->getRotation().x(), 1, 0, 0);
-        glRotatef(j->getRotation().y(), 0, 1, 0);
-        glRotatef(j->getRotation().z(), 0, 0, 1);
-        //glRotatef(1, j->getRotation().x(), j->getRotation().y(), j->getRotation().z());
+//        glTranslatef(j.getPosition().x(), j.getPosition().y(), j.getPosition().z());
+//        glRotatef(j.getRotation().x(), 1, 0, 0);
+//        glRotatef(j.getRotation().y(), 0, 1, 0);
+//        glRotatef(j.getRotation().z(), 0, 0, 1);
+//        //glRotatef(1, j.getRotation().x(), j.getRotation().y(), j.getRotation().z());
+//        drawRotationJoint();
+//        glRotatef(j.getValue(), 0 ,0, 1);
+//    }
+//    glPopMatrix();
 
-        switch(j->getType())
-        {
-        case JointType_t::JOINT_ROTATION:
-        {
-            drawRotationJoint();
-            glRotatef(j->getValue(), 0 ,0, 1);
-            break;
-        }
-        case JointType_t::JOINT_LINEAR:
-        {
-            drawLinearJoint();
-            glPushMatrix();
-            glColor3f(1, 0.8, 0);
-            glTranslatef(-0.3, -0.3, -0.3);
-            glScalef(0.6, 0.6, j->getValue()+0.6*(j->getValue() > 0));
-            drawCube(GL_QUADS);
-            glPopMatrix();
+//    //rawing joints axes on top of all elements
+//    glPushMatrix();
+//    for(int i = 0; i <= joints.size(); i++)
+//    {
+//        const Joint_t& j = joints[i];
+//        glTranslatef(j.getPosition().x(), j.getPosition().y(), j.getPosition().z());
+//        glRotatef(j.getRotation().x(), 1, 0, 0);
+//        glRotatef(j.getRotation().y(), 0, 1, 0);
+//        glRotatef(j.getRotation().z(), 0, 0, 1);
 
-            glTranslatef(0, 0, j->getValue());
-            break;
-        }
-        case JointType_t::JOINT_EFFECTOR:
-        {
-            GLUquadricObj *q = gluNewQuadric();
-            glLineWidth(1);
-            gluQuadricDrawStyle(q, GL_FILL );
-            glColor3f(1, 0.2, 0.2);
-            gluSphere(q, 0.5, _jointResolution, _jointResolution);
-            gluDeleteQuadric(q);
-            break;
-        }
-        default:
-            break;
-        }
-    }
-    glPopMatrix();
+//        glPushMatrix();
+//        glScalef(2*_jointKoef, 2*_jointKoef, 2*_jointKoef);
+//        glLineWidth(3);
+//        glDisable(GL_DEPTH_TEST);
+//        drawAxis();
+//        glEnable(GL_DEPTH_TEST);
+//        glPopMatrix();
 
-    //rawing joints axes on top of all elements
-    glPushMatrix();
-    for(int i = 0; i <= joints.size(); i++)
-    {
-        Joint_t* j;
-        if(i == joints.size())
-            j = _effector;
-        else
-            j = joints[i];
-        glTranslatef(j->getPosition().x(), j->getPosition().y(), j->getPosition().z());
-        glRotatef(j->getRotation().x(), 1, 0, 0);
-        glRotatef(j->getRotation().y(), 0, 1, 0);
-        glRotatef(j->getRotation().z(), 0, 0, 1);
-
-        glPushMatrix();
-        glScalef(2*_jointKoef, 2*_jointKoef, 2*_jointKoef);
-        glLineWidth(3);
-        glDisable(GL_DEPTH_TEST);
-        drawAxis();
-        glEnable(GL_DEPTH_TEST);
-        glPopMatrix();
-
-        switch(j->getType())
-        {
-        case JointType_t::JOINT_ROTATION:
-        {
-            glRotatef(j->getValue(), 0 ,0, 1);
-            break;
-        }
-        case JointType_t::JOINT_LINEAR:
-        {
-            glTranslatef(0, 0, j->getValue());
-            break;
-        }
-        default:
-            break;
-        }
-    }
-    glPopMatrix();
+//        glRotatef(j.getValue(), 0 ,0, 1);
+//    }
+//    glPopMatrix();
 }
 
 void serialMan::ProjectVisualizator::drawRotationJoint()

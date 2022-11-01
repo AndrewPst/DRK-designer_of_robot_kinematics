@@ -1,9 +1,6 @@
 #include "../openGL/glvisualizatorwidget.h"
 
 #include "../openGL/projectvisualizator.h"
-#include "serialManipulator/serialManipulatorProject.h"
-#include "../logic/manipulatorcontroller.h"
-#include "projectCore/projectsmanager.h"
 
 #include <gl/gl.h>
 #include <gl/glu.h>
@@ -23,25 +20,11 @@ glVisualizatorWidget::glVisualizatorWidget(serialMan::ProjectVisualizator* visua
     _displayWidth = QApplication::desktop()->geometry().width();
     _displayHeight = QApplication::desktop()->geometry().height();
 
-    connect(((serialMan::SerialManipulatorProject*)(projectsManager.getOpenedProject()))->getManipulatorController(), SIGNAL(structureChanged()), this, SLOT(updateGL()));
-
     //installEventFilter(this);
     //Pass the context menu event to the parent widget
     setContextMenuPolicy(Qt::ContextMenuPolicy::NoContextMenu);
 
 }
-
-//bool glVisualizatorWidget::eventFilter( QObject *o, QEvent *e )
-//{
-//    if(QGLWidget::eventFilter(o, e) == TRUE)
-//        return TRUE;
-//    if ( e->type() == QEvent::KeyPress  || e->type() == QEvent::KeyRelease || e->type() == QEvent::FocusOut) {
-//        return TRUE; // eat event
-//    } else {
-//        // standard event processing
-//        return FALSE;
-//    }
-//}
 
 //------------------GL methods--------------------
 
