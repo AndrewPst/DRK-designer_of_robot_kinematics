@@ -39,11 +39,17 @@ glCentralDock::glCentralDock(const QString& title, ManipulatorController* man,
     QPushButton *addTabButton = new QPushButton(tr("TAB"));
     connect(addTabButton, &QPushButton::clicked, this, &glCentralDock::onTabSplit);
     addTabButton->setFixedSize(32, 32);
+
+    QPushButton* resetButton = new QPushButton(tr("Reset"));
+    connect(resetButton, &QPushButton::clicked, this, &glCentralDock::onResetPos);
+    resetButton->setFixedSize(32, 32);
+
     bLayout->setAlignment(Qt::AlignmentFlag::AlignTop);
 
     bLayout->addWidget(splitVButton);
     bLayout->addWidget(splitHButton);
     bLayout->addWidget(addTabButton);
+    bLayout->addWidget(resetButton);
     layout->addLayout(bLayout);
     _mainWidget->setLayout(layout);
 
@@ -127,6 +133,13 @@ void glCentralDock::onTabSplit()
 {
     CentralWindow* window = qobject_cast<CentralWindow*>(parent());
     window->tabDockWidget(this,  projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(QDockWidget::windowTitle(), _man));
+}
+
+void glCentralDock::onResetPos()
+{
+    _glWidget->setCameraX(0);
+    _glWidget->setCameraY(0);
+    _glWidget->setCameraZ(4);
 }
 
 

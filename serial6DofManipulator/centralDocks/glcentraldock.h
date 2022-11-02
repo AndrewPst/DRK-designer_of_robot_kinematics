@@ -27,6 +27,7 @@ private slots:
     void onVSplit();
     void onTabSplit();
     void onUpdate();
+    void onResetPos();
 
 private:
 

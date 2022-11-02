@@ -26,7 +26,7 @@ void serialMan::ProjectVisualizator::visualizate(serialMan::glVisualizatorWidget
 
 void serialMan::ProjectVisualizator::drawField()
 {
-
+    //_fieldkKoef =  ((int)_currentContext->getDistance()) / 10;
     const int field_w = 500 / _fieldkKoef, field_h = 500 / _fieldkKoef;
 
     float angle_pos_S = (cos(_currentContext->getAngleY()) < 0 ? 1 : -1);
@@ -254,7 +254,7 @@ void serialMan::ProjectVisualizator::drawManipulator()
     auto& dh = mc->getDHTable();
 
     glPushMatrix();
-    for(int i = 0; i < ManipulatorController::DEFAULT_DOF - 1; i++) //-1 - ignore frame between J6 and effector
+    for(int i = 0; i < ManipulatorController::DEFAULT_DOF; i++) //-1 - ignore frame between J6 and effector
     {
         if(i == 0)
             drawRotationJoint();
@@ -278,12 +278,13 @@ void serialMan::ProjectVisualizator::drawManipulator()
 
         glTranslatef(dh.r[i], 0, 0);
 
-        drawRotationJoint();
+        if(i != ManipulatorController::DEFAULT_DOF - 1)
+            drawRotationJoint();
     }
     glPopMatrix();
 
     glPushMatrix();
-    for(int i = 0; i < ManipulatorController::DEFAULT_DOF - 1; i++) //-1 - ignore frame between J6 and effector
+    for(int i = 0; i < ManipulatorController::DEFAULT_DOF; i++) //-1 - ignore frame between J6 and effector
     {
         if(i == 0)
         {

@@ -62,7 +62,7 @@ void glVisualizatorWidget::paintGL() // рисование
 
     //Конвертирование системы координат из xzy в xyz
     glRotatef(-90, 1, 0, 0);
-    glTranslatef(0, 0, -_cameraZPoint);
+    glTranslatef(_cameraXPoint, _cameraYPoint, -_cameraZPoint);
 
     _visualizator->visualizate(this);
 }
@@ -128,6 +128,16 @@ float glVisualizatorWidget::getAngleY()
     return _angleY;
 }
 
+float glVisualizatorWidget::getCameraX()
+{
+    return _cameraXPoint;
+}
+
+float glVisualizatorWidget::getCameraY()
+{
+    return _cameraYPoint;
+}
+
 float glVisualizatorWidget::getCameraZ()
 {
     return _cameraZPoint;
@@ -161,6 +171,18 @@ void glVisualizatorWidget::setAngleY(float a)
     updateGL();
 }
 
+void glVisualizatorWidget::setCameraX(float x)
+{
+    _cameraXPoint = x;
+    updateGL();
+}
+
+void glVisualizatorWidget::setCameraY(float y)
+{
+    _cameraYPoint = y;
+    updateGL();
+}
+
 void glVisualizatorWidget::setCameraZ(float z)
 {
     _cameraZPoint = z;
@@ -180,7 +202,7 @@ void glVisualizatorWidget::mousePressEvent(QMouseEvent *pe)
         _mauseYOrigin = pe->y();
         _isMiddlePressed = true;
     } else if(pe->button() == Qt::MouseButton::LeftButton){
-        _isRightPressed = true;
+        _isLeftPressed = true;
         _mauseXOrigin = pe->x();
         _mauseYOrigin = pe->y();
     }
@@ -195,7 +217,7 @@ void glVisualizatorWidget::mouseReleaseEvent(QMouseEvent *pe)
     if (pe->button() == Qt::MouseButton::MiddleButton) {
         _isMiddlePressed = false;
     } else if(pe->button() == Qt::MouseButton::LeftButton){
-        _isRightPressed = false;
+        _isLeftPressed = false;
     }
 }
 
@@ -218,8 +240,15 @@ void glVisualizatorWidget::mouseMoveEvent(QMouseEvent *pe)
         //            angle_x = -M_PI / 2 + 0.01;
 
         updateGL();
-    } else if(_isRightPressed){
-        _cameraZPoint += (pe->y() - _mauseYOrigin) * (0.0005 *_distance);
+    } else if(_isLeftPressed)
+    {
+        double yDif = (pe->y() - _mauseYOrigin) * 0.0005 *_distance;
+        double xDif = (pe->x() - _mauseXOrigin) * 0.0005 *_distance;
+        _cameraZPoint += (yDif) * cos(_angleX);
+        _cameraXPoint += (xDif) * cos(_angleY) + (yDif) * sin(_angleX) * -sin(_angleY);
+        _cameraYPoint += -(xDif) * sin(_angleY) - (yDif) * sin(_angleX) * cos(_angleY);
+//        _cameraXPoint += (pe->x() - _mauseXOrigin) * (0.0005 * _distance) * cos(_angleY) * sin(_angleX);
+//        _cameraYPoint += (pe->x() - _mauseXOrigin) * (0.0005 * _distance) * sin(_angleY) * cos(_angleX);
         _mauseYOrigin = pe->y();
         _mauseXOrigin = pe->x();
         updateGL();

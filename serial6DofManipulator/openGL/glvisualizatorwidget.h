@@ -31,6 +31,8 @@ public:
     float getDistance();
     float getAngleX();
     float getAngleY();
+    float getCameraX();
+    float getCameraY();
     float getCameraZ();
 
     //---Setters---
@@ -39,6 +41,8 @@ public:
     void setDistance(float);
     void setAngleX(float);
     void setAngleY(float);
+    void setCameraX(float);
+    void setCameraY(float);
     void setCameraZ(float);
 
     //---GL methods---
@@ -75,10 +79,13 @@ private:
     //last mause position
     int _mauseXOrigin = -1, _mauseYOrigin = -1;
 
-    bool _isRightPressed = false;
+    bool _isLeftPressed = false;
     bool _isMiddlePressed = false;
 
     float _cameraZPoint = 4;
+    float _cameraYPoint = 0;
+    float _cameraXPoint = 0;
+
     //Split places
     const float NEAR_PLANE = 0.01f;
     const float FAR_PLANE = 1000.0;
