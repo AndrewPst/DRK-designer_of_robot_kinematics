@@ -4,6 +4,7 @@
 #include "projectCore/baseprojectcontroller.h"
 #include "../serial6dofmanipulator.h"
 #include "../openGL/projectvisualizator.h"
+#include "../logic/manipulatorcontroller.h"
 
 #include <QAction>
 #include <QHBoxLayout>
@@ -12,10 +13,10 @@
 
 using namespace serialMan;
 
-glCentralDock::glCentralDock(const QString& title,
+glCentralDock::glCentralDock(const QString& title, ManipulatorController* man,
                              QMainWindow *parent,
                              Qt::WindowFlags flags)
-    : BaseCentralDock(title, parent, flags)
+    : BaseCentralDock(title, parent, flags), _man(man)
 {
     _titleWidget = nullptr;
 
@@ -74,6 +75,13 @@ glCentralDock::glCentralDock(const QString& title,
     _menu->addAction(_reverseDirection);
     _glWidget->setProjectionMode(ProjectionMode_t::PR_PERSPECTIVE);
     setWidget(_mainWidget);
+
+    connect(_man, &ManipulatorController::structureChanged, this, &glCentralDock::onUpdate);
+}
+
+void glCentralDock::onUpdate()
+{
+    _glWidget->updateGL();
 }
 
 void glCentralDock::setProjectionModeSlot(QAction* action)
@@ -106,19 +114,19 @@ void glCentralDock::setLookDirectionSlot(QAction* action)
 void glCentralDock::onHSplit()
 {
     CentralWindow* window = qobject_cast<CentralWindow*>(parent());
-    window->splitDockWidget(this, projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(), Qt::Orientation::Vertical);
+    window->splitDockWidget(this, projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(QDockWidget::windowTitle(), _man), Qt::Orientation::Vertical);
 }
 
 void glCentralDock::onVSplit()
 {
     CentralWindow* window = qobject_cast<CentralWindow*>(parent());
-    window->splitDockWidget(this,  projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(), Qt::Orientation::Horizontal);
+    window->splitDockWidget(this,  projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(QDockWidget::windowTitle(), _man), Qt::Orientation::Horizontal);
 }
 
 void glCentralDock::onTabSplit()
 {
     CentralWindow* window = qobject_cast<CentralWindow*>(parent());
-    window->tabDockWidget(this,  projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>());
+    window->tabDockWidget(this,  projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(QDockWidget::windowTitle(), _man));
 }
 
 

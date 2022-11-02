@@ -27,7 +27,7 @@ void serialMan::ProjectVisualizator::visualizate(serialMan::glVisualizatorWidget
 void serialMan::ProjectVisualizator::drawField()
 {
 
-    const int field_w = 100 / _fieldkKoef, field_h = 100 / _fieldkKoef;
+    const int field_w = 500 / _fieldkKoef, field_h = 500 / _fieldkKoef;
 
     float angle_pos_S = (cos(_currentContext->getAngleY()) < 0 ? 1 : -1);
     float angle_pos_C = (sin(_currentContext->getAngleY()) > 0 ? 1 : -1);
@@ -249,6 +249,84 @@ void drawCube(GLenum mode)
 
 void serialMan::ProjectVisualizator::drawManipulator()
 {
+    auto mc = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController();
+    auto& joints = mc->getJoints();
+    auto& dh = mc->getDHTable();
+
+    glPushMatrix();
+    for(int i = 0; i < ManipulatorController::DEFAULT_DOF - 1; i++) //-1 - ignore frame between J6 and effector
+    {
+        if(i == 0)
+            drawRotationJoint();
+
+        glLineWidth(5);
+        glColor3f(1, 0, 0);
+        glBegin(GL_LINES);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 0, dh.d[i]);
+        glEnd();
+
+        glTranslatef(0, 0, dh.d[i]);
+        glRotatef((dh.theta[i] + joints[i]->getValue()), 0, 0, 1);
+        glRotatef(dh.alfa[i], 1, 0, 0);
+
+        glColor3f(0, 1, 0);
+        glBegin(GL_LINES);
+        glVertex3f(0, 0, 0);
+        glVertex3f(dh.r[i], 0, 0);
+        glEnd();
+
+        glTranslatef(dh.r[i], 0, 0);
+
+        drawRotationJoint();
+    }
+    glPopMatrix();
+
+    glPushMatrix();
+    for(int i = 0; i < ManipulatorController::DEFAULT_DOF - 1; i++) //-1 - ignore frame between J6 and effector
+    {
+        if(i == 0)
+        {
+            glPushMatrix();
+            glScalef(2*_jointKoef, 2*_jointKoef, 2*_jointKoef);
+            glLineWidth(4);
+            glDisable(GL_DEPTH_TEST);
+            drawAxis();
+            glEnable(GL_DEPTH_TEST);
+            glPopMatrix();
+        }
+        glTranslatef(0, 0, dh.d[i]);
+        glRotatef((dh.theta[i] + joints[i]->getValue()), 0, 0, 1);
+        glRotatef(dh.alfa[i], 1, 0, 0);
+        glTranslatef(dh.r[i], 0, 0);
+
+        glPushMatrix();
+        if(abs(dh.r[i]) <= _jointKoef && abs(dh.d[i]) <= _jointKoef)
+        {
+            glEnable(GL_LINE_STIPPLE);
+            glLineStipple(1,0XF0F0);
+
+            glColor3f(0, 0, 0);
+            glBegin(GL_LINES);
+            glVertex3f(0, 0, 0);
+            glVertex3f(0, 2 * _jointKoef, 0);
+            glEnd();
+
+            glTranslatef(0, 2 * _jointKoef, 0);
+            glDisable(GL_LINE_STIPPLE);
+        }
+        glScalef(2*_jointKoef, 2*_jointKoef, 2*_jointKoef);
+        glDisable(GL_DEPTH_TEST);
+        drawAxis();
+        glEnable(GL_DEPTH_TEST);
+        glPopMatrix();
+    }
+    glPopMatrix();
+
+}
+
+//void serialMan::ProjectVisualizator::drawManipulator()
+//{
 //    auto& joints = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController()->getJoints();
 //    //const Effector_t& _effector = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController()->getEffector();
 //    //Draw manipulator
@@ -319,7 +397,7 @@ void serialMan::ProjectVisualizator::drawManipulator()
 //        glRotatef(j.getValue(), 0 ,0, 1);
 //    }
 //    glPopMatrix();
-}
+//}
 
 void serialMan::ProjectVisualizator::drawRotationJoint()
 {

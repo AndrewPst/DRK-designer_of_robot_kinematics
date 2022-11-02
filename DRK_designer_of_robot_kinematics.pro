@@ -16,6 +16,7 @@ SOURCES += \
     messageWindows/ConfirmActionDialog.cpp \
     messageWindows/newprojectconstructorwidget.cpp \
     serial6DofManipulator/centralDocks/glcentraldock.cpp \
+    serial6DofManipulator/docks/dhtabledock.cpp \
     serial6DofManipulator/docks/manybuttonsdock.cpp \
     serial6DofManipulator/logic/manipulatorcontroller.cpp \
     serial6DofManipulator/logic/models/joint_t.cpp \
@@ -37,6 +38,7 @@ HEADERS += \
     projectCore/projectGenerator.h \
     projectCore/projectMetadata.h \
     serial6DofManipulator/centralDocks/glcentraldock.h \
+    serial6DofManipulator/docks/dhtabledock.h \
     serial6DofManipulator/docks/manybuttonsdock.h \
     serial6DofManipulator/logic/manipulatorcontroller.h \
     serial6DofManipulator/logic/models/DHTable_t.h \

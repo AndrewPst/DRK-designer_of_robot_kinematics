@@ -6,10 +6,12 @@
 
 namespace serialMan {
 
+QT_FORWARD_DECLARE_CLASS(ManipulatorController)
+
 class glCentralDock : public BaseCentralDock
 {
 public:
-    glCentralDock(const QString& title = "Visualization",
+    glCentralDock(const QString& title, ManipulatorController* man,
                   QMainWindow *parent = nullptr,
                   Qt::WindowFlags flags = {});
 
@@ -24,6 +26,7 @@ private slots:
     void onHSplit();
     void onVSplit();
     void onTabSplit();
+    void onUpdate();
 
 private:
 
@@ -33,6 +36,8 @@ private:
     QAction *_pModeOrtho, *_pModePers;
     QAction *_lookFromX, *_lookFromY, *_lookFromZ;
     QAction *_reverseDirection;
+
+    ManipulatorController* _man;
 };
 
 }

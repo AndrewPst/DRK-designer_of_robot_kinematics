@@ -10,10 +10,10 @@ ManipulatorController::ManipulatorController():
     initJoints();
 
     //Setup default parameters
-    _dhTable.theta = {0, -M_PI_2, 0, 0, 0, 0};
-    _dhTable.alfa = {-M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0};
-    _dhTable.r = {0, 110, 0, 0, 0, 0};
-    _dhTable.d = {133, 0, 0, 117.5, 0, 28};
+    _dhTable.theta = {0, -90, 0, 0, 0, 0};
+    _dhTable.alfa = {-90, 0, -90, 90, -90, 0};
+    _dhTable.r = {4, 11, 2, 0, 0, 0};
+    _dhTable.d = {13, 0, 0, 11, 0, 2};
 
 }
 
