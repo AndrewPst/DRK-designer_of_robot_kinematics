@@ -43,7 +43,9 @@ signals:
 private:
 
     QVector<Joint_t*> _joints;
+
     Effector_t _effector;
+    Effector_t _realEffector;
 
     DHTable_t<DEFAULT_DOF> _dhTable;
 };

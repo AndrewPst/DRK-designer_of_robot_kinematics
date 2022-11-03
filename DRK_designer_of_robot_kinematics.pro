@@ -18,6 +18,7 @@ SOURCES += \
     serial6DofManipulator/centralDocks/glcentraldock.cpp \
     serial6DofManipulator/docks/dhtabledock.cpp \
     serial6DofManipulator/docks/manybuttonsdock.cpp \
+    serial6DofManipulator/logic/kinematics.cpp \
     serial6DofManipulator/logic/manipulatorcontroller.cpp \
     serial6DofManipulator/logic/models/joint_t.cpp \
     serial6DofManipulator/openGL/glvisualizatorwidget.cpp \
@@ -40,6 +41,7 @@ HEADERS += \
     serial6DofManipulator/centralDocks/glcentraldock.h \
     serial6DofManipulator/docks/dhtabledock.h \
     serial6DofManipulator/docks/manybuttonsdock.h \
+    serial6DofManipulator/logic/kinematics.h \
     serial6DofManipulator/logic/manipulatorcontroller.h \
     serial6DofManipulator/logic/models/DHTable_t.h \
     serial6DofManipulator/logic/models/Effector_t.h \

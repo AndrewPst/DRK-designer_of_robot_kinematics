@@ -278,8 +278,21 @@ void serialMan::ProjectVisualizator::drawManipulator()
 
         glTranslatef(dh.r[i], 0, 0);
 
-        if(i != ManipulatorController::DEFAULT_DOF - 1)
+        if(i == ManipulatorController::DEFAULT_DOF - 1)
+        {
+//            glPointSize(10);
+//            glColor3f(0, 0, 1);
+//            glBegin(GL_POINTS);
+//            glVertex3f(0, 0, 0);
+//            glEnd();
+            GLUquadricObj *q = gluNewQuadric();
+            glColor3f(0, 0, 1);
+            gluSphere(q, _jointKoef/4, _jointResolution, _jointResolution);
+        }
+        else
+        {
             drawRotationJoint();
+        }
     }
     glPopMatrix();
 
@@ -302,7 +315,7 @@ void serialMan::ProjectVisualizator::drawManipulator()
         glTranslatef(dh.r[i], 0, 0);
 
         glPushMatrix();
-        if(abs(dh.r[i]) <= _jointKoef && abs(dh.d[i]) <= _jointKoef)
+        if(abs(dh.r[i]) <= _jointKoef*1.5 && abs(dh.d[i]) <= _jointKoef*1.5)
         {
             glEnable(GL_LINE_STIPPLE);
             glLineStipple(1,0XF0F0);
@@ -310,10 +323,10 @@ void serialMan::ProjectVisualizator::drawManipulator()
             glColor3f(0, 0, 0);
             glBegin(GL_LINES);
             glVertex3f(0, 0, 0);
-            glVertex3f(0, 2 * _jointKoef, 0);
+            glVertex3f(0, 2 * _jointKoef * 1.5, 0);
             glEnd();
 
-            glTranslatef(0, 2 * _jointKoef, 0);
+            glTranslatef(0, 2 * _jointKoef * 1.5, 0);
             glDisable(GL_LINE_STIPPLE);
         }
         glScalef(2*_jointKoef, 2*_jointKoef, 2*_jointKoef);
