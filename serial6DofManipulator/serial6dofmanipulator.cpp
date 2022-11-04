@@ -3,6 +3,7 @@
 #include "centralDocks/glcentraldock.h"
 #include "docks/manybuttonsdock.h"
 #include "docks/dhtabledock.h"
+#include "docks/kinematicsdock.h"
 
 #include "openGL/projectvisualizator.h"
 #include "logic/manipulatorcontroller.h"
@@ -23,6 +24,7 @@ void Serial6DofManipulator::init()
     _avaiableCentralDocks << new glCentralDock(tr("Visualization"), _manipulatorController);
     _avaiableDocks << new ManyButtonsDock(tr("Buttons"));
     _avaiableDocks << new DhTableDock(tr("DH parameters"), _manipulatorController);
+    _avaiableDocks << new KinematicsDock(_manipulatorController);
 }
 
 Serial6DofManipulator::~Serial6DofManipulator()

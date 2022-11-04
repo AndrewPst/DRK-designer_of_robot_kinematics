@@ -17,6 +17,7 @@ SOURCES += \
     messageWindows/newprojectconstructorwidget.cpp \
     serial6DofManipulator/centralDocks/glcentraldock.cpp \
     serial6DofManipulator/docks/dhtabledock.cpp \
+    serial6DofManipulator/docks/kinematicsdock.cpp \
     serial6DofManipulator/docks/manybuttonsdock.cpp \
     serial6DofManipulator/logic/kinematics.cpp \
     serial6DofManipulator/logic/manipulatorcontroller.cpp \
@@ -40,12 +41,14 @@ HEADERS += \
     projectCore/projectMetadata.h \
     serial6DofManipulator/centralDocks/glcentraldock.h \
     serial6DofManipulator/docks/dhtabledock.h \
+    serial6DofManipulator/docks/kinematicsdock.h \
     serial6DofManipulator/docks/manybuttonsdock.h \
     serial6DofManipulator/logic/kinematics.h \
     serial6DofManipulator/logic/manipulatorcontroller.h \
     serial6DofManipulator/logic/models/DHTable_t.h \
     serial6DofManipulator/logic/models/Effector_t.h \
     serial6DofManipulator/logic/models/joint_t.h \
+    serial6DofManipulator/logic/models/matrix.h \
     serial6DofManipulator/logic/models/units_t.h \
     serial6DofManipulator/openGL/glvisualizatorwidget.h \
     serial6DofManipulator/openGL/projectvisualizator.h \

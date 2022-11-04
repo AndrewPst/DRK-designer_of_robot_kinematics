@@ -27,7 +27,7 @@ void serialMan::ProjectVisualizator::visualizate(serialMan::glVisualizatorWidget
 void serialMan::ProjectVisualizator::drawField()
 {
     //_fieldkKoef =  ((int)_currentContext->getDistance()) / 10;
-    const int field_w = 500 / _fieldkKoef, field_h = 500 / _fieldkKoef;
+    const int field_w = 50 / _fieldkKoef, field_h = 50 / _fieldkKoef;
 
     float angle_pos_S = (cos(_currentContext->getAngleY()) < 0 ? 1 : -1);
     float angle_pos_C = (sin(_currentContext->getAngleY()) > 0 ? 1 : -1);

@@ -56,6 +56,7 @@ void DhTableDock::initTable()
     for(int i = 0; i < ManipulatorController::DEFAULT_DOF; i++)
     {
         QDoubleSpinBox* thetaSpin = new QDoubleSpinBox();
+        thetaSpin->setSuffix(" Degrees");
         connect(thetaSpin, SIGNAL(valueChanged(double)), this, SLOT(tableChanged()));
         thetaSpin->setRange(-180, 180);
         thetaSpin->setSingleStep(15);
@@ -64,6 +65,7 @@ void DhTableDock::initTable()
         _table->setCellWidget(i, 0, thetaSpin);
 
         QDoubleSpinBox* alfaSpin = new QDoubleSpinBox();
+        alfaSpin->setSuffix(" Degrees");
         connect(alfaSpin, SIGNAL(valueChanged(double)), this, SLOT(tableChanged()));
         alfaSpin->setRange(-180, 180);
         alfaSpin->setSingleStep(15);
@@ -72,6 +74,7 @@ void DhTableDock::initTable()
         _table->setCellWidget(i, 1, alfaSpin);
 
         QDoubleSpinBox* rSpin = new QDoubleSpinBox();
+        rSpin->setSuffix(" mm");
         connect(rSpin, SIGNAL(valueChanged(double)), this, SLOT(tableChanged()));
         rSpin->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
         rSpin->setValue(dh.r[i]);
@@ -79,6 +82,7 @@ void DhTableDock::initTable()
         _table->setCellWidget(i, 2, rSpin);
 
         QDoubleSpinBox* dSpin = new QDoubleSpinBox();
+        dSpin->setSuffix(" mm");
         connect(dSpin, SIGNAL(valueChanged(double)), this, SLOT(tableChanged()));
         dSpin->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
         dSpin->setValue(dh.d[i]);

@@ -8,9 +8,8 @@ namespace serialMan
 
 struct Effector_t
 {
-    QVector3D position;
-    QVector3D rotation;
-
+    double x {0}, y{0}, z{0};
+    double wx{0}, wy{0}, wz{0};
 };
 
 }

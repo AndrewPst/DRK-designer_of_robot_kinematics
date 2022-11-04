@@ -56,7 +56,7 @@ void BaseDock::onTopLevelChanged(bool)
                        Qt::WindowCloseButtonHint);
         show();
     }
-    else
+    else if(_drawAsWindow)
     {
         if(titleBarWidget())
             titleBarWidget()->show();

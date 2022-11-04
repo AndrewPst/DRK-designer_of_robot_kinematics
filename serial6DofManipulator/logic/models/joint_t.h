@@ -34,8 +34,8 @@ private:
 
     double _value {0};
 
-    double _minValue {0};
-    double _maxValue {0};
+    double _minValue {-180};
+    double _maxValue {180};
 };
 
 }

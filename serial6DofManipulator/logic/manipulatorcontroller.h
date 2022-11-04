@@ -2,6 +2,7 @@
 #define MANIPULATORCONTROLLER_H
 
 #include "../serial6dofmanipulator.h"
+#include "kinematics.h"
 #include "models/Effector_t.h"
 #include "models/joint_t.h"
 #include "models/DHTable_t.h"
@@ -34,11 +35,19 @@ public:
     const Effector_t& getEffector() const;
     const DHTable_t<DEFAULT_DOF>& getDHTable() const;
 
+    void forwardKinematics(QVector<double>& joints);
+    void inverseKinematics(const Effector_t& pos);
+
     void setDHTable(DHTable_t<DEFAULT_DOF>&&);
+    void setEffector(const Effector_t&);
 
 signals:
 
     void structureChanged();
+
+private slots:
+
+    void onJointsChanged();
 
 private:
 
@@ -48,6 +57,8 @@ private:
     Effector_t _realEffector;
 
     DHTable_t<DEFAULT_DOF> _dhTable;
+
+    Kinematics<DEFAULT_DOF> _kin;
 };
 
 }

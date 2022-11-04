@@ -11,7 +11,12 @@ void Joint_t::setValue(double value)
 {
     if(value == _value)
         return;
-    _value = value;
+    if(value < _minValue)
+        _value = _minValue;
+    else if(value > _maxValue)
+        _value = _maxValue;
+    else
+        _value = value;
     emit valueChanged(value);
 }
 

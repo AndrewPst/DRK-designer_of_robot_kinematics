@@ -15,6 +15,7 @@ ManipulatorController::ManipulatorController():
     _dhTable.r = {4, 11, 2, 0, 0, 0};
     _dhTable.d = {13, 0, 0, 11, 0, 2};
 
+    _kin.setDHTable(_dhTable);
 }
 
 
@@ -26,12 +27,13 @@ void ManipulatorController::initJoints()
     {
         j = new Joint_t();
         connect(j, &Joint_t::valueChanged, this, &ManipulatorController::structureChanged);
+        connect(j, &Joint_t::valueChanged, this, &ManipulatorController::onJointsChanged);
     }
 }
 
 void ManipulatorController::setDHTable(DHTable_t<DEFAULT_DOF>&& dh)
 {
-    _dhTable = dh;
+    _dhTable = std::move(dh);
     emit structureChanged();
 }
 
@@ -50,6 +52,36 @@ const DHTable_t<ManipulatorController::DEFAULT_DOF>& ManipulatorController::getD
     return _dhTable;
 }
 
+void ManipulatorController::forwardKinematics(QVector<double>& joints)
+{
+    Effector_t result;
+    _kin.forward(joints, result);
+    _effector = result;
+    emit structureChanged();
+}
+
+void ManipulatorController::inverseKinematics(const Effector_t& pos)
+{
+    QVector<double> out(DEFAULT_DOF);
+    _kin.inverse(pos, out);
+    for(int i = 0; i < DEFAULT_DOF; i++)
+        _joints[i]->setValue(out[i]);
+}
+
+void ManipulatorController::onJointsChanged()
+{
+    QVector<double> values(DEFAULT_DOF);
+    for(int i = 0; i < DEFAULT_DOF; i++)
+        values[i] = _joints[i]->getValue();
+    forwardKinematics(values);
+}
+
+void ManipulatorController::setEffector(const Effector_t& eff)
+{
+    inverseKinematics(eff);
+    _effector = eff;
+
+}
 
 ManipulatorController::~ManipulatorController()
 {
