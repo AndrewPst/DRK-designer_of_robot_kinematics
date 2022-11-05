@@ -4,6 +4,7 @@
 
 #include <QApplication>
 
+
 Version_t _version {1, 1, 0, VersionStage_t::VERSION_ALFA};
 
 int main(int argc, char *argv[])

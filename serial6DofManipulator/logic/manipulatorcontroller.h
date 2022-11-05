@@ -38,6 +38,9 @@ public:
     void forwardKinematics(QVector<double>& joints);
     void inverseKinematics(const Effector_t& pos);
 
+    void setInvConfig(char);
+    char getInvConfig();
+
     void setDHTable(DHTable_t<DEFAULT_DOF>&&);
     void setEffector(const Effector_t&);
 
@@ -54,7 +57,8 @@ private:
     QVector<Joint_t*> _joints;
 
     Effector_t _effector;
-    Effector_t _realEffector;
+
+    char _kinConfig {0};
 
     DHTable_t<DEFAULT_DOF> _dhTable;
 

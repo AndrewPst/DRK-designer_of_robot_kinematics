@@ -8,10 +8,11 @@
 #include <QFormLayout>
 #include <QListWidget>
 #include <QGroupBox>
+#include <QCheckBox>
 
 using namespace serialMan;
 
-JointViewModelWidget::JointViewModelWidget(Joint_t* j)
+JointViewModelWidget::JointViewModelWidget(Joint_t* j, ManipulatorController* man)
     : QWidget(), _joint(j)
 {
     _mainL = new QVBoxLayout();
@@ -41,6 +42,7 @@ JointViewModelWidget::JointViewModelWidget(Joint_t* j)
     connect(j, SIGNAL(valueChanged(double)), this, SLOT(onJointValueChanged()));
     connect(j, SIGNAL(minValueChanged(double)), this, SLOT(onJointMinChanged()));
     connect(j, SIGNAL(maxValueChanged(double)), this, SLOT(onJointMaxChanged()));
+    connect(man, SIGNAL(structureChanged()), this, SLOT(onJointValueChanged()));
 
     _mainL->addLayout(fl);
 
@@ -49,7 +51,9 @@ JointViewModelWidget::JointViewModelWidget(Joint_t* j)
 
 void JointViewModelWidget::onJointValueChanged()
 {
+    _value->blockSignals(true);
     _value->setValue(_joint->getValue());
+    _value->blockSignals(false);
 }
 
 void JointViewModelWidget::onJointMinChanged()
@@ -84,7 +88,6 @@ KinematicsDock::KinematicsDock(ManipulatorController* man,
     _list = new QListWidget();
 
     initList();
-    _mainL->addWidget(_list);
 
     QGroupBox* gb = new QGroupBox("Desired position");
 
@@ -101,16 +104,32 @@ KinematicsDock::KinematicsDock(ManipulatorController* man,
     connect(_posZ, SIGNAL(editingFinished()), this, SLOT(onPositionChanged()));
 
     _rotX = new QDoubleSpinBox();
+    _rotX->setSingleStep(15);
     _rotX->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
     connect(_rotX, SIGNAL(editingFinished()), this, SLOT(onPositionChanged()));
 
     _rotY = new QDoubleSpinBox();
+    _rotY->setSingleStep(15);
     _rotY->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
     connect(_rotY, SIGNAL(editingFinished()), this, SLOT(onPositionChanged()));
 
     _rotZ = new QDoubleSpinBox();
+    _rotZ->setSingleStep(15);
     _rotZ->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
     connect(_rotZ, SIGNAL(editingFinished()), this, SLOT(onPositionChanged()));
+
+
+    _v1 = new QCheckBox();
+    _v1->setText("Variant 1");
+
+    _v2 = new QCheckBox();
+    _v2->setText("Variant 2");
+
+    _v3 = new QCheckBox();
+    _v3->setText("Variant 3");
+    connect(_v1, SIGNAL(toggled(bool)), this, SLOT(onConfigChanged()));
+    connect(_v2, SIGNAL(toggled(bool)), this, SLOT(onConfigChanged()));
+    connect(_v3, SIGNAL(toggled(bool)), this, SLOT(onConfigChanged()));
 
     onStructureChanged();
 
@@ -125,7 +144,11 @@ KinematicsDock::KinematicsDock(ManipulatorController* man,
 
     gb->setLayout(tempL);
 
+    _mainL->addWidget(_list);
     _mainL->addWidget(gb);
+    _mainL->addWidget(_v1);
+    _mainL->addWidget(_v2);
+    _mainL->addWidget(_v3);
 
     _mainW = new QWidget();
     _mainW->setLayout(_mainL);
@@ -145,8 +168,16 @@ void KinematicsDock::onPositionChanged()
         _rotY->value(),
         _rotZ->value(),
     };
-
     _man->setEffector(eff);
+}
+
+void KinematicsDock::onConfigChanged()
+{
+    char conf = 0;
+    if(_v1->isChecked()) conf |= 0b00000001;
+    if(_v2->isChecked()) conf |= 0b00000010;
+    if(_v3->isChecked()) conf |= 0b00000100;
+    _man->setInvConfig(conf);
 }
 
 void KinematicsDock::onStructureChanged()
@@ -157,6 +188,15 @@ void KinematicsDock::onStructureChanged()
     _rotX->setValue(_man->getEffector().wx);
     _rotY->setValue(_man->getEffector().wy);
     _rotZ->setValue(_man->getEffector().wz);
+    _v1->blockSignals(true);
+    _v2->blockSignals(true);
+    _v3->blockSignals(true);
+    _v1->setChecked(_man->getInvConfig() & 0b00000001);
+    _v2->setChecked(_man->getInvConfig() & 0b00000010);
+    _v3->setChecked(_man->getInvConfig() & 0b00000100);
+    _v1->blockSignals(false);
+    _v2->blockSignals(false);
+    _v3->blockSignals(false);
 }
 
 void KinematicsDock::initList()
@@ -165,7 +205,7 @@ void KinematicsDock::initList()
     auto& js = _man->getJoints();
     for(auto j : js)
     {
-        JointViewModelWidget* jw = new JointViewModelWidget(j);
+        JointViewModelWidget* jw = new JointViewModelWidget(j, _man);
         QListWidgetItem* item = new QListWidgetItem(_list);
         item->setSizeHint( jw->sizeHint() );
         _list->setItemWidget(item, jw);

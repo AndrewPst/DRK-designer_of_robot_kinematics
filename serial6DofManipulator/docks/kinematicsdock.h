@@ -9,6 +9,7 @@ QT_FORWARD_DECLARE_CLASS(QDoubleSpinBox);
 QT_FORWARD_DECLARE_CLASS(QVBoxLayout);
 QT_FORWARD_DECLARE_CLASS(QListWidget);
 QT_FORWARD_DECLARE_CLASS(QGroupBox);
+QT_FORWARD_DECLARE_CLASS(QCheckBox)
 
 namespace serialMan
 {
@@ -21,7 +22,7 @@ class JointViewModelWidget : public QWidget
 {
   Q_OBJECT
 public:
-    JointViewModelWidget(Joint_t* joint);
+    JointViewModelWidget(Joint_t* joint, ManipulatorController* man);
 
 private slots:
 
@@ -57,6 +58,7 @@ public slots:
     void onStructureChanged();
 
     void onPositionChanged();
+    void onConfigChanged();
 
 private:
 
@@ -68,6 +70,8 @@ private:
     QDoubleSpinBox *_posX, *_posY, *_posZ, *_rotX, *_rotY, *_rotZ;
 
     ManipulatorController* _man;
+
+    QCheckBox* _v1, *_v2, *_v3;
 };
 
 }

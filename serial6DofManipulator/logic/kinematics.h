@@ -18,6 +18,9 @@ enum class CalculationError_t
     CALC_SUCCESSFULL,
 };
 
+#define RAD(x)((x) / 180.0 * M_PI)
+#define DEG(x)((x) * 180.0 / M_PI)
+
 template<int _Dof>
 class Kinematics
 {
@@ -26,6 +29,7 @@ private:
     DHTable_t<_Dof> _dh;
 
     using calc_t = double;
+    using config_t = char;
 
 public:
 
@@ -40,7 +44,7 @@ public:
 
     CalculationError_t forward(const QVector<calc_t>& joints, Effector_t& out);
 
-    CalculationError_t inverse(const Effector_t& pos, QVector<calc_t>& out);
+    CalculationError_t inverse(const Effector_t& pos, QVector<calc_t>& out, config_t conf);
 
 private:
     void inverseTransformMatrix(Matrix<calc_t> &m, Matrix<calc_t> &out)
@@ -72,26 +76,26 @@ private:
         out.x = m.at(0, 3);
         out.y = m.at(1, 3);
         out.z = m.at(2, 3);
-        out.wy = atan2(sqrt(m.at(2, 0) * m.at(2, 0) + m.at(2, 1) * m.at(2, 1)), m.at(2, 2));
-        out.wx = atan2(m.at(1, 2) / sin(out.wy), m.at(0, 2) / sin(out.wy));
-        out.wz = atan2(m.at(2, 1) / sin(out.wy), -m.at(2, 0) / sin(out.wy));
+        out.wy = DEG(atan2(sqrt(m.at(2, 0) * m.at(2, 0) + m.at(2, 1) * m.at(2, 1)), m.at(2, 2)));
+        out.wx = DEG(atan2(m.at(1, 2) / sin(out.wy), m.at(0, 2) / sin(out.wy)));
+        out.wz = DEG(atan2(m.at(2, 1) / sin(out.wy), -m.at(2, 0) / sin(out.wy)));
     }
 
     void positionToTransformMatrix(const Effector_t &pos, Matrix<calc_t> &out)
     {
-        out.at(0, 0) = cos(pos.wx) * cos(pos.wy) * cos(pos.wz) - sin(pos.wx) * sin(pos.wz);
-        out.at(0, 1) = -cos(pos.wx) * cos(pos.wy) * sin(pos.wz) - sin(pos.wx) * cos(pos.wz);
-        out.at(0, 2) = cos(pos.wx) * sin(pos.wy);
+        out.at(0, 0) = cos(RAD(pos.wx)) * cos(RAD(pos.wy)) * cos(RAD(pos.wz)) - sin(RAD(pos.wx)) * sin(RAD(pos.wz));
+        out.at(0, 1) = -cos(RAD(pos.wx)) * cos(RAD(pos.wy)) * sin(RAD(pos.wz)) - sin(RAD(pos.wx)) * cos(RAD(pos.wz));
+        out.at(0, 2) = cos(RAD(pos.wx)) * sin(RAD(pos.wy));
         out.at(0, 3) = pos.x;
 
-        out.at(1, 0) = sin(pos.wx) * cos(pos.wy) * cos(pos.wz) + cos(pos.wx) * sin(pos.wz);
-        out.at(1, 1) = -sin(pos.wx) * cos(pos.wy) * sin(pos.wz) + cos(pos.wx) * cos(pos.wz);
-        out.at(1, 2) = sin(pos.wx) * sin(pos.wy);
+        out.at(1, 0) = sin(RAD(pos.wx)) * cos(RAD(pos.wy)) * cos(RAD(pos.wz)) + cos(RAD(pos.wx)) * sin(RAD(pos.wz));
+        out.at(1, 1) = -sin(RAD(pos.wx)) * cos(RAD(pos.wy)) * sin(RAD(pos.wz)) + cos(RAD(pos.wx)) * cos(RAD(pos.wz));
+        out.at(1, 2) = sin(RAD(pos.wx)) * sin(RAD(pos.wy));
         out.at(1, 3) = pos.y;
 
-        out.at(2, 0) = -sin(pos.wy) * cos(pos.wz);
-        out.at(2, 1) = sin(pos.wy) * sin(pos.wz);
-        out.at(2, 2) = cos(pos.wy);
+        out.at(2, 0) = -sin(RAD(pos.wy)) * cos(RAD(pos.wz));
+        out.at(2, 1) = sin(RAD(pos.wy)) * sin(RAD(pos.wz));
+        out.at(2, 2) = cos(RAD(pos.wy));
         out.at(2, 3) = pos.z;
 
         out.at(3, 0) = 0.0;

@@ -4,6 +4,7 @@
 
 using namespace serialMan;
 
+
 ManipulatorController::ManipulatorController():
     _joints(DEFAULT_DOF), _effector()
 {
@@ -34,6 +35,7 @@ void ManipulatorController::initJoints()
 void ManipulatorController::setDHTable(DHTable_t<DEFAULT_DOF>&& dh)
 {
     _dhTable = std::move(dh);
+    _kin.setDHTable(_dhTable);
     emit structureChanged();
 }
 
@@ -63,9 +65,13 @@ void ManipulatorController::forwardKinematics(QVector<double>& joints)
 void ManipulatorController::inverseKinematics(const Effector_t& pos)
 {
     QVector<double> out(DEFAULT_DOF);
-    _kin.inverse(pos, out);
-    for(int i = 0; i < DEFAULT_DOF; i++)
+    _kin.inverse(pos, out, _kinConfig);
+    for(int i = 0; i < DEFAULT_DOF; i++){
+        _joints[i]->blockSignals(true);
         _joints[i]->setValue(out[i]);
+        _joints[i]->blockSignals(false);
+    }
+    emit structureChanged();
 }
 
 void ManipulatorController::onJointsChanged()
@@ -80,7 +86,19 @@ void ManipulatorController::setEffector(const Effector_t& eff)
 {
     inverseKinematics(eff);
     _effector = eff;
+    emit structureChanged();
+}
 
+
+void ManipulatorController::setInvConfig(char c)
+{
+    _kinConfig = c;
+    inverseKinematics(_effector);
+}
+
+char ManipulatorController::getInvConfig()
+{
+    return _kinConfig;
 }
 
 ManipulatorController::~ManipulatorController()

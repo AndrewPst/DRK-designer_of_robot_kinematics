@@ -2,8 +2,9 @@
 
 using namespace serialMan;
 
-#define RAD(x)((x) / 180.0 * M_PI)
-#define DEG(x)((x) * 180.0 / M_PI)
+#define IS_V1(x)((x) & 0b00000001)
+#define IS_V2(x)((x) & 0b00000010)
+#define IS_V3(x)((x) & 0b00000100)
 
 template<>
 CalculationError_t Kinematics<6>::forward(const QVector<double>& joints, Effector_t& out)
@@ -31,8 +32,9 @@ CalculationError_t Kinematics<6>::forward(const QVector<double>& joints, Effecto
 }
 
 template<>
-CalculationError_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double>& out)
+CalculationError_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double>& out, config_t conf)
 {
+    (void)conf;
     Matrix<calc_t> Twf(4, 4); // work frame matrix;
     positionToTransformMatrix(Effector_t(), Twf);
     Matrix<calc_t> Ttf(Twf); // tool frame transform matrix;
@@ -47,18 +49,28 @@ CalculationError_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double>
     Matrix<calc_t> t06 = inTwf * (Twt * inTtf);
 
     calc_t tempPos[3]; // Buffer for calculation first 3 joints. This is position of N=5 joint
-    tempPos[0] = t06.at(0, 3) - _dh.d[5] * t06.at(0, 2);
-    tempPos[1] = t06.at(1, 3) - _dh.d[5] * t06.at(1, 2);
-    tempPos[2] = t06.at(2, 3) - _dh.d[5] * t06.at(2, 2);
+    tempPos[0] = t06.at(0, 3) - _dh.d[5] * t06.at(0, 2) - _dh.r[5] * t06.at(0, 0);
+    tempPos[1] = t06.at(1, 3) - _dh.d[5] * t06.at(1, 2) - _dh.r[5] * t06.at(1, 0);
+    tempPos[2] = t06.at(2, 3) - _dh.d[5] * t06.at(2, 2) - _dh.r[5] * t06.at(2, 0);
 
     // First joint
-    out[0] = atan2(tempPos[1], tempPos[0]) - atan2(_dh.d[2], sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2]));
+    out[0] = atan2(tempPos[1], tempPos[0]) - atan2(_dh.d[2], sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2])) + (IS_V1(conf) ? M_PI : 0);
 
     // Second joint
-    out[1] = M_PI / 2.0 - acos((_dh.r[1] * _dh.r[1] + (tempPos[2] - _dh.d[0]) * (tempPos[2] - _dh.d[0]) + (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2]) - _dh.r[0]) * (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2]) - _dh.r[0]) - (_dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3])) / (2.0 * _dh.r[1] * sqrt((tempPos[2] - _dh.d[0]) * (tempPos[2] - _dh.d[0]) + (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2]) - _dh.r[0]) * (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2]) - _dh.r[0])))) - atan((tempPos[2] - _dh.d[0]) / (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2]) - _dh.r[0])); // out(2)=pi/2-acos((_dh.r(2)^2+(tempPos(3)-d(1))^2+(sqrt(tempPos(1)^2+tempPos(2)^2-d(3)^2)-r(1))^2-(r(3)^2+d(4)^2))/(2*r(2)*sqrt((tempPos(3)-d(1))^2+(sqrt(tempPos(1)^2+tempPos(2)^2-d(3)^2)-r(1))^2)))-atan((tempPos(3)-d(1))/(sqrt(tempPos(1)^2+tempPos(2)^2-d(3)^2)-r(1)));
+
+    //comp = components
+    double comp1 = M_PI_2;
+
+    double gipotinuze = (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2]) - _dh.r[0]);
+    double zDif = (tempPos[2] - _dh.d[0]);
+
+    double comp2 = acos((_dh.r[1] * _dh.r[1] + zDif * zDif + gipotinuze * gipotinuze - (_dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3])) / (2.0 * _dh.r[1] * sqrt(zDif * zDif + gipotinuze * gipotinuze)));
+    double comp3 = atan((tempPos[2] - _dh.d[0]) / (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2]) - _dh.r[0]));
+
+    out[1] = comp1 - comp2 - comp3;
 
     // third joint
-    out[2] = M_PI - acos((_dh.r[1] * _dh.r[1] + _dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3] - (tempPos[2] - _dh.d[0]) * (tempPos[2] - _dh.d[0]) - (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2]) - _dh.r[0]) * (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2]) - _dh.r[0])) / (2 * _dh.r[1] * sqrt(_dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3]))) - atan2(_dh.d[3], _dh.r[2]); // out(3)=pi-acos((r(2)^2+r(3)^2+d(4)^2-(tempPos(3)-d(1))^2-(sqrt(tempPos(1)^2+tempPos(2)^2-d(3)^2)-r(1))^2)/(2*r(2)*sqrt(r(3)^2+d(4)^2)))-atan(d(4)/r(3));
+    out[2] = M_PI - acos((_dh.r[1] * _dh.r[1] + _dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3] - zDif * zDif - gipotinuze * gipotinuze) / (2.0 * _dh.r[1] * sqrt(_dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3]))) - atan(_dh.d[3]/ _dh.r[2]); // out(3)=pi-acos((r(2)^2+r(3)^2+d(4)^2-(tempPos(3)-d(1))^2-(sqrt(tempPos(1)^2+tempPos(2)^2-d(3)^2)-r(1))^2)/(2*r(2)*sqrt(r(3)^2+d(4)^2)))-atan(d(4)/r(3));
 
     // Calculate T36 transoform matrix
     Matrix<calc_t> t_n_to_n1(4, 4), t_n1_to_n2(4, 4), invT03(4, 4);
