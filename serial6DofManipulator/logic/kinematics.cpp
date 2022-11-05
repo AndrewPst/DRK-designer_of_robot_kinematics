@@ -54,23 +54,20 @@ CalculationError_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double>
     tempPos[2] = t06.at(2, 3) - _dh.d[5] * t06.at(2, 2) - _dh.r[5] * t06.at(2, 0);
 
     // First joint
-    out[0] = atan2(tempPos[1], tempPos[0]) - atan2(_dh.d[2], sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2])) + (IS_V1(conf) ? M_PI : 0);
+    out[0] = atan2(tempPos[1], tempPos[0]) - atan2((_dh.d[2] + _dh.d[1]) * (IS_V1(conf) ? -1 : 1), sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - (_dh.d[2] + _dh.d[1]) * (_dh.d[2] + _dh.d[1]))) + (IS_V1(conf) ? M_PI : 0);
 
     // Second joint
 
     //comp = components
-    double comp1 = M_PI_2;
-
-    double gipotinuze = (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2]) - _dh.r[0]);
+    double comp1 = RAD(_dh.theta[1]) * (IS_V1(conf) ? 1 : -1);
+    double gipotinuze = (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - (_dh.d[2] + _dh.d[1]) * (_dh.d[2] + _dh.d[1])) - _dh.r[0] * (IS_V1(conf) ? -1 : 1));
     double zDif = (tempPos[2] - _dh.d[0]);
-
     double comp2 = acos((_dh.r[1] * _dh.r[1] + zDif * zDif + gipotinuze * gipotinuze - (_dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3])) / (2.0 * _dh.r[1] * sqrt(zDif * zDif + gipotinuze * gipotinuze)));
-    double comp3 = atan((tempPos[2] - _dh.d[0]) / (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _dh.d[2] * _dh.d[2]) - _dh.r[0]));
-
-    out[1] = comp1 - comp2 - comp3;
+    double comp3 = atan(zDif / gipotinuze);
+    out[1] = comp1 - (comp2 + comp3) * (IS_V1(conf) ? -1 : 1);
 
     // third joint
-    out[2] = M_PI - acos((_dh.r[1] * _dh.r[1] + _dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3] - zDif * zDif - gipotinuze * gipotinuze) / (2.0 * _dh.r[1] * sqrt(_dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3]))) - atan(_dh.d[3]/ _dh.r[2]); // out(3)=pi-acos((r(2)^2+r(3)^2+d(4)^2-(tempPos(3)-d(1))^2-(sqrt(tempPos(1)^2+tempPos(2)^2-d(3)^2)-r(1))^2)/(2*r(2)*sqrt(r(3)^2+d(4)^2)))-atan(d(4)/r(3));
+    out[2] = (IS_V1(conf) ? -M_PI : M_PI) - (acos((_dh.r[1] * _dh.r[1] + _dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3] - zDif * zDif - gipotinuze * gipotinuze) / (2.0 * _dh.r[1] * sqrt(_dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3]))) + atan(_dh.d[3]/ _dh.r[2]) * (IS_V1(conf) ? -1 : 1)) * (IS_V1(conf) ? -1 : 1); // out(3)=pi-acos((r(2)^2+r(3)^2+d(4)^2-(tempPos(3)-d(1))^2-(sqrt(tempPos(1)^2+tempPos(2)^2-d(3)^2)-r(1))^2)/(2*r(2)*sqrt(r(3)^2+d(4)^2)))-atan(d(4)/r(3));
 
     // Calculate T36 transoform matrix
     Matrix<calc_t> t_n_to_n1(4, 4), t_n1_to_n2(4, 4), invT03(4, 4);
@@ -85,9 +82,9 @@ CalculationError_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double>
     Matrix<calc_t> t36 = invT03 * t06;
 
     // Find last joints
-    out[3] = atan2(-t36.at(1, 2), -t36.at(0, 2));
-    out[4] = atan2(sqrt(t36.at(0, 2) * t36.at(0, 2) + t36.at(1, 2) * t36.at(1, 2)), t36.at(2, 2));
-    out[5] = atan2(-t36.at(2, 1), t36.at(2, 0));
+    out[3] = atan2(t36.at(1, 2) * (IS_V3(conf) ? 1 : -1), t36.at(0, 2) * (IS_V3(conf) ? 1 : -1));
+    out[4] = (IS_V3(conf) ? -1 : 1) * atan2(sqrt(t36.at(0, 2) * t36.at(0, 2) + t36.at(1, 2) * t36.at(1, 2)), t36.at(2, 2));
+    out[5] = atan2(t36.at(2, 1) * (IS_V3(conf) ? 1 : -1), t36.at(2, 0) * (IS_V3(conf) ? -1 : 1));
 
     for(int i = 0; i < out.size(); i++)
         out[i] = DEG(out[i]);
