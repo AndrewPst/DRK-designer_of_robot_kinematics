@@ -5,6 +5,9 @@
 
 #include <QVector3D>
 
+#include <QMutex>
+#include <QMutexLocker>
+
 namespace serialMan
 {
 
@@ -36,6 +39,8 @@ private:
 
     double _minValue {-360};
     double _maxValue {360};
+    mutable QMutex _mValue, _mMinValue, _mMaxValue;
+
 };
 
 }

@@ -42,6 +42,11 @@ public:
         _dh = dh;
     }
 
+    const DHTable_t<_Dof>& dhTable() const noexcept
+    {
+        return _dh;
+    }
+
     CalculationError_t forward(const QVector<calc_t>& joints, Effector_t& out);
 
     CalculationError_t inverse(const Effector_t& pos, QVector<calc_t>& out, config_t conf);

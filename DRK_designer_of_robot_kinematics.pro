@@ -19,8 +19,11 @@ SOURCES += \
     serial6DofManipulator/docks/dhtabledock.cpp \
     serial6DofManipulator/docks/kinematicsdock.cpp \
     serial6DofManipulator/docks/manybuttonsdock.cpp \
+    serial6DofManipulator/docks/programdock.cpp \
+    serial6DofManipulator/logic/actionscontroller.cpp \
     serial6DofManipulator/logic/kinematics.cpp \
     serial6DofManipulator/logic/manipulatorcontroller.cpp \
+    serial6DofManipulator/logic/models/actionscontainer.cpp \
     serial6DofManipulator/logic/models/joint_t.cpp \
     serial6DofManipulator/openGL/glvisualizatorwidget.cpp \
     serial6DofManipulator/openGL/projectvisualizator.cpp \
@@ -43,10 +46,15 @@ HEADERS += \
     serial6DofManipulator/docks/dhtabledock.h \
     serial6DofManipulator/docks/kinematicsdock.h \
     serial6DofManipulator/docks/manybuttonsdock.h \
+    serial6DofManipulator/docks/programdock.h \
+    serial6DofManipulator/logic/actionscontroller.h \
     serial6DofManipulator/logic/kinematics.h \
     serial6DofManipulator/logic/manipulatorcontroller.h \
+    serial6DofManipulator/logic/models/Actions.h \
     serial6DofManipulator/logic/models/DHTable_t.h \
     serial6DofManipulator/logic/models/Effector_t.h \
+    serial6DofManipulator/logic/models/actionscontainer.h \
+    serial6DofManipulator/logic/models/iaction.h \
     serial6DofManipulator/logic/models/joint_t.h \
     serial6DofManipulator/logic/models/matrix.h \
     serial6DofManipulator/logic/models/units_t.h \

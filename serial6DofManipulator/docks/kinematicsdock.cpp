@@ -93,30 +93,33 @@ KinematicsDock::KinematicsDock(ManipulatorController* man,
 
     _posX = new QDoubleSpinBox();
     _posX->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-    connect(_posX, SIGNAL(editingFinished()), this, SLOT(onPositionChanged()));
+    _posX->setSingleStep(0.2);
+    connect(_posX, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
 
     _posY = new QDoubleSpinBox();
     _posY->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-    connect(_posY, SIGNAL(editingFinished()), this, SLOT(onPositionChanged()));
+    _posY->setSingleStep(0.2);
+    connect(_posY, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
 
     _posZ = new QDoubleSpinBox();
     _posZ->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-    connect(_posZ, SIGNAL(editingFinished()), this, SLOT(onPositionChanged()));
+    _posZ->setSingleStep(0.2);
+    connect(_posZ, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
 
     _rotX = new QDoubleSpinBox();
-    _rotX->setSingleStep(15);
+    _rotX->setSingleStep(5);
     _rotX->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-    connect(_rotX, SIGNAL(editingFinished()), this, SLOT(onPositionChanged()));
+    connect(_rotX, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
 
     _rotY = new QDoubleSpinBox();
-    _rotY->setSingleStep(15);
+    _rotY->setSingleStep(5);
     _rotY->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-    connect(_rotY, SIGNAL(editingFinished()), this, SLOT(onPositionChanged()));
+    connect(_rotY, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
 
     _rotZ = new QDoubleSpinBox();
-    _rotZ->setSingleStep(15);
+    _rotZ->setSingleStep(5);
     _rotZ->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-    connect(_rotZ, SIGNAL(editingFinished()), this, SLOT(onPositionChanged()));
+    connect(_rotZ, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
 
 
     _v1 = new QCheckBox();
@@ -125,11 +128,8 @@ KinematicsDock::KinematicsDock(ManipulatorController* man,
     _v2 = new QCheckBox();
     _v2->setText("Variant 2");
 
-    _v3 = new QCheckBox();
-    _v3->setText("Variant 3");
     connect(_v1, SIGNAL(toggled(bool)), this, SLOT(onConfigChanged()));
     connect(_v2, SIGNAL(toggled(bool)), this, SLOT(onConfigChanged()));
-    connect(_v3, SIGNAL(toggled(bool)), this, SLOT(onConfigChanged()));
 
     onStructureChanged();
 
@@ -148,7 +148,6 @@ KinematicsDock::KinematicsDock(ManipulatorController* man,
     _mainL->addWidget(gb);
     _mainL->addWidget(_v1);
     _mainL->addWidget(_v2);
-    _mainL->addWidget(_v3);
 
     _mainW = new QWidget();
     _mainW->setLayout(_mainL);
@@ -176,27 +175,42 @@ void KinematicsDock::onConfigChanged()
     char conf = 0;
     if(_v1->isChecked()) conf |= 0b00000001;
     if(_v2->isChecked()) conf |= 0b00000010;
-    if(_v3->isChecked()) conf |= 0b00000100;
     _man->setInvConfig(conf);
 }
 
 void KinematicsDock::onStructureChanged()
 {
+    _posX->blockSignals(true);
     _posX->setValue(_man->getEffector().x);
+    _posX->blockSignals(false);
+
+    _posY->blockSignals(true);
     _posY->setValue(_man->getEffector().y);
+    _posY->blockSignals(false);
+
+    _posZ->blockSignals(true);
     _posZ->setValue(_man->getEffector().z);
+    _posZ->blockSignals(false);
+
+    _rotX->blockSignals(true);
     _rotX->setValue(_man->getEffector().wx);
+    _rotX->blockSignals(false);
+
+    _rotY->blockSignals(true);
     _rotY->setValue(_man->getEffector().wy);
+    _rotY->blockSignals(false);
+
+    _rotZ->blockSignals(true);
     _rotZ->setValue(_man->getEffector().wz);
+    _rotZ->blockSignals(false);
+
+
     _v1->blockSignals(true);
     _v2->blockSignals(true);
-    _v3->blockSignals(true);
     _v1->setChecked(_man->getInvConfig() & 0b00000001);
     _v2->setChecked(_man->getInvConfig() & 0b00000010);
-    _v3->setChecked(_man->getInvConfig() & 0b00000100);
     _v1->blockSignals(false);
     _v2->blockSignals(false);
-    _v3->blockSignals(false);
 }
 
 void KinematicsDock::initList()

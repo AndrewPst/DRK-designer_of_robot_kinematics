@@ -9,6 +9,7 @@
 
 #include <QObject>
 #include <QVector>
+#include <QMutex>
 
 namespace serialMan
 {
@@ -32,16 +33,16 @@ public:
     const static int DEFAULT_DOF = 6;
 
     const QVector<Joint_t*>& getJoints() const;
-    const Effector_t& getEffector() const;
+    Effector_t getEffector() const;
     const DHTable_t<DEFAULT_DOF>& getDHTable() const;
 
     void forwardKinematics(QVector<double>& joints);
     void inverseKinematics(const Effector_t& pos);
 
     void setInvConfig(char);
-    char getInvConfig();
+    char getInvConfig() const;
 
-    void setDHTable(DHTable_t<DEFAULT_DOF>&&);
+    void setDHTable(const DHTable_t<DEFAULT_DOF>&);
     void setEffector(const Effector_t&);
 
 signals:
@@ -60,9 +61,9 @@ private:
 
     char _kinConfig {0};
 
-    DHTable_t<DEFAULT_DOF> _dhTable;
-
     Kinematics<DEFAULT_DOF> _kin;
+
+    mutable QMutex _mKin, _mEffector, _mJoints, _mConfig;
 };
 
 }

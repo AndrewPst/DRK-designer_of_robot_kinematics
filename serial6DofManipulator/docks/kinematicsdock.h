@@ -71,7 +71,7 @@ private:
 
     ManipulatorController* _man;
 
-    QCheckBox* _v1, *_v2, *_v3;
+    QCheckBox* _v1, *_v2;
 };
 
 }
