@@ -2,18 +2,14 @@
 #define ACTIONS_H
 
 #include "iaction.h"
+#include <QThreadStorage>
+#include <QDebug>
+#include <QCache>
 
 #include "../manipulatorcontroller.h"
 
-namespace serialMan {
 
-#define _IS_X(c) ((c) & 0b00000001)
-#define _IS_Y(c) ((c) & 0b0000001)
-#define _IS_Z(c) ((c) & 0b000001)
-#define _IS_A(c) ((c) & 0b00001)
-#define _IS_B(c) ((c) & 0b0001)
-#define _IS_G(c) ((c) & 0b001)
-#define _IS_F(c) ((c) & 0b01)
+namespace serialMan {
 
 struct LinearMovement : public serialMan::IAction
 {
@@ -22,52 +18,65 @@ struct LinearMovement : public serialMan::IAction
     constexpr static const char* _cmd1 = "G1";
     constexpr static const char _separator = ' ';
 
+    qint64 _tempTime = 0;
+    long _counter = 0;
     //1 byte
     using config_t = char;
-
-public:
-
-    //variables
-    double x, y, z, //position
-    a, b, g, //orientation (alfa, beta, gamma)
-    f; //speed
-
-    config_t flag = (char)255;
 
 private:
 
     //interface methods
     bool isCorrected(QString& cmd) override
     {
-        return cmd.startsWith(_cmd0) || cmd.startsWith(_cmd1);
+        return cmd == _cmd0 || cmd == _cmd1;
     }
 
     void serializate(std::ostream& out)override
     {
         out << _cmd1 << _separator;
-        if(_IS_X(flag)) out << 'X' << x << _separator;
-        if(_IS_Y(flag)) out << 'Y' << y << _separator;
-        if(_IS_Z(flag)) out << 'Z' << z << _separator;
-        if(_IS_A(flag)) out << 'A' << a << _separator;
-        if(_IS_B(flag)) out << 'B' << b << _separator;
-        if(_IS_G(flag)) out << 'G' << g << _separator;
-        out << 'F' << f << _separator;
+        if(double* x = args.localData().object('X')) out << 'X' << *x << _separator;
+        if(double* y = args.localData().object('Y')) out << 'Y' << *y << _separator;
+        if(double* z = args.localData().object('Z')) out << 'Z' << *z << _separator;
+        if(double* a = args.localData().object('A')) out << 'A' << *a << _separator;
+        if(double* b = args.localData().object('B')) out << 'B' << *b << _separator;
+        if(double* g = args.localData().object('G')) out << 'G' << *g << _separator;
+        if(double* f = args.localData().object('F')) out << 'F' << *f << _separator;
     }
 
-    void deserializate(std::istream&) override;
-
-    void execute(ManipulatorController& man) override
+    void deserializate(std::istream& in) override
     {
-        auto c_pos = man.getEffector();
-        if(_IS_X(flag)) c_pos.x = x;
-        if(_IS_Y(flag)) c_pos.y = y;
-        if(_IS_Z(flag)) c_pos.z = z;
-        if(_IS_A(flag)) c_pos.wx = a;
-        if(_IS_B(flag)) c_pos.wy = b;
-        if(_IS_G(flag)) c_pos.wz = g;
-        man.inverseKinematics(c_pos);
+        while(in.peek() != '\n')
+        {
+            char key;
+            double param;
+            in >> key;
+            in >> param;
+            args.localData().insert(key, new double(param));
+        }
     }
 
+    ActionResult_t execute(ManipulatorController&, qint64 timediff) override
+    {
+
+        qDebug() << "work " << _counter << timediff;
+        _counter++;
+        //auto c_pos = man.getEffector();
+        //        if(double* x = args.localData().object("X")) c_pos.x = *x;
+        //        if(double* y = args.localData().object("Y")) c_pos.y = *y;
+        //        if(double* z = args.localData().object("Z")) c_pos.z = *z;
+        //        if(double* a = args.localData().object("A")) c_pos.wz = *a;
+        //        if(double* b = args.localData().object("B")) c_pos.wy = *b;
+        //        if(double* g = args.localData().object("G")) c_pos.wz = *g;
+        //        if(double* f = args.localData().object("F")) c_pos.f = *f;
+        //man.inverseKinematics(c_pos);
+        return (_counter < 5000) ? ActionResult_t::RESULT_IN_PROCESS : ActionResult_t::RESULT_FINISH;
+    }
+
+    void endExecution() override
+    {
+        _tempTime = 0;
+        _counter = 0;
+    }
 
 };
 

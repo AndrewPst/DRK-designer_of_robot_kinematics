@@ -3,7 +3,7 @@
 #include "version_t.h"
 
 #include <QApplication>
-
+#include <serial6DofManipulator/logic/actionscontroller.h>
 
 Version_t _version {1, 1, 0, VersionStage_t::VERSION_ALFA};
 
@@ -11,6 +11,8 @@ int main(int argc, char *argv[])
 {
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
+    qRegisterMetaType<serialMan::ProgramState_t>("serialMan::ProgramState_t");
 
     QApplication a(argc, argv);
 

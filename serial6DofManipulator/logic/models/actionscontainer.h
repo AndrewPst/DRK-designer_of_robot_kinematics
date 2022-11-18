@@ -17,7 +17,7 @@ class ActionsContainer : QObject
 
 private:
 
-    QList<IAction*> _data;
+    QList<serialMan::IAction*> _data;
 
     mutable QMutex _mutex;
 
@@ -38,6 +38,9 @@ public:
     IAction& at(size_t);
     IAction& first();
     IAction& last();
+
+    QList<serialMan::IAction*>::Iterator begin();
+    QList<serialMan::IAction*>::Iterator end();
 
     void swap(size_t, size_t);
 

@@ -78,6 +78,17 @@ void ActionsContainer::swap(size_t i, size_t b)
     _data.swapItemsAt(i, b);
 }
 
+QList<serialMan::IAction*>::Iterator ActionsContainer::begin()
+{
+    QMutexLocker lock(&_mutex);
+    return _data.begin();
+}
+
+QList<serialMan::IAction*>::Iterator ActionsContainer::end()
+{
+    QMutexLocker lock(&_mutex);
+    return _data.end();
+}
 
 
 

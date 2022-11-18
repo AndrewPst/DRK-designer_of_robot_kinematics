@@ -7,6 +7,7 @@ namespace serialMan {
 
 QT_FORWARD_DECLARE_CLASS(ManipulatorController);
 QT_FORWARD_DECLARE_CLASS(ProjectVisualizator);
+QT_FORWARD_DECLARE_CLASS(ActionsController);
 
 class Serial6DofManipulator : public BaseProjectController
 {
@@ -20,12 +21,13 @@ public:
 
     ManipulatorController* getManipulatorController() const;
     ProjectVisualizator* getVisualizator() const;
+    ActionsController* getActionsController() const;
 
 private:
 
     ManipulatorController* _manipulatorController;
     ProjectVisualizator* _projectVisualizator;
-
+    ActionsController* _actionsController;
 };
 
 }
