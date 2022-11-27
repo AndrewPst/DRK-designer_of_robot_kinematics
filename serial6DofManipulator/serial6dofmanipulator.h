@@ -19,15 +19,15 @@ public:
 
     void init() override;
 
-    ManipulatorController* getManipulatorController() const;
-    ProjectVisualizator* getVisualizator() const;
-    ActionsController* getActionsController() const;
+    ManipulatorController& getManipulatorController() const;
+    ProjectVisualizator& getVisualizator() const;
+    ActionsController& getActionsController() const;
 
 private:
 
-    ManipulatorController* _manipulatorController;
-    ProjectVisualizator* _projectVisualizator;
-    ActionsController* _actionsController;
+    std::unique_ptr<ManipulatorController> _manipulatorController;
+    std::unique_ptr<ProjectVisualizator> _projectVisualizator;
+    std::unique_ptr<ActionsController> _actionsController;
 };
 
 }

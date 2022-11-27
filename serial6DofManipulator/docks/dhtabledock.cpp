@@ -12,7 +12,7 @@
 using namespace serialMan;
 
 
-DhTableDock::DhTableDock(const QString& title, ManipulatorController* man,
+DhTableDock::DhTableDock(ManipulatorController& man, const QString& title ,
                          QWidget* parent,
                          Qt::WindowFlags flags)
     : BaseDock(title, parent, flags),  _man(man)
@@ -52,7 +52,7 @@ void DhTableDock::initTable()
     _table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     _table->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-    auto& dh = _man->getDHTable();
+    auto& dh = _man.getDHTable();
     for(int i = 0; i < ManipulatorController::DEFAULT_DOF; i++)
     {
         QDoubleSpinBox* thetaSpin = new QDoubleSpinBox();
@@ -106,7 +106,7 @@ void DhTableDock::changesApplied()
         newDH.r[i] = qobject_cast<QDoubleSpinBox*>(_table->cellWidget(i, 2))->value();
         newDH.d[i] = qobject_cast<QDoubleSpinBox*>(_table->cellWidget(i, 3))->value();
     }
-    _man->setDHTable(std::move(newDH));
+    _man.setDHTable(std::move(newDH));
     _updateParamsButton->setEnabled(false);
 }
 
@@ -114,5 +114,5 @@ void DhTableDock::changesApplied()
 
 Qt::DockWidgetArea DhTableDock::getDefaultArea() const
 {
-    return Qt::DockWidgetArea::LeftDockWidgetArea;
+    return Qt::DockWidgetArea::BottomDockWidgetArea;
 }

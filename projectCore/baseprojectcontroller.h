@@ -28,7 +28,7 @@ public:
     //Creating central widgets only through this method
     template <typename T, typename ...ArgsT,
               typename = typename std::enable_if_t<std::is_base_of_v<BaseCentralDock, T>>>
-    T * getNewCentralDock(ArgsT... args)
+    T * getNewCentralDock(ArgsT&... args)
     {
         T* result = new T(args...);
         _avaiableCentralDocks.append(result);

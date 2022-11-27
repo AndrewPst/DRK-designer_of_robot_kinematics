@@ -23,7 +23,7 @@ class glVisualizatorWidget : public QGLWidget
     Q_OBJECT
 
 public:
-    glVisualizatorWidget(ProjectVisualizator* visualizator, QWidget* parent = nullptr);
+    glVisualizatorWidget(ProjectVisualizator& visualizator, QWidget* parent = nullptr);
 
 
     //---Getters---
@@ -68,7 +68,7 @@ private:
 
     ProjectionMode_t _projectionMode = ProjectionMode_t::PR_ORTHOGONAL;
 
-    ProjectVisualizator* _visualizator;
+    ProjectVisualizator& _visualizator;
 
     float _distance = 60;
     float _angleX = M_PI/5.0, _angleY = 0;

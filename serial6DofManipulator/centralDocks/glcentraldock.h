@@ -11,7 +11,7 @@ QT_FORWARD_DECLARE_CLASS(ManipulatorController)
 class glCentralDock : public BaseCentralDock
 {
 public:
-    glCentralDock(const QString& title, ManipulatorController* man,
+    glCentralDock(ManipulatorController& man,const QString& title = "Visualization",
                   QMainWindow *parent = nullptr,
                   Qt::WindowFlags flags = {});
 
@@ -38,7 +38,7 @@ private:
     QAction *_lookFromX, *_lookFromY, *_lookFromZ;
     QAction *_reverseDirection;
 
-    ManipulatorController* _man;
+    ManipulatorController& _man;
 };
 
 }

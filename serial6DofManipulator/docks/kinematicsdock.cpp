@@ -12,7 +12,7 @@
 
 using namespace serialMan;
 
-JointViewModelWidget::JointViewModelWidget(Joint_t* j, ManipulatorController* man)
+JointViewModelWidget::JointViewModelWidget(Joint_t* j, ManipulatorController& man)
     : QWidget(), _joint(j)
 {
     _mainL = new QVBoxLayout();
@@ -42,7 +42,7 @@ JointViewModelWidget::JointViewModelWidget(Joint_t* j, ManipulatorController* ma
     connect(j, SIGNAL(valueChanged(double)), this, SLOT(onJointValueChanged()));
     connect(j, SIGNAL(minValueChanged(double)), this, SLOT(onJointMinChanged()));
     connect(j, SIGNAL(maxValueChanged(double)), this, SLOT(onJointMaxChanged()));
-    connect(man, SIGNAL(structureChanged()), this, SLOT(onJointValueChanged()));
+    connect(&man, SIGNAL(structureChanged()), this, SLOT(onJointValueChanged()));
 
     _mainL->addLayout(fl);
 
@@ -76,7 +76,7 @@ void JointViewModelWidget::onSpinsChanged()
 
 
 
-KinematicsDock::KinematicsDock(ManipulatorController* man,
+KinematicsDock::KinematicsDock(ManipulatorController& man,
                                const QString& title,
                                QWidget* parent,
                                Qt::WindowFlags flags)
@@ -153,7 +153,7 @@ KinematicsDock::KinematicsDock(ManipulatorController* man,
     _mainW->setLayout(_mainL);
     setWidget(_mainW);
 
-    connect(_man, SIGNAL(structureChanged()), this, SLOT(onStructureChanged()));
+    connect(&_man, SIGNAL(structureChanged()), this, SLOT(onStructureChanged()));
 }
 
 void KinematicsDock::onPositionChanged()
@@ -167,7 +167,7 @@ void KinematicsDock::onPositionChanged()
         _rotY->value(),
         _rotZ->value(),
     };
-    _man->setEffector(eff);
+    _man.setEffector(eff);
 }
 
 void KinematicsDock::onConfigChanged()
@@ -175,40 +175,40 @@ void KinematicsDock::onConfigChanged()
     char conf = 0;
     if(_v1->isChecked()) conf |= 0b00000001;
     if(_v2->isChecked()) conf |= 0b00000010;
-    _man->setInvConfig(conf);
+    _man.setInvConfig(conf);
 }
 
 void KinematicsDock::onStructureChanged()
 {
     _posX->blockSignals(true);
-    _posX->setValue(_man->getEffector().x);
+    _posX->setValue(_man.getEffector().x);
     _posX->blockSignals(false);
 
     _posY->blockSignals(true);
-    _posY->setValue(_man->getEffector().y);
+    _posY->setValue(_man.getEffector().y);
     _posY->blockSignals(false);
 
     _posZ->blockSignals(true);
-    _posZ->setValue(_man->getEffector().z);
+    _posZ->setValue(_man.getEffector().z);
     _posZ->blockSignals(false);
 
     _rotX->blockSignals(true);
-    _rotX->setValue(_man->getEffector().wx);
+    _rotX->setValue(_man.getEffector().wx);
     _rotX->blockSignals(false);
 
     _rotY->blockSignals(true);
-    _rotY->setValue(_man->getEffector().wy);
+    _rotY->setValue(_man.getEffector().wy);
     _rotY->blockSignals(false);
 
     _rotZ->blockSignals(true);
-    _rotZ->setValue(_man->getEffector().wz);
+    _rotZ->setValue(_man.getEffector().wz);
     _rotZ->blockSignals(false);
 
 
     _v1->blockSignals(true);
     _v2->blockSignals(true);
-    _v1->setChecked(_man->getInvConfig() & 0b00000001);
-    _v2->setChecked(_man->getInvConfig() & 0b00000010);
+    _v1->setChecked(_man.getInvConfig() & 0b00000001);
+    _v2->setChecked(_man.getInvConfig() & 0b00000010);
     _v1->blockSignals(false);
     _v2->blockSignals(false);
 }
@@ -216,7 +216,7 @@ void KinematicsDock::onStructureChanged()
 void KinematicsDock::initList()
 {
     _list->setStyleSheet( "QListWidget::item { border-bottom: 1px solid black; }" );
-    auto& js = _man->getJoints();
+    auto& js = _man.getJoints();
     for(auto j : js)
     {
         JointViewModelWidget* jw = new JointViewModelWidget(j, _man);
@@ -226,6 +226,10 @@ void KinematicsDock::initList()
     }
 }
 
+Qt::DockWidgetArea KinematicsDock::getDefaultArea() const
+{
+    return Qt::DockWidgetArea::LeftDockWidgetArea;
+}
 
 
 

@@ -6,7 +6,7 @@ using namespace serialMan;
 #define IS_V2(x)((x) & 0b00000010)
 
 template<>
-CalculationError_t Kinematics<6>::forward(const QVector<double>& joints, Effector_t& out)
+CalculationResult_t Kinematics<6>::forward(const QVector<double>& joints, Effector_t& out)
 {
 
     Matrix<calc_t> baseT(4, 4);  // Zero position of the base frame
@@ -27,11 +27,11 @@ CalculationError_t Kinematics<6>::forward(const QVector<double>& joints, Effecto
     // Get position by calculated matrix
     transformMatrixToPosition(baseT, out);
 
-    return CalculationError_t::CALC_SUCCESSFULL;
+    return CalculationResult_t::CALC_SUCCESSFULL;
 }
 
 template<>
-CalculationError_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double>& out, config_t conf)
+CalculationResult_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double>& out, config_t conf)
 {
     (void)conf;
     Matrix<calc_t> Twf(4, 4); // work frame matrix;
@@ -66,6 +66,9 @@ CalculationError_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double>
     double comp3 = atan(zDif / gipotinuze);
     out[1] = comp1 - (comp2 + comp3) * (IS_V1(conf) ? -1 : 1);
 
+    if(gipotinuze < 0)
+        out[1] += M_PI;
+
     // third joint
     out[2] = (IS_V1(conf) ? -M_PI : M_PI) - (RAD(_dh.theta[2]) + acos((_dh.r[1] * _dh.r[1] + _dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3] - zDif * zDif - gipotinuze * gipotinuze) / (2.0 * _dh.r[1] * sqrt(_dh.r[2] * _dh.r[2] + _dh.d[3] * _dh.d[3]))) + atan(_dh.d[3]/ _dh.r[2]) * (IS_V1(conf) ? -1 : 1)) * (IS_V1(conf) ? -1 : 1); // out(3)=pi-acos((r(2)^2+r(3)^2+d(4)^2-(tempPos(3)-d(1))^2-(sqrt(tempPos(1)^2+tempPos(2)^2-d(3)^2)-r(1))^2)/(2*r(2)*sqrt(r(3)^2+d(4)^2)))-atan(d(4)/r(3));
 
@@ -87,8 +90,15 @@ CalculationError_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double>
     out[5] = atan2(t36.at(2, 1) * (IS_V2(conf) ? 1 : -1), t36.at(2, 0) * (IS_V2(conf) ? -1 : 1));
 
     for(int i = 0; i < out.size(); i++)
+    {
+        if(std::isnan(out[i]))
+            return CalculationResult_t::CALC_ERROR;
         out[i] = DEG(out[i]);
+    }
 
-    return CalculationError_t::CALC_SUCCESSFULL;
+    if(abs(out[4]) <= 0.0001 && abs(out[3] + out[5]) < 0.0001)
+        out[3] = out[5] = 0;
+
+    return CalculationResult_t::CALC_SUCCESSFULL;
 }
 

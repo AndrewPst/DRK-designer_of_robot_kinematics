@@ -1,7 +1,7 @@
 #include "manipulatorcontroller.h"
 
 #include <math.h>
-
+#include <QDebug>
 using namespace serialMan;
 
 
@@ -76,25 +76,31 @@ void ManipulatorController::forwardKinematics(QVector<double>& joints)
     emit structureChanged();
 }
 
-void ManipulatorController::inverseKinematics(const Effector_t& pos)
+CalculationResult_t ManipulatorController::inverseKinematics(const Effector_t& pos, char config)
 {
     QVector<double> out(DEFAULT_DOF);
 
     QMutexLocker klock(&_mKin);
-    QMutexLocker clock(&_mConfig);
-    _kin.inverse(pos, out, _kinConfig);
+    auto result = _kin.inverse(pos, out, config);
     klock.unlock();
-    clock.unlock();
 
-    QMutexLocker jlock(&_mJoints);
-    for(int i = 0; i < DEFAULT_DOF; i++){
-        _joints[i]->blockSignals(true);
-        _joints[i]->setValue(out[i]);
-        _joints[i]->blockSignals(false);
+    if(result == CalculationResult_t::CALC_SUCCESSFULL)
+    {
+        QMutexLocker clock(&_mConfig);
+        _kinConfig = config;
+        QMutexLocker jlock(&_mJoints);
+        for(int i = 0; i < DEFAULT_DOF; i++){
+            _joints[i]->blockSignals(true);
+            _joints[i]->setValue(out[i]);
+            _joints[i]->blockSignals(false);
+        }
+        QMutexLocker elock(&_mEffector);
+        _effector = pos;
+    } else {
+        qDebug() << "error!";
     }
-    jlock.unlock();
-
     emit structureChanged();
+    return result;
 }
 
 void ManipulatorController::onJointsChanged()
@@ -111,19 +117,15 @@ void ManipulatorController::onJointsChanged()
 
 void ManipulatorController::setEffector(const Effector_t& eff)
 {
-    QMutexLocker lock(&_mEffector);
-    _effector = eff;
-    lock.unlock();
-    inverseKinematics(eff);
+    QMutexLocker clock(&_mConfig);
+    inverseKinematics(eff, _kinConfig);
 }
 
 
 void ManipulatorController::setInvConfig(char c)
 {
     QMutexLocker lock(&_mConfig);
-    _kinConfig = c;
-    lock.unlock();
-    inverseKinematics(_effector);
+    inverseKinematics(_effector, c);
 }
 
 char ManipulatorController::getInvConfig() const

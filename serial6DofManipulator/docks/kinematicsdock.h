@@ -14,7 +14,6 @@ QT_FORWARD_DECLARE_CLASS(QCheckBox)
 namespace serialMan
 {
 
-
 QT_FORWARD_DECLARE_CLASS(ManipulatorController);
 QT_FORWARD_DECLARE_CLASS(Joint_t)
 
@@ -22,7 +21,7 @@ class JointViewModelWidget : public QWidget
 {
   Q_OBJECT
 public:
-    JointViewModelWidget(Joint_t* joint, ManipulatorController* man);
+    JointViewModelWidget(Joint_t* joint, ManipulatorController& man);
 
 private slots:
 
@@ -49,9 +48,11 @@ private:
     void initList();
 
 public:
-    explicit KinematicsDock(ManipulatorController* man, const QString& title = "Kinematics",
+    explicit KinematicsDock(ManipulatorController& man, const QString& title = "Kinematics",
                             QWidget* parent = nullptr,
                             Qt::WindowFlags flags = {});
+
+    Qt::DockWidgetArea getDefaultArea() const override;
 
 public slots:
 
@@ -69,7 +70,7 @@ private:
 
     QDoubleSpinBox *_posX, *_posY, *_posZ, *_rotX, *_rotY, *_rotZ;
 
-    ManipulatorController* _man;
+    ManipulatorController& _man;
 
     QCheckBox* _v1, *_v2;
 };

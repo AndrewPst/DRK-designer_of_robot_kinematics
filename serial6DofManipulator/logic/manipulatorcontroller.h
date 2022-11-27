@@ -10,6 +10,7 @@
 #include <QObject>
 #include <QVector>
 #include <QMutex>
+#include <QRecursiveMutex>
 
 namespace serialMan
 {
@@ -22,7 +23,6 @@ class ManipulatorController : public QObject
     friend class serialMan::Serial6DofManipulator;
 
     ManipulatorController();
-    ~ManipulatorController();
 
     ManipulatorController& operator=(const ManipulatorController&) = delete;
     ManipulatorController(const ManipulatorController&) = delete;
@@ -37,7 +37,7 @@ public:
     const DHTable_t<DEFAULT_DOF>& getDHTable() const;
 
     void forwardKinematics(QVector<double>& joints);
-    void inverseKinematics(const Effector_t& pos);
+    CalculationResult_t inverseKinematics(const Effector_t& pos, char config);
 
     void setInvConfig(char);
     char getInvConfig() const;
@@ -45,6 +45,7 @@ public:
     void setDHTable(const DHTable_t<DEFAULT_DOF>&);
     void setEffector(const Effector_t&);
 
+    ~ManipulatorController();
 signals:
 
     void structureChanged();
@@ -63,7 +64,7 @@ private:
 
     Kinematics<DEFAULT_DOF> _kin;
 
-    mutable QMutex _mKin, _mEffector, _mJoints, _mConfig;
+    mutable QRecursiveMutex _mKin, _mEffector, _mJoints, _mConfig;
 };
 
 }

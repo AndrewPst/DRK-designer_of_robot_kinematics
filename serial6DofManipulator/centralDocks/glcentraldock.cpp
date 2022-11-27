@@ -13,7 +13,7 @@
 
 using namespace serialMan;
 
-glCentralDock::glCentralDock(const QString& title, ManipulatorController* man,
+glCentralDock::glCentralDock(ManipulatorController& man, const QString& title,
                              QMainWindow *parent,
                              Qt::WindowFlags flags)
     : BaseCentralDock(title, parent, flags), _man(man)
@@ -82,7 +82,7 @@ glCentralDock::glCentralDock(const QString& title, ManipulatorController* man,
     _glWidget->setProjectionMode(ProjectionMode_t::PR_PERSPECTIVE);
     setWidget(_mainWidget);
 
-    connect(_man, &ManipulatorController::structureChanged, this, &glCentralDock::onUpdate);
+    connect(&_man, &ManipulatorController::structureChanged, this, &glCentralDock::onUpdate);
 }
 
 void glCentralDock::onUpdate()
@@ -120,19 +120,19 @@ void glCentralDock::setLookDirectionSlot(QAction* action)
 void glCentralDock::onHSplit()
 {
     CentralWindow* window = qobject_cast<CentralWindow*>(parent());
-    window->splitDockWidget(this, projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(QDockWidget::windowTitle(), _man), Qt::Orientation::Vertical);
+    window->splitDockWidget(this, projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(_man, "Visualization"), Qt::Orientation::Vertical);
 }
 
 void glCentralDock::onVSplit()
 {
     CentralWindow* window = qobject_cast<CentralWindow*>(parent());
-    window->splitDockWidget(this,  projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(QDockWidget::windowTitle(), _man), Qt::Orientation::Horizontal);
+    window->splitDockWidget(this,  projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(_man), Qt::Orientation::Horizontal);
 }
 
 void glCentralDock::onTabSplit()
 {
     CentralWindow* window = qobject_cast<CentralWindow*>(parent());
-    window->tabDockWidget(this,  projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(QDockWidget::windowTitle(), _man));
+    window->tabDockWidget(this,  projectsManager.getOpenedProject()->getNewCentralDock<glCentralDock>(_man));
 }
 
 void glCentralDock::onResetPos()

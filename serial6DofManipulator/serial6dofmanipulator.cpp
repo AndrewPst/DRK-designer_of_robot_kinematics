@@ -14,41 +14,43 @@
 using namespace serialMan;
 
 Serial6DofManipulator::Serial6DofManipulator()
-    : BaseProjectController(), _manipulatorController(new ManipulatorController),
-      _projectVisualizator(new ProjectVisualizator), _actionsController(new ActionsController())
+    : BaseProjectController(),
+      _manipulatorController(new ManipulatorController()),
+      _projectVisualizator(new ProjectVisualizator),
+      _actionsController(new ActionsController(*_manipulatorController))
+
 {
 }
 
 void Serial6DofManipulator::init()
 {
+
     //Init widgets here!!
-    _avaiableCentralDocks << new glCentralDock(tr("Visualization"), _manipulatorController);
+    _avaiableCentralDocks << new glCentralDock(*_manipulatorController);
     //_avaiableDocks << new ManyButtonsDock(tr("Buttons"));
 
     _avaiableDocks << new ProgramDock(*_actionsController);
-    _avaiableDocks << new DhTableDock(tr("DH parameters"), _manipulatorController);
-    _avaiableDocks << new KinematicsDock(_manipulatorController);
+    _avaiableDocks << new DhTableDock(*_manipulatorController);
+    _avaiableDocks << new KinematicsDock(*_manipulatorController);
 }
 
 Serial6DofManipulator::~Serial6DofManipulator()
 {
-    delete _manipulatorController;
-    delete _projectVisualizator;
-    delete _actionsController;
+
 }
 
-ManipulatorController* Serial6DofManipulator::getManipulatorController() const
+ManipulatorController& Serial6DofManipulator::getManipulatorController() const
 {
-    return _manipulatorController;
+    return *_manipulatorController;
 }
 
-ActionsController* Serial6DofManipulator::getActionsController() const
+ActionsController& Serial6DofManipulator::getActionsController() const
 {
-    return _actionsController;
+    return *_actionsController;
 }
 
-ProjectVisualizator* Serial6DofManipulator::getVisualizator() const
+ProjectVisualizator& Serial6DofManipulator::getVisualizator() const
 {
-    return _projectVisualizator;
+    return *_projectVisualizator;
 }
 

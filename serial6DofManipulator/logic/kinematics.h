@@ -12,7 +12,7 @@
 namespace serialMan
 {
 
-enum class CalculationError_t
+enum class CalculationResult_t
 {
     CALC_ERROR = 0,
     CALC_SUCCESSFULL,
@@ -47,9 +47,9 @@ public:
         return _dh;
     }
 
-    CalculationError_t forward(const QVector<calc_t>& joints, Effector_t& out);
+    CalculationResult_t forward(const QVector<calc_t>& joints, Effector_t& out);
 
-    CalculationError_t inverse(const Effector_t& pos, QVector<calc_t>& out, config_t conf);
+    CalculationResult_t inverse(const Effector_t& pos, QVector<calc_t>& out, config_t conf);
 
 private:
     void inverseTransformMatrix(Matrix<calc_t> &m, Matrix<calc_t> &out)

@@ -9,20 +9,19 @@
 
 using namespace serialMan;
 
-ActionsController::ActionsController()
-    : QObject(), _state(ProgramState_t::STATE_FINISHED)
+ActionsController::ActionsController(ManipulatorController& man)
+    : QObject(),  _man(man), _enivroment(man), _state(ProgramState_t::STATE_FINISHED)
 {
-    actions.append(createAction<LinearMovement>());
+    //actions.append(createAction<LinearMovement>());
+    _enivroment.program.append(_enivroment.createAction<LinearMovement>());
 }
 
 void ActionsController::startProgram()
 {
 
-    ManipulatorController* man = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController();
-
     if(_state != ProgramState_t::STATE_FINISHED)
         return;
-    _executor = new ProgramExecutor(actions, *man);
+    _executor = new ProgramExecutor(_enivroment, _man);
     _thread = new QThread();
 
     connect(this, &ActionsController::messageToThread, _executor, &serialMan::ProgramExecutor::setState, Qt::DirectConnection );
@@ -89,7 +88,7 @@ void ActionsController::stateChanged(serialMan::ProgramState_t state)
 
 //Program executor
 
-ProgramExecutor::ProgramExecutor(ActionsContainer& actions, ManipulatorController& man)
+ProgramExecutor::ProgramExecutor(ActionsEnivroment& actions, ManipulatorController& man)
     : QObject(), _man(man), _actions(actions), _state(ProgramState_t::STATE_IS_RUNNING)
 {
 }
@@ -97,11 +96,11 @@ ProgramExecutor::ProgramExecutor(ActionsContainer& actions, ManipulatorControlle
 void ProgramExecutor::start()
 {
     emit onStateChanged(_state);
-    auto iter = _actions.begin();
+    auto iter = _actions.program.begin();
     bool exit = false;
     _frameTime = QDateTime::currentMSecsSinceEpoch();
 
-    for(;iter != _actions.end() && exit == false; iter++)
+    for(;iter != _actions.program.end() && exit == false; iter++)
     {
         ActionResult_t result = ActionResult_t::RESULT_IN_PROCESS;
         IAction* action = *iter;

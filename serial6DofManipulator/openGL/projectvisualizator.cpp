@@ -249,9 +249,9 @@ void drawCube(GLenum mode)
 
 void serialMan::ProjectVisualizator::drawManipulator()
 {
-    auto mc = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController();
-    auto& joints = mc->getJoints();
-    auto& dh = mc->getDHTable();
+    auto& mc = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController();
+    auto& joints = mc.getJoints();
+    auto& dh = mc.getDHTable();
 
     glPushMatrix();
     for(int i = 0; i < ManipulatorController::DEFAULT_DOF; i++) //-1 - ignore frame between J6 and effector
@@ -338,80 +338,6 @@ void serialMan::ProjectVisualizator::drawManipulator()
     glPopMatrix();
 
 }
-
-//void serialMan::ProjectVisualizator::drawManipulator()
-//{
-//    auto& joints = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController()->getJoints();
-//    //const Effector_t& _effector = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController()->getEffector();
-//    //Draw manipulator
-//    glPushMatrix();
-//    for(int i = 0; i < joints.size(); i++)
-//    {
-//        const Joint_t& j = joints[i];
-//        //draw the joints of the joints
-//        const static int modes[] {GL_LINE_LOOP, GL_QUADS};
-//        const static QColor colors[] {Qt::GlobalColor::black, Qt::yellow}; //And border
-//        for(size_t i  = 0; i < sizeof(modes) / sizeof(modes[0]); i++)
-//        {
-//            _currentContext->qglColor(colors[i]);
-//            glLineWidth(3);
-
-//            glPushMatrix();
-//            glScalef(1 - (float)i*0.1, 1 - (float)i*0.1, 1); //This scale needing for correct drawing borders
-//            glTranslatef(-0.25, -0.25, -0.25); //Set joint to center
-//            glScalef(0.5, 0.5, j.getPosition().z()+0.5*(j.getPosition().z() > 0)); //Scale joint
-//            drawCube(modes[i]);
-//            glPopMatrix();
-
-//            glPushMatrix();
-//            glTranslatef(0, 0, j.getPosition().z());
-//            glScalef(1, 1 - (float)i*0.1, 1 - (float)i*0.1);
-//            glTranslatef(-0.25, -0.25, -0.25);
-//            glScalef(j.getPosition().x()+0.5*(j.getPosition().x() > 0), 0.5, 0.5);
-//            drawCube(modes[i]);
-//            glPopMatrix();
-
-//            glPushMatrix();
-//            glTranslatef(j.getPosition().x(), 0, j.getPosition().z());
-//            glScalef(1 - (float)i*0.1, 1, 1 - (float)i*0.1);
-//            glTranslatef(-0.25, -0.25, -0.25);
-//            glScalef(0.5, j.getPosition().y()+0.5*(j.getPosition().y() > 0), 0.5);
-//            drawCube(modes[i]);
-//            glPopMatrix();
-//        }
-
-//        glTranslatef(j.getPosition().x(), j.getPosition().y(), j.getPosition().z());
-//        glRotatef(j.getRotation().x(), 1, 0, 0);
-//        glRotatef(j.getRotation().y(), 0, 1, 0);
-//        glRotatef(j.getRotation().z(), 0, 0, 1);
-//        //glRotatef(1, j.getRotation().x(), j.getRotation().y(), j.getRotation().z());
-//        drawRotationJoint();
-//        glRotatef(j.getValue(), 0 ,0, 1);
-//    }
-//    glPopMatrix();
-
-//    //rawing joints axes on top of all elements
-//    glPushMatrix();
-//    for(int i = 0; i <= joints.size(); i++)
-//    {
-//        const Joint_t& j = joints[i];
-//        glTranslatef(j.getPosition().x(), j.getPosition().y(), j.getPosition().z());
-//        glRotatef(j.getRotation().x(), 1, 0, 0);
-//        glRotatef(j.getRotation().y(), 0, 1, 0);
-//        glRotatef(j.getRotation().z(), 0, 0, 1);
-
-//        glPushMatrix();
-//        glScalef(2*_jointKoef, 2*_jointKoef, 2*_jointKoef);
-//        glLineWidth(3);
-//        glDisable(GL_DEPTH_TEST);
-//        drawAxis();
-//        glEnable(GL_DEPTH_TEST);
-//        glPopMatrix();
-
-//        glRotatef(j.getValue(), 0 ,0, 1);
-//    }
-//    glPopMatrix();
-//}
 
 void serialMan::ProjectVisualizator::drawRotationJoint()
 {

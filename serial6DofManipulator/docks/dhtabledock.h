@@ -22,7 +22,7 @@ private:
 
 public:
 
-    explicit DhTableDock(const QString& title, ManipulatorController* man,
+    explicit DhTableDock(ManipulatorController& man, const QString& title = "DH Table",
                          QWidget* parent = nullptr,
                          Qt::WindowFlags flags = {});
 
@@ -36,12 +36,12 @@ private slots:
 private:
 
     QWidget* _mainW;
-
     QVBoxLayout *_mainLayout;
-    QTableWidget *_table;
-    ManipulatorController* _man;
 
+    QTableWidget *_table;
     QPushButton* _updateParamsButton;
+
+    ManipulatorController& _man;
 };
 
 }

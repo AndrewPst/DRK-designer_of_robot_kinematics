@@ -12,7 +12,7 @@
 using namespace serialMan;
 
 
-glVisualizatorWidget::glVisualizatorWidget(serialMan::ProjectVisualizator* visualizator, QWidget* parent) :
+glVisualizatorWidget::glVisualizatorWidget(serialMan::ProjectVisualizator& visualizator, QWidget* parent) :
     QGLWidget(parent),
     _visualizator(visualizator)
 {
@@ -64,7 +64,7 @@ void glVisualizatorWidget::paintGL() // рисование
     glRotatef(-90, 1, 0, 0);
     glTranslatef(_cameraXPoint, _cameraYPoint, -_cameraZPoint);
 
-    _visualizator->visualizate(this);
+    _visualizator.visualizate(this);
 }
 
 

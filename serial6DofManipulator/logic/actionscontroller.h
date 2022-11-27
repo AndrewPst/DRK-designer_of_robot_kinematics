@@ -2,19 +2,19 @@
 #define ACTIONSCONTROLLER_H
 
 #include "models/iaction.h"
-#include "models/actionscontainer.h"
+#include "models/actionsenivroment.h"
 
 #include <QObject>
 #include <istream>
 #include <ostream>
 #include <QThread>
 #include <QTime>
+#include <QSharedPointer>
 
 namespace serialMan
 {
 
 QT_FORWARD_DECLARE_CLASS(ManipulatorController);
-QT_FORWARD_DECLARE_CLASS(ActionsContainer);
 
 
 enum SerializingError_t
@@ -37,15 +37,15 @@ class ProgramExecutor : public QObject
 private:
 
     ManipulatorController& _man;
+    ActionsEnivroment& _actions;
 
-    ActionsContainer& _actions;
     serialMan::ProgramState_t _state;
 
     constexpr const static int _fps = 30;
     qint64 _frameDiff = 1000/_fps;
     qint64 _frameTime = 0;
 
-    ProgramExecutor(ActionsContainer&, ManipulatorController&);
+    ProgramExecutor(ActionsEnivroment&, ManipulatorController&);
 
 public:
 
@@ -77,18 +77,24 @@ class ActionsController : public QObject
 
 private:
 
-    ProgramState_t _state;
+    ManipulatorController& _man;
+
     ProgramExecutor* _executor;
+    ActionsEnivroment _enivroment;
+
+    ProgramState_t _state;
+
+    QList<QSharedPointer<IAction>> _actionsBuf;
 
 
 public:
 
-    ActionsController();
-
-    ActionsContainer actions;
+    ActionsController(ManipulatorController& man);
 
     SerializingError_t serializate(std::ostream&);
     SerializingError_t deserializate(std::istream&);
+
+    ActionsEnivroment const& enivroment() const;
 
     void executeAction(IAction&);
 
@@ -101,15 +107,6 @@ public:
     int position();
 
     ProgramState_t getState();
-
-    template<typename T, typename = typename std::enable_if_t<std::is_base_of_v<serialMan::IAction, T>>>
-    T* createAction()
-    {
-        IAction* act = new T();
-        return (T*)act;
-    }
-
-    void deleteAction(IAction*);
 
 signals:
 
