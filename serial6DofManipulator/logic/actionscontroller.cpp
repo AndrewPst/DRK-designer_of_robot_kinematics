@@ -1,5 +1,4 @@
 #include "actionscontroller.h"
-#include "projectCore/projectsmanager.h"
 #include "manipulatorcontroller.h"
 
 #include "models/Actions.h"
@@ -13,7 +12,14 @@ ActionsController::ActionsController(ManipulatorController& man)
     : QObject(),  _man(man), _enivroment(man), _state(ProgramState_t::STATE_FINISHED)
 {
     //actions.append(createAction<LinearMovement>());
-    _enivroment.program.append(_enivroment.createAction<LinearMovement>());
+    auto temp = _enivroment.createAction<LinearMovement>();
+    temp->setArg('X', {ActionArgumentType_t::ARGTYPE_DOUBLE, 15.0});
+    temp->setArg('Y', {ActionArgumentType_t::ARGTYPE_DOUBLE,8.0});
+    temp->setArg('Z', {ActionArgumentType_t::ARGTYPE_DOUBLE,15.0});
+    temp->setArg('A', {ActionArgumentType_t::ARGTYPE_DOUBLE,90.0});
+    temp->setArg('G', {ActionArgumentType_t::ARGTYPE_DOUBLE,-90.0});
+    temp->setArg('F', {ActionArgumentType_t::ARGTYPE_DOUBLE,0.5});
+    _enivroment.program.append(temp);
 }
 
 void ActionsController::startProgram()
@@ -71,9 +77,12 @@ void ActionsController::resume()
     emit messageToThread(serialMan::ProgramState_t::STATE_IS_RUNNING);
 }
 
-void ActionsController::setPosition(int)
+void ActionsController::setPosition(int i)
 {
-
+    IAction& action = _enivroment.program.at(i);
+    action.startExecution();
+    action.execute(0, ExecuteConfig_t::EXECUTE_INSTANTLY);
+    action.endExecution();
 }
 
 int ActionsController::position()
@@ -117,7 +126,7 @@ void ProgramExecutor::start()
 
             if(_state == ProgramState_t::STATE_IS_RUNNING)
             {
-                result = action->execute(_man, diff);
+                result = action->execute(diff, ExecuteConfig_t::EXECUTE_ANIMATION);
             }
             else if(_state == ProgramState_t::STATE_SUSPENDED)
             {
@@ -142,7 +151,6 @@ void ProgramExecutor::suspend()
 {
     _state = ProgramState_t::STATE_SUSPENDED;
     emit onStateChanged(_state);
-
 }
 
 void ProgramExecutor::resume()

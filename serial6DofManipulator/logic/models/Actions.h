@@ -19,17 +19,20 @@ struct LinearMovement : public serialMan::IAction
     constexpr static const char* _cmd1 = "G1";
     constexpr static const char _separator = ' ';
 
-    qint64 _tempTime = 0;
-    long _counter = 0;
-    //1 byte
-    using config_t = char;
+    const QList<char> _keys = {'X', 'Y', 'Z', 'A', 'B', 'G', 'F'};
+
+    Effector_t endPos;
+    Effector_t argsSpeed;
+
+    double speed = 2;
+    double dist, time = 0, curtime = 0;
 
 public:
 
     explicit LinearMovement(ActionsEnivroment& env) : IAction(env){}
 
     //interface methods
-    bool isCorrected(QString& cmd) override
+    bool isKey(QString& cmd) override
     {
         return cmd == _cmd0 || cmd == _cmd1;
     }
@@ -37,13 +40,14 @@ public:
     void serializate(std::ostream& out)override
     {
         out << _cmd1 << _separator;
-//        if(double* x = args.localData().object('X')) out << 'X' << *x << _separator;
-//        if(double* y = args.localData().object('Y')) out << 'Y' << *y << _separator;
-//        if(double* z = args.localData().object('Z')) out << 'Z' << *z << _separator;
-//        if(double* a = args.localData().object('A')) out << 'A' << *a << _separator;
-//        if(double* b = args.localData().object('B')) out << 'B' << *b << _separator;
-//        if(double* g = args.localData().object('G')) out << 'G' << *g << _separator;
-//        if(double* f = args.localData().object('F')) out << 'F' << *f << _separator;
+        Argument_t res;
+        if(getArg('X', res)) out << 'X' << res.value.toDouble() << _separator;
+        if(getArg('Y', res)) out << 'Y' << res.value.toDouble() << _separator;
+        if(getArg('Z', res)) out << 'Z' << res.value.toDouble() << _separator;
+        if(getArg('A', res)) out << 'A' << res.value.toDouble() << _separator;
+        if(getArg('B', res)) out << 'B' << res.value.toDouble() << _separator;
+        if(getArg('G', res)) out << 'G' << res.value.toDouble() << _separator;
+        if(getArg('F', res)) out << 'F' << res.value.toDouble() << _separator;
     }
 
     void deserializate(std::istream& in) override
@@ -54,33 +58,66 @@ public:
             double param;
             in >> key;
             in >> param;
-            //args.localData().insert(key, new double(param));
+            setArg(key, {ActionArgumentType_t::ARGTYPE_DOUBLE, param});
         }
     }
 
-    ActionResult_t execute(ManipulatorController&, qint64) override
+    void startExecution() override
     {
         Effector_t eff = _enivroment->manipulator().getEffector();
-        eff.x-=0.1;
-        eff.wx+=90.0/100.0;
-        _enivroment->manipulator().setEffector(eff);
-        _counter++;
-        //auto c_pos = man.getEffector();
-        //        if(double* x = args.localData().object("X")) c_pos.x = *x;
-        //        if(double* y = args.localData().object("Y")) c_pos.y = *y;
-        //        if(double* z = args.localData().object("Z")) c_pos.z = *z;
-        //        if(double* a = args.localData().object("A")) c_pos.wz = *a;
-        //        if(double* b = args.localData().object("B")) c_pos.wy = *b;
-        //        if(double* g = args.localData().object("G")) c_pos.wz = *g;
-        //        if(double* f = args.localData().object("F")) c_pos.f = *f;
-        //man.inverseKinematics(c_pos);
-        return (_counter < 100) ? ActionResult_t::RESULT_IN_PROCESS : ActionResult_t::RESULT_FINISH;
+        endPos = eff;
+        Argument_t res;
+        if(getArg('X', res)) endPos.x = res.value.toDouble();
+        if(getArg('Y', res)) endPos.y = res.value.toDouble();
+        if(getArg('Z', res)) endPos.z = res.value.toDouble();
+        if(getArg('A', res)) endPos.wx = res.value.toDouble();
+        if(getArg('B', res)) endPos.wy = res.value.toDouble();
+        if(getArg('G', res)) endPos.wz = res.value.toDouble();
+        if(getArg('F', res)) speed = res.value.toDouble();
+
+        dist = sqrt(pow(endPos.x-eff.x, 2) + pow(endPos.y-eff.y, 2) + pow(endPos.z-eff.z, 2));
+        time = dist / speed * 1000;
+        argsSpeed.x = (endPos.x - eff.x) / time;
+        argsSpeed.y = (endPos.y - eff.y) / time;
+        argsSpeed.z = (endPos.z - eff.z) / time;
+        argsSpeed.wx = (endPos.wx - eff.wx) / time;
+        argsSpeed.wy = (endPos.wy - eff.wy) / time;
+        argsSpeed.wz = (endPos.wz - eff.wz) / time;
+
+    }
+
+    ActionResult_t execute(qint64 t, ExecuteConfig_t config) override
+    {
+        Effector_t eff = _enivroment->manipulator().getEffector();
+        bool end = false;
+        if(curtime + t >= time || config == ExecuteConfig_t::EXECUTE_INSTANTLY)
+        {
+            eff = endPos;
+            end = true;
+        } else {
+            eff.x += t*argsSpeed.x;
+            eff.y += t*argsSpeed.y;
+            eff.z += t*argsSpeed.z;
+            eff.wx += t*argsSpeed.wx;
+            eff.wy += t*argsSpeed.wy;
+            eff.wz += t*argsSpeed.wz;
+        }
+        curtime += t;
+        auto result = _enivroment->manipulator().inverseKinematics(eff, 0);
+        if(result == CalculationResult_t::CALC_ERROR)
+            return ActionResult_t::RESULT_ERROR;
+        return end ? ActionResult_t::RESULT_FINISH : ActionResult_t::RESULT_IN_PROCESS;
+
+    }
+
+    const QList<char>* argsKeys() const override
+    {
+        return &_keys;
     }
 
     void endExecution() override
     {
-        _tempTime = 0;
-        _counter = 0;
+        curtime = 0;
     }
 
 };

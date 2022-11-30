@@ -4,10 +4,10 @@
 #include <QString>
 #include <istream>
 #include <ostream>
-#include <QThreadStorage>
 #include <QMap>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QVariant>
 
 namespace serialMan
 {
@@ -23,11 +23,31 @@ enum ActionResult_t
     RESULT_FINISH
 };
 
+enum ExecuteConfig_t
+{
+    EXECUTE_ANIMATION,
+    EXECUTE_INSTANTLY,
+};
+
+enum ActionArgumentType_t
+{
+    ARGTYPE_DOUBLE,
+    ARGTYPE_STRING,
+};
+
+struct Argument_t
+{
+    ActionArgumentType_t type;
+    QVariant value;
+};
+
 struct IAction
 {
+    friend class ActionsEnivroment;
+
 private:
 
-    mutable QMap<char, double> _args;
+    mutable QMap<char, Argument_t> _args;
     mutable QMutex _argMut;
 
 protected:
@@ -36,32 +56,24 @@ protected:
 
 public:
 
-    explicit IAction(ActionsEnivroment& env) : _enivroment(&env){}
+    explicit IAction(ActionsEnivroment& env);
 
-    void setEnivroment(ActionsEnivroment& env)
-    {
-        _enivroment = &env;
-    }
+    //Enivroment
+    void setEnivroment(ActionsEnivroment& env);
+    ActionsEnivroment& enivroment() const;
 
-    void setArg(char key, double& value)
-    {
-        QMutexLocker lock(&_argMut);
-        _args[key] = value;
-    }
+    //Args functions
+    void setArg(char key, Argument_t value);
+    bool getArg(char key, Argument_t& result) const;
+    virtual const QList<char>* argsKeys() const;
 
-    double getArg(char key, double defaultValue = 0) const
-    {
-        QMutexLocker lock(&_argMut);
-        return _args.value(key, defaultValue);
-    }
-
-    virtual bool isCorrected(QString&) = 0;
+    virtual bool isKey(QString&) = 0;
 
     virtual void serializate(std::ostream&) = 0;
     virtual void deserializate(std::istream&) = 0;
 
     virtual void startExecution(){}
-    virtual ActionResult_t execute(ManipulatorController&, qint64) = 0;
+    virtual ActionResult_t execute(qint64, ExecuteConfig_t) = 0;
     virtual void endExecution(){}
 
     virtual ~IAction() {};

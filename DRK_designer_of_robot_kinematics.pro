@@ -25,6 +25,7 @@ SOURCES += \
     serial6DofManipulator/logic/manipulatorcontroller.cpp \
     serial6DofManipulator/logic/models/actionscontainer.cpp \
     serial6DofManipulator/logic/models/actionsenivroment.cpp \
+    serial6DofManipulator/logic/models/iaction.cpp \
     serial6DofManipulator/logic/models/joint_t.cpp \
     serial6DofManipulator/openGL/glvisualizatorwidget.cpp \
     serial6DofManipulator/openGL/projectvisualizator.cpp \
