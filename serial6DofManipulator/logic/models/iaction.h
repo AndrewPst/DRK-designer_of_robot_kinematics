@@ -35,9 +35,30 @@ enum ActionArgumentType_t
     ARGTYPE_STRING,
 };
 
+struct ArgKey_t
+{
+    char key {0};
+    ActionArgumentType_t type {ActionArgumentType_t::ARGTYPE_DOUBLE};
+    QString name;
+
+    bool operator==(const ArgKey_t& arg)
+    {
+        return key == arg.key;
+    }
+
+    bool operator>(const ArgKey_t& arg)
+    {
+        return key > arg.key;
+    }
+
+    bool operator<(const ArgKey_t& arg)
+    {
+        return key < arg.key;
+    }
+};
+
 struct Argument_t
 {
-    ActionArgumentType_t type;
     QVariant value;
 };
 
@@ -47,7 +68,7 @@ struct IAction
 
 private:
 
-    mutable QMap<char, Argument_t> _args;
+    mutable QMap<ArgKey_t, Argument_t> _args;
     mutable QMutex _argMut;
 
 protected:
@@ -63,9 +84,9 @@ public:
     ActionsEnivroment& enivroment() const;
 
     //Args functions
-    void setArg(char key, Argument_t value);
-    bool getArg(char key, Argument_t& result) const;
-    virtual const QList<char>* argsKeys() const;
+    void setArg(ArgKey_t key, Argument_t value);
+    bool getArg(ArgKey_t key, Argument_t& result) const;
+    virtual const QVector<ArgKey_t>* argsKeys() const;
 
     virtual bool isKey(QString&) = 0;
 

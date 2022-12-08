@@ -84,6 +84,11 @@ CalculationResult_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double
     inverseTransformMatrix(t03, invT03);
     Matrix<calc_t> t36 = invT03 * t06;
 
+
+    //DEBUG: (index)
+    //3 = atan2(6, 2)
+    //4 = atan2(,)
+    //5 = atan2(9, 8)
     // Find last joints
     out[3] = atan2(t36.at(1, 2) * (IS_V2(conf) ? 1 : -1), t36.at(0, 2) * (IS_V2(conf) ? 1 : -1));
     out[4] = (IS_V2(conf) ? -1 : 1) * atan2(sqrt(t36.at(0, 2) * t36.at(0, 2) + t36.at(1, 2) * t36.at(1, 2)), t36.at(2, 2));
@@ -96,8 +101,11 @@ CalculationResult_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double
         out[i] = DEG(out[i]);
     }
 
-    if(abs(out[4]) <= 0.0001 && abs(out[3] + out[5]) < 0.0001)
-        out[3] = out[5] = 0;
+    if(abs(out[4]) <= 0.0001)
+    {
+        out[5] += out[3];
+        out[3] = 0;
+    }
 
     return CalculationResult_t::CALC_SUCCESSFULL;
 }

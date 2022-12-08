@@ -17,7 +17,7 @@ ActionsEnivroment& IAction::enivroment() const
     return *_enivroment;
 }
 
-void IAction::setArg(char key, Argument_t value)
+void IAction::setArg(ArgKey_t key, Argument_t value)
 {
     QMutexLocker lock(&_argMut);
     if(auto keys = argsKeys())
@@ -27,7 +27,7 @@ void IAction::setArg(char key, Argument_t value)
     }
 }
 
-bool IAction::getArg(char key, Argument_t& result) const
+bool IAction::getArg(ArgKey_t key, Argument_t& result) const
 {
     QMutexLocker lock(&_argMut);
     if(_args.contains(key))
@@ -39,4 +39,4 @@ bool IAction::getArg(char key, Argument_t& result) const
 }
 
 
-const QList<char>* IAction::argsKeys() const {return nullptr;}
+const QVector<ArgKey_t>* IAction::argsKeys() const {return nullptr;}
