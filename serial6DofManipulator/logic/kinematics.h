@@ -81,9 +81,16 @@ private:
         out.x = m.at(0, 3);
         out.y = m.at(1, 3);
         out.z = m.at(2, 3);
+
         out.wy = DEG(atan2(sqrt(m.at(2, 0) * m.at(2, 0) + m.at(2, 1) * m.at(2, 1)), m.at(2, 2)));
+        out.wy = out.wy < 0 ? out.wy + 180.0 : out.wy;
+
         out.wx = DEG(atan2(m.at(1, 2) / sin(out.wy), m.at(0, 2) / sin(out.wy)));
+        out.wx = out.wx < 0 ? out.wx + 180.0: out.wx;
+
         out.wz = DEG(atan2(m.at(2, 1) / sin(out.wy), -m.at(2, 0) / sin(out.wy)));
+        out.wz = out.wz < 0 ? out.wz + 180.0 : out.wz;
+
     }
 
     void positionToTransformMatrix(const Effector_t &pos, Matrix<calc_t> &out)

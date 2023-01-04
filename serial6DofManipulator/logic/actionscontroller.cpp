@@ -13,12 +13,12 @@ ActionsController::ActionsController(ManipulatorController& man)
 {
     //actions.append(createAction<LinearMovement>());
     auto temp = _enivroment.createAction<LinearMovement>();
-    temp->setArg({'X'}, { 15.0});
-    temp->setArg({'Y'}, {8.0});
-    temp->setArg({'Z'}, {15.0});
-    temp->setArg({'A'}, {90.0});
-    temp->setArg({'G'}, {-90.0});
-    temp->setArg({'F'}, {0.5});
+    temp->setArg(ArgKey_t{'X'}, { 15.0});
+    temp->setArg(ArgKey_t{'Y'}, {8.0});
+    temp->setArg(ArgKey_t{'Z'}, {15.0});
+    temp->setArg(ArgKey_t{'A'}, {90.0});
+    temp->setArg(ArgKey_t{'G'}, {-90.0});
+    temp->setArg(ArgKey_t{'F'}, {0.5});
     _enivroment.program.append(temp);
 }
 

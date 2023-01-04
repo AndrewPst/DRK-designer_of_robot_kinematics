@@ -2,6 +2,22 @@
 
 using namespace serialMan;
 
+ArgKey_t::ArgKey_t()
+{}
+ArgKey_t::ArgKey_t(char k, ActionArgumentType_t t, const QString& n) : key(k), type(t), name(n)
+{}
+
+bool ArgKey_t::operator == (const serialMan::ArgKey_t &p1) const
+{
+    return key == p1.key;
+}
+
+bool ArgKey_t::operator < (const serialMan::ArgKey_t &p1) const
+{
+    return key < p1.key;
+}
+
+
 IAction::IAction(ActionsEnivroment& env) : _enivroment(&env)
 {
 
@@ -17,7 +33,7 @@ ActionsEnivroment& IAction::enivroment() const
     return *_enivroment;
 }
 
-void IAction::setArg(ArgKey_t key, Argument_t value)
+void IAction::setArg(const ArgKey_t& key, const Argument_t& value)
 {
     QMutexLocker lock(&_argMut);
     if(auto keys = argsKeys())
@@ -27,7 +43,7 @@ void IAction::setArg(ArgKey_t key, Argument_t value)
     }
 }
 
-bool IAction::getArg(ArgKey_t key, Argument_t& result) const
+bool IAction::getArg(const ArgKey_t& key, Argument_t& result) const
 {
     QMutexLocker lock(&_argMut);
     if(_args.contains(key))

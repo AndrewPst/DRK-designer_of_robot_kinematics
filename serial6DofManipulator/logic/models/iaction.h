@@ -32,30 +32,23 @@ enum ExecuteConfig_t
 enum ActionArgumentType_t
 {
     ARGTYPE_DOUBLE,
-    ARGTYPE_STRING,
+    ARGTYPE_STRING,F
 };
 
 struct ArgKey_t
 {
+    ArgKey_t();
+    explicit ArgKey_t(char k, ActionArgumentType_t = ActionArgumentType_t::ARGTYPE_DOUBLE, const QString& = QString());
+
     char key {0};
     ActionArgumentType_t type {ActionArgumentType_t::ARGTYPE_DOUBLE};
     QString name;
-
-    bool operator==(const ArgKey_t& arg)
-    {
-        return key == arg.key;
-    }
-
-    bool operator>(const ArgKey_t& arg)
-    {
-        return key > arg.key;
-    }
-
-    bool operator<(const ArgKey_t& arg)
-    {
-        return key < arg.key;
-    }
+    bool operator == (const serialMan::ArgKey_t &) const;
+    bool operator < (const serialMan::ArgKey_t &) const;
 };
+
+//bool operator == (const serialMan::ArgKey_t &, const serialMan::ArgKey_t &);
+//bool operator < (const serialMan::ArgKey_t &, const serialMan::ArgKey_t &);
 
 struct Argument_t
 {
@@ -84,8 +77,8 @@ public:
     ActionsEnivroment& enivroment() const;
 
     //Args functions
-    void setArg(ArgKey_t key, Argument_t value);
-    bool getArg(ArgKey_t key, Argument_t& result) const;
+    void setArg(const ArgKey_t& key, const Argument_t& value);
+    bool getArg(const ArgKey_t& key, Argument_t& result) const;
     virtual const QVector<ArgKey_t>* argsKeys() const;
 
     virtual bool isKey(QString&) = 0;

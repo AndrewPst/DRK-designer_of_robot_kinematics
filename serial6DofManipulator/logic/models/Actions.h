@@ -20,13 +20,13 @@ struct LinearMovement : public serialMan::IAction
     constexpr static const char _separator = ' ';
 
     const QVector<ArgKey_t> _keys = {
-        {'X', ActionArgumentType_t::ARGTYPE_DOUBLE, "X coord"},
-        {'Y', ActionArgumentType_t::ARGTYPE_DOUBLE, "Y coord"},
-        {'Z', ActionArgumentType_t::ARGTYPE_DOUBLE, "Z coord"},
-        {'A', ActionArgumentType_t::ARGTYPE_DOUBLE, "Alfa degrees"},
-        {'B', ActionArgumentType_t::ARGTYPE_DOUBLE, "Beta degrees"},
-        {'G', ActionArgumentType_t::ARGTYPE_DOUBLE, "Gamma degrees"},
-        {'F', ActionArgumentType_t::ARGTYPE_DOUBLE, "Move speed"},
+        ArgKey_t('X', ActionArgumentType_t::ARGTYPE_DOUBLE, "X coord"),
+        ArgKey_t('Y', ActionArgumentType_t::ARGTYPE_DOUBLE, "Y coord"),
+        ArgKey_t('Z', ActionArgumentType_t::ARGTYPE_DOUBLE, "Z coord"),
+        ArgKey_t('A', ActionArgumentType_t::ARGTYPE_DOUBLE, "Alfa degrees"),
+        ArgKey_t('B', ActionArgumentType_t::ARGTYPE_DOUBLE, "Beta degrees"),
+        ArgKey_t('G', ActionArgumentType_t::ARGTYPE_DOUBLE, "Gamma degrees"),
+        ArgKey_t('F', ActionArgumentType_t::ARGTYPE_DOUBLE, "Move speed"),
     };
 
     Effector_t endPos;
@@ -49,13 +49,13 @@ public:
     {
         out << _cmd1 << _separator;
         Argument_t res;
-        if(getArg({'X'}, res)) out << 'X' << res.value.toDouble() << _separator;
-        if(getArg({'Y'}, res)) out << 'Y' << res.value.toDouble() << _separator;
-        if(getArg({'Z'}, res)) out << 'Z' << res.value.toDouble() << _separator;
-        if(getArg({'A'}, res)) out << 'A' << res.value.toDouble() << _separator;
-        if(getArg({'B'}, res)) out << 'B' << res.value.toDouble() << _separator;
-        if(getArg({'G'}, res)) out << 'G' << res.value.toDouble() << _separator;
-        if(getArg({'F'}, res)) out << 'F' << res.value.toDouble() << _separator;
+        if(getArg(ArgKey_t{'X'}, res)) out << 'X' << res.value.toDouble() << _separator;
+        if(getArg(ArgKey_t{'Y'}, res)) out << 'Y' << res.value.toDouble() << _separator;
+        if(getArg(ArgKey_t{'Z'}, res)) out << 'Z' << res.value.toDouble() << _separator;
+        if(getArg(ArgKey_t{'A'}, res)) out << 'A' << res.value.toDouble() << _separator;
+        if(getArg(ArgKey_t{'B'}, res)) out << 'B' << res.value.toDouble() << _separator;
+        if(getArg(ArgKey_t{'G'}, res)) out << 'G' << res.value.toDouble() << _separator;
+        if(getArg(ArgKey_t{'F'}, res)) out << 'F' << res.value.toDouble() << _separator;
     }
 
     void deserializate(std::istream& in) override
@@ -66,7 +66,7 @@ public:
             double param;
             in >> key;
             in >> param;
-            setArg({key}, {param});
+            setArg(ArgKey_t{key}, {param});
         }
     }
 
@@ -75,13 +75,13 @@ public:
         Effector_t eff = _enivroment->manipulator().getEffector();
         endPos = eff;
         Argument_t res;
-        if(getArg({'X'}, res)) endPos.x = res.value.toDouble();
-        if(getArg({'Y'}, res)) endPos.y = res.value.toDouble();
-        if(getArg({'Z'}, res)) endPos.z = res.value.toDouble();
-        if(getArg({'A'}, res)) endPos.wx = res.value.toDouble();
-        if(getArg({'B'}, res)) endPos.wy = res.value.toDouble();
-        if(getArg({'G'}, res)) endPos.wz = res.value.toDouble();
-        if(getArg({'F'}, res)) speed = res.value.toDouble();
+        if(getArg(ArgKey_t{'X'}, res)) endPos.x = res.value.toDouble();
+        if(getArg(ArgKey_t{'Y'}, res)) endPos.y = res.value.toDouble();
+        if(getArg(ArgKey_t{'Z'}, res)) endPos.z = res.value.toDouble();
+        if(getArg(ArgKey_t{'A'}, res)) endPos.wx = res.value.toDouble();
+        if(getArg(ArgKey_t{'B'}, res)) endPos.wy = res.value.toDouble();
+        if(getArg(ArgKey_t{'G'}, res)) endPos.wz = res.value.toDouble();
+        if(getArg(ArgKey_t{'F'}, res)) speed = res.value.toDouble();
 
         dist = sqrt(pow(endPos.x-eff.x, 2) + pow(endPos.y-eff.y, 2) + pow(endPos.z-eff.z, 2));
         time = dist / speed * 1000;

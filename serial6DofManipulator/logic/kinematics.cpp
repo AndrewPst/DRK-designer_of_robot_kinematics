@@ -33,7 +33,6 @@ CalculationResult_t Kinematics<6>::forward(const QVector<double>& joints, Effect
 template<>
 CalculationResult_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double>& out, config_t conf)
 {
-    (void)conf;
     Matrix<calc_t> Twf(4, 4); // work frame matrix;
     positionToTransformMatrix(Effector_t(), Twf);
     Matrix<calc_t> Ttf(Twf); // tool frame transform matrix;
