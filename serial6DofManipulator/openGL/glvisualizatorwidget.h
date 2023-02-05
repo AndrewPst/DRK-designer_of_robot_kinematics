@@ -70,7 +70,7 @@ private:
 
     ProjectVisualizator& _visualizator;
 
-    float _distance = 60;
+    float _distance = 260;
     float _angleX = M_PI/5.0, _angleY = 0;
 
     //current viewport width and height
@@ -88,11 +88,11 @@ private:
 
     //Split places
     const float NEAR_PLANE = 0.01f;
-    const float FAR_PLANE = 1000.0;
+    const float FAR_PLANE = 5000.0;
 
     //Max and min distance
     const float MIN_DISTANCE = 0.1;
-    const float MAX_DISTANCE = 500;
+    const float MAX_DISTANCE = 2500;
 
     //Mause wheel rotation koef
     const int MOUSE_WHEEL_KOEF = -1;

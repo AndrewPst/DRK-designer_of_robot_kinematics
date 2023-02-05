@@ -29,6 +29,8 @@ private slots:
     void onUpdate();
     void onResetPos();
 
+    void onOpenVisualizationSettings();
+
 private:
 
     QWidget *_mainWidget;
@@ -37,6 +39,7 @@ private:
     QAction *_pModeOrtho, *_pModePers;
     QAction *_lookFromX, *_lookFromY, *_lookFromZ;
     QAction *_reverseDirection;
+    QAction *_openVisualizateSettings;
 
     ManipulatorController& _man;
 };

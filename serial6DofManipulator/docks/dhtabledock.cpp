@@ -1,5 +1,6 @@
 #include "dhtabledock.h"
 #include "../logic/manipulatorcontroller.h"
+#include "../logic/models/units_t.h"
 
 #include <math.h>
 #include <QVBoxLayout>
@@ -60,7 +61,7 @@ void DhTableDock::initTable()
         connect(thetaSpin, SIGNAL(valueChanged(double)), this, SLOT(tableChanged()));
         thetaSpin->setRange(-180, 180);
         thetaSpin->setSingleStep(15);
-        thetaSpin->setValue(dh.theta[i]);
+        thetaSpin->setValue(radToDeg(dh.theta[i]));
         thetaSpin->setAlignment(Qt::AlignmentFlag::AlignCenter);
         _table->setCellWidget(i, 0, thetaSpin);
 
@@ -69,7 +70,7 @@ void DhTableDock::initTable()
         connect(alfaSpin, SIGNAL(valueChanged(double)), this, SLOT(tableChanged()));
         alfaSpin->setRange(-180, 180);
         alfaSpin->setSingleStep(15);
-        alfaSpin->setValue(dh.alfa[i]);
+        alfaSpin->setValue(radToDeg(dh.alfa[i]));
         alfaSpin->setAlignment(Qt::AlignmentFlag::AlignCenter);
         _table->setCellWidget(i, 1, alfaSpin);
 
@@ -101,8 +102,8 @@ void DhTableDock::changesApplied()
     DHTable_t<ManipulatorController::DEFAULT_DOF> newDH;
     for(int i = 0; i < ManipulatorController::DEFAULT_DOF; i++)
     {
-        newDH.theta[i] = qobject_cast<QDoubleSpinBox*>(_table->cellWidget(i, 0))->value();
-        newDH.alfa[i] = qobject_cast<QDoubleSpinBox*>(_table->cellWidget(i, 1))->value();
+        newDH.theta[i] = degToRad(qobject_cast<QDoubleSpinBox*>(_table->cellWidget(i, 0))->value());
+        newDH.alfa[i] = degToRad(qobject_cast<QDoubleSpinBox*>(_table->cellWidget(i, 1))->value());
         newDH.r[i] = qobject_cast<QDoubleSpinBox*>(_table->cellWidget(i, 2))->value();
         newDH.d[i] = qobject_cast<QDoubleSpinBox*>(_table->cellWidget(i, 3))->value();
     }

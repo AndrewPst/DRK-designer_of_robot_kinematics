@@ -2,6 +2,8 @@
 #include "../logic/models/joint_t.h"
 #include "../logic/manipulatorcontroller.h"
 
+#include "../logic/models/units_t.h"
+
 #include <limits>
 #include <QDoubleSpinBox>
 #include <QVBoxLayout>
@@ -21,21 +23,21 @@ JointViewModelWidget::JointViewModelWidget(Joint_t* j, ManipulatorController& ma
     _value = new QDoubleSpinBox();
     _value->setSuffix(" Degrees");
     _value->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-    _value->setValue(j->getValue());
+    _value->setValue(radToDeg(j->getValue()));
     connect(_value, SIGNAL(valueChanged(double)), this, SLOT(onSpinsChanged()));
     fl->addRow(tr("Value"), _value);
 
     _min = new QDoubleSpinBox();
     _min->setSuffix(" Degrees");
     _min->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-    _min->setValue(j->getMinValue());
+    _min->setValue(radToDeg(j->getMinValue()));
     connect(_min, SIGNAL(valueChanged(double)), this, SLOT(onSpinsChanged()));
     fl->addRow(tr("Min"), _min);
 
     _max = new QDoubleSpinBox();
     _max->setSuffix(" Degrees");
     _max->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-    _max->setValue(j->getMaxValue());
+    _max->setValue(radToDeg(j->getMaxValue()));
     connect(_max, SIGNAL(valueChanged(double)), this, SLOT(onSpinsChanged()));
     fl->addRow(tr("Max"), _max);
 
@@ -49,28 +51,37 @@ JointViewModelWidget::JointViewModelWidget(Joint_t* j, ManipulatorController& ma
     setLayout(_mainL);
 }
 
+void JointViewModelWidget::onStepChanged(double step)
+{
+    _value->setSingleStep(step);
+}
+
 void JointViewModelWidget::onJointValueChanged()
 {
     _value->blockSignals(true);
-    _value->setValue(_joint->getValue());
+    _value->setValue(radToDeg(_joint->getValue()));
+    if(_joint->getValue() < _joint->getMinValue() || _joint->getValue() > _joint->getMaxValue())
+        _value->setStyleSheet("QDoubleSpinBox { background-color: red; }");
+    else
+        _value->setStyleSheet("QDoubleSpinBox { background-color: white; }");
     _value->blockSignals(false);
 }
 
 void JointViewModelWidget::onJointMinChanged()
 {
-    _min->setValue(_joint->getMinValue());
+    _min->setValue(radToDeg(_joint->getMinValue()));
 }
 
 void JointViewModelWidget::onJointMaxChanged()
 {
-    _max->setValue(_joint->getMaxValue());
+    _max->setValue(radToDeg(_joint->getMaxValue()));
 }
 
 void JointViewModelWidget::onSpinsChanged()
 {
-    _joint->setMinValue(_min->value());
-    _joint->setMaxValue(_max->value());
-    _joint->setValue(_value->value());
+    _joint->setMinValue(degToRad(_min->value()));
+    _joint->setMaxValue(degToRad(_max->value()));
+    _joint->setValue(degToRad(_value->value()));
 }
 
 
@@ -121,6 +132,33 @@ KinematicsDock::KinematicsDock(ManipulatorController& man,
     _rotZ->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
     connect(_rotZ, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
 
+    QGroupBox *paramsGroup = new QGroupBox("Control parameters");
+
+    posStep = new QDoubleSpinBox();
+    posStep->setRange(0.1, 10000);
+    posStep->setValue(_stepMove);
+    posStep->setSingleStep(0.1);
+
+    rotStep = new QDoubleSpinBox();
+    rotStep->setRange(0.1, 10000);
+    rotStep->setValue(_stepRot);
+    rotStep->setSingleStep(0.1);
+
+    jointStep = new QDoubleSpinBox();
+    jointStep->setRange(0.1, 10000);
+    jointStep->setValue(_stepJointMove);
+    jointStep->setSingleStep(0.1);
+
+    connect(posStep, SIGNAL(valueChanged(double)), this, SLOT(controlParamsChanged()));
+    connect(rotStep, SIGNAL(valueChanged(double)), this, SLOT(controlParamsChanged()));
+    connect(jointStep, SIGNAL(valueChanged(double)), this, SLOT(controlParamsChanged()));
+
+    QFormLayout *paramsForm = new QFormLayout();
+    paramsForm->addRow("Step by move", posStep);
+    paramsForm->addRow("Step by rotation", rotStep);
+    paramsForm->addRow("Step by joint moving", jointStep);
+
+    paramsGroup->setLayout(paramsForm);
 
     _v1 = new QCheckBox();
     _v1->setText("Variant 1");
@@ -130,6 +168,10 @@ KinematicsDock::KinematicsDock(ManipulatorController& man,
 
     connect(_v1, SIGNAL(toggled(bool)), this, SLOT(onConfigChanged()));
     connect(_v2, SIGNAL(toggled(bool)), this, SLOT(onConfigChanged()));
+
+    QHBoxLayout *varsl = new QHBoxLayout();
+    varsl->addWidget(_v1);
+    varsl->addWidget(_v2);
 
     onStructureChanged();
 
@@ -142,12 +184,14 @@ KinematicsDock::KinematicsDock(ManipulatorController& man,
     tempL->addRow("Rot Y", _rotY);
     tempL->addRow("Rot Z", _rotZ);
 
+
     gb->setLayout(tempL);
 
     _mainL->addWidget(_list);
     _mainL->addWidget(gb);
-    _mainL->addWidget(_v1);
-    _mainL->addWidget(_v2);
+    _mainL->addWidget(paramsGroup);
+    _mainL->addLayout(varsl);
+
 
     _mainW = new QWidget();
     _mainW->setLayout(_mainL);
@@ -163,9 +207,9 @@ void KinematicsDock::onPositionChanged()
         _posX->value(),
         _posY->value(),
         _posZ->value(),
-        _rotX->value(),
-        _rotY->value(),
-        _rotZ->value(),
+        degToRad(_rotX->value()),
+        degToRad(_rotY->value()),
+        degToRad(_rotZ->value()),
     };
     _man.setEffector(eff);
 }
@@ -176,6 +220,20 @@ void KinematicsDock::onConfigChanged()
     if(_v1->isChecked()) conf |= 0b00000001;
     if(_v2->isChecked()) conf |= 0b00000010;
     _man.setInvConfig(conf);
+}
+
+void KinematicsDock::controlParamsChanged()
+{
+    _posX->setSingleStep(posStep->value());
+    _posY->setSingleStep(posStep->value());
+    _posZ->setSingleStep(posStep->value());
+
+    _rotX->setSingleStep(rotStep->value());
+    _rotY->setSingleStep(rotStep->value());
+    _rotZ->setSingleStep(rotStep->value());
+
+    emit stepChanged(jointStep->value());
+    //_list->itemAt()
 }
 
 void KinematicsDock::onStructureChanged()
@@ -193,17 +251,16 @@ void KinematicsDock::onStructureChanged()
     _posZ->blockSignals(false);
 
     _rotX->blockSignals(true);
-    _rotX->setValue(_man.getEffector().wx);
+    _rotX->setValue(radToDeg(_man.getEffector().wx));
     _rotX->blockSignals(false);
 
     _rotY->blockSignals(true);
-    _rotY->setValue(_man.getEffector().wy);
+    _rotY->setValue(radToDeg(_man.getEffector().wy));
     _rotY->blockSignals(false);
 
     _rotZ->blockSignals(true);
-    _rotZ->setValue(_man.getEffector().wz);
+    _rotZ->setValue(radToDeg(_man.getEffector().wz));
     _rotZ->blockSignals(false);
-
 
     _v1->blockSignals(true);
     _v2->blockSignals(true);
@@ -220,6 +277,7 @@ void KinematicsDock::initList()
     for(auto j : js)
     {
         JointViewModelWidget* jw = new JointViewModelWidget(j, _man);
+        connect(this, SIGNAL(stepChanged(double)), jw, SLOT(onStepChanged(double)));
         QListWidgetItem* item = new QListWidgetItem(_list);
         item->setSizeHint( jw->sizeHint() );
         _list->setItemWidget(item, jw);

@@ -13,12 +13,12 @@ void Joint_t::setValue(double value)
     QMutexLocker lock(&_mValue);
     if(value == _value)
         return;
-    if(value < _minValue)
-        _value = _minValue;
-    else if(value > _maxValue)
-        _value = _maxValue;
-    else
-        _value = value;
+//    if(value < _minValue)
+//        _value = _minValue;
+//    else if(value > _maxValue)
+//        _value = _maxValue;
+//    else
+    _value = value;
     lock.unlock();
     emit valueChanged(value);
 }

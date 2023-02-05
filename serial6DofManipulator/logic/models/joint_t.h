@@ -1,6 +1,8 @@
 #ifndef JOINT_T_H
 #define JOINT_T_H
 
+#include "math.h"
+
 #include <QObject>
 
 #include <QVector3D>
@@ -37,8 +39,8 @@ private:
 
     double _value {0};
 
-    double _minValue {-360};
-    double _maxValue {360};
+    double _minValue {-M_PI_2};
+    double _maxValue {M_PI_2};
     mutable QMutex _mValue, _mMinValue, _mMaxValue;
 
 };

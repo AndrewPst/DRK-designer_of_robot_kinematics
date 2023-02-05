@@ -1,27 +1,22 @@
 #ifndef UNITS_T_H
 #define UNITS_T_H
 
+#include "math.h"
+
 namespace serialMan
 {
 
-struct Unit
+inline double degToRad(double v)
 {
-    const static Unit millimeters;
-    const static Unit centimeters;
-    const static Unit metres;
+    return v * M_PI/180.0;
+}
 
-    explicit Unit(float f)
-        : factor(f)
-    {
-    }
 
-    const float factor;
-};
-
-const Unit Unit::millimeters = Unit(1.0);
-const Unit Unit::centimeters = Unit(10.0);
-const Unit Unit::metres = Unit(100.0);
-
+inline double radToDeg(double v)
+{
+    return v * 180.0/M_PI;
+}
 
 }
+
 #endif // UNITS_T_H

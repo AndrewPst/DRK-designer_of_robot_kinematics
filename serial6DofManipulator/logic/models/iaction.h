@@ -32,7 +32,7 @@ enum ExecuteConfig_t
 enum ActionArgumentType_t
 {
     ARGTYPE_DOUBLE,
-    ARGTYPE_STRING,F
+    ARGTYPE_STRING,
 };
 
 struct ArgKey_t
@@ -64,30 +64,20 @@ private:
     mutable QMap<ArgKey_t, Argument_t> _args;
     mutable QMutex _argMut;
 
-protected:
-
-    ActionsEnivroment* _enivroment;
-
 public:
-
-    explicit IAction(ActionsEnivroment& env);
-
-    //Enivroment
-    void setEnivroment(ActionsEnivroment& env);
-    ActionsEnivroment& enivroment() const;
 
     //Args functions
     void setArg(const ArgKey_t& key, const Argument_t& value);
     bool getArg(const ArgKey_t& key, Argument_t& result) const;
     virtual const QVector<ArgKey_t>* argsKeys() const;
 
-    virtual bool isKey(QString&) = 0;
+    virtual bool isActionKey(QString&) = 0;
 
     virtual void serializate(std::ostream&) = 0;
     virtual void deserializate(std::istream&) = 0;
 
-    virtual void startExecution(){}
-    virtual ActionResult_t execute(qint64, ExecuteConfig_t) = 0;
+    virtual void startExecution(const ActionsEnivroment&){}
+    virtual ActionResult_t execute(const ActionsEnivroment&, qint64, ExecuteConfig_t) = 0;
     virtual void endExecution(){}
 
     virtual ~IAction() {};

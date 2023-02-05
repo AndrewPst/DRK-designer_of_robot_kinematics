@@ -1,4 +1,5 @@
 #include "manipulatorcontroller.h"
+#include "models/units_t.h"
 
 #include <math.h>
 #include <QDebug>
@@ -12,10 +13,10 @@ ManipulatorController::ManipulatorController():
 
     DHTable_t<DEFAULT_DOF> _dhTable;
     //Setup default parameters
-    _dhTable.theta = {0, -90, 0, 0, 0, 0};
-    _dhTable.alfa = {-90, 0, -90, 90, -90, 0};
-    _dhTable.r = {4, 11, 2, 0, 0, 0};
-    _dhTable.d = {13, 0, 0, 11, 0, 2};
+    _dhTable.theta = {0, degToRad(-90), 0, 0, 0, 0};
+    _dhTable.alfa = {degToRad(-90), 0,degToRad(-90), degToRad(90), degToRad(-90), 0};
+    _dhTable.d = {83.5, 0, 0, 100, 0, 60};
+    _dhTable.r = {0, 133,10, 0, 0, 0};
 
     _kin.setDHTable(_dhTable);
     onJointsChanged();
@@ -89,13 +90,24 @@ CalculationResult_t ManipulatorController::inverseKinematics(const Effector_t& p
         QMutexLocker clock(&_mConfig);
         _kinConfig = config;
         QMutexLocker jlock(&_mJoints);
-        for(int i = 0; i < DEFAULT_DOF; i++){
+//        for(int i = 0; i < DEFAULT_DOF; i++)
+//        {
+//            if(out[i] < _joints[i]->getMinValue() || out[i] > _joints[i]->getMaxValue())
+//                return CalculationResult_t::CALC_ERROR;
+//        }
+        for(int i = 0; i < DEFAULT_DOF; i++)
+        {
             _joints[i]->blockSignals(true);
             _joints[i]->setValue(out[i]);
             _joints[i]->blockSignals(false);
         }
         QMutexLocker elock(&_mEffector);
         _effector = pos;
+
+//        _effector.wx = _effector.wx >= 2.0 * M_PI ? fmod(_effector.wx, 2.0 * M_PI) : _effector.wx < 0 ? 2.0 * M_PI - fmod(-_effector.wx, 2.0 * M_PI) : pos.wx;
+//        _effector.wy = _effector.wy >= 2.0 * M_PI ? fmod(_effector.wy, 2.0 * M_PI) : _effector.wy < 0 ? 2.0 * M_PI - fmod(-_effector.wy, 2.0 * M_PI) : pos.wy;
+//        _effector.wz = _effector.wz >= 2.0 * M_PI ? fmod(_effector.wz, 2.0 * M_PI) : _effector.wz < 0 ? 2.0 * M_PI - fmod(-_effector.wz, 2.0 * M_PI) : pos.wz;
+
     } else {
         qDebug() << "error!";
     }

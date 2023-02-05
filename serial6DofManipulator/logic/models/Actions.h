@@ -8,14 +8,17 @@
 
 #include "../manipulatorcontroller.h"
 #include "actionsenivroment.h"
+#include "../../logic/models/units_t.h"
 
 
 namespace serialMan {
 
-struct LinearMovement : public serialMan::IAction
+namespace actions
 {
 
-    constexpr static const char* _cmd0 = "G0";
+struct G1 : public serialMan::IAction
+{
+
     constexpr static const char* _cmd1 = "G1";
     constexpr static const char _separator = ' ';
 
@@ -32,17 +35,15 @@ struct LinearMovement : public serialMan::IAction
     Effector_t endPos;
     Effector_t argsSpeed;
 
-    double speed = 2;
-    double dist, time = 0, curtime = 0;
+    double _speed = 2;
+    double _dist, _time = 0;
 
 public:
 
-    explicit LinearMovement(ActionsEnivroment& env) : IAction(env){}
-
     //interface methods
-    bool isKey(QString& cmd) override
+    bool isActionKey(QString& cmd) override
     {
-        return cmd == _cmd0 || cmd == _cmd1;
+        return  cmd == _cmd1;
     }
 
     void serializate(std::ostream& out)override
@@ -60,7 +61,7 @@ public:
 
     void deserializate(std::istream& in) override
     {
-        while(in.peek() != '\n')
+        while(in.peek() != '\n' && in.peek() != '\0')
         {
             char key;
             double param;
@@ -70,9 +71,9 @@ public:
         }
     }
 
-    void startExecution() override
+    void startExecution(const ActionsEnivroment& env) override
     {
-        Effector_t eff = _enivroment->manipulator().getEffector();
+        Effector_t eff = env.manipulator().getEffector();
         endPos = eff;
         Argument_t res;
         if(getArg(ArgKey_t{'X'}, res)) endPos.x = res.value.toDouble();
@@ -81,24 +82,30 @@ public:
         if(getArg(ArgKey_t{'A'}, res)) endPos.wx = res.value.toDouble();
         if(getArg(ArgKey_t{'B'}, res)) endPos.wy = res.value.toDouble();
         if(getArg(ArgKey_t{'G'}, res)) endPos.wz = res.value.toDouble();
-        if(getArg(ArgKey_t{'F'}, res)) speed = res.value.toDouble();
+        if(getArg(ArgKey_t{'F'}, res)) _speed = res.value.toDouble();
 
-        dist = sqrt(pow(endPos.x-eff.x, 2) + pow(endPos.y-eff.y, 2) + pow(endPos.z-eff.z, 2));
-        time = dist / speed * 1000;
-        argsSpeed.x = (endPos.x - eff.x) / time;
-        argsSpeed.y = (endPos.y - eff.y) / time;
-        argsSpeed.z = (endPos.z - eff.z) / time;
-        argsSpeed.wx = (endPos.wx - eff.wx) / time;
-        argsSpeed.wy = (endPos.wy - eff.wy) / time;
-        argsSpeed.wz = (endPos.wz - eff.wz) / time;
-
+        _dist = sqrt(pow(endPos.x-eff.x, 2) + pow(endPos.y-eff.y, 2) + pow(endPos.z-eff.z, 2));
+        if(_dist == 0)
+        {
+            _dist = radToDeg(sqrt(pow(endPos.wx-eff.wx, 2) + pow(endPos.wy-eff.wy, 2) + pow(endPos.wz-eff.wz, 2)));
+        }
+        if(_speed == 0)
+            _time = 1;
+        else
+            _time = _dist / _speed * 1000;
+        argsSpeed.x = (endPos.x - eff.x) / _time;
+        argsSpeed.y = (endPos.y - eff.y) / _time;
+        argsSpeed.z = (endPos.z - eff.z) / _time;
+        argsSpeed.wx = (endPos.wx - eff.wx) / _time;
+        argsSpeed.wy = (endPos.wy - eff.wy) / _time;
+        argsSpeed.wz = (endPos.wz - eff.wz) / _time;
     }
 
-    ActionResult_t execute(qint64 t, ExecuteConfig_t config) override
+    ActionResult_t execute(const ActionsEnivroment& env, qint64 t, ExecuteConfig_t config) override
     {
-        Effector_t eff = _enivroment->manipulator().getEffector();
+        Effector_t eff = env.manipulator().getEffector();
         bool end = false;
-        if(curtime + t >= time || config == ExecuteConfig_t::EXECUTE_INSTANTLY)
+        if(t >= _time || config == ExecuteConfig_t::EXECUTE_INSTANTLY)
         {
             eff = endPos;
             end = true;
@@ -110,25 +117,24 @@ public:
             eff.wy += t*argsSpeed.wy;
             eff.wz += t*argsSpeed.wz;
         }
-        curtime += t;
-        auto result = _enivroment->manipulator().inverseKinematics(eff, 0);
+        auto result = env.manipulator().inverseKinematics(eff, 0);
         if(result == CalculationResult_t::CALC_ERROR)
             return ActionResult_t::RESULT_ERROR;
         return end ? ActionResult_t::RESULT_FINISH : ActionResult_t::RESULT_IN_PROCESS;
 
     }
 
+    void endExecution() override
+    {
+    }
+
     const QVector<ArgKey_t>* argsKeys() const override
     {
         return &_keys;
     }
-
-    void endExecution() override
-    {
-        curtime = 0;
-    }
-
 };
+
+}
 
 }
 #endif // ACTIONS_H

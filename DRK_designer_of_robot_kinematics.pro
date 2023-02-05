@@ -27,6 +27,8 @@ SOURCES += \
     serial6DofManipulator/logic/models/actionsenivroment.cpp \
     serial6DofManipulator/logic/models/iaction.cpp \
     serial6DofManipulator/logic/models/joint_t.cpp \
+    serial6DofManipulator/logic/models/unit_t.cpp \
+    serial6DofManipulator/openGL/editvisualizaionparamswidget.cpp \
     serial6DofManipulator/openGL/glvisualizatorwidget.cpp \
     serial6DofManipulator/openGL/projectvisualizator.cpp \
     serial6DofManipulator/serial6dofmanipulator.cpp \
@@ -61,6 +63,7 @@ HEADERS += \
     serial6DofManipulator/logic/models/joint_t.h \
     serial6DofManipulator/logic/models/matrix.h \
     serial6DofManipulator/logic/models/units_t.h \
+    serial6DofManipulator/openGL/editvisualizaionparamswidget.h \
     serial6DofManipulator/openGL/glvisualizatorwidget.h \
     serial6DofManipulator/openGL/projectvisualizator.h \
     serial6DofManipulator/serial6dofmanipulator.h \

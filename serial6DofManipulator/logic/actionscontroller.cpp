@@ -1,5 +1,6 @@
 #include "actionscontroller.h"
 #include "manipulatorcontroller.h"
+#include "models/units_t.h"
 
 #include "models/Actions.h"
 #include <QDateTime>
@@ -12,13 +13,57 @@ ActionsController::ActionsController(ManipulatorController& man)
     : QObject(),  _man(man), _enivroment(man), _state(ProgramState_t::STATE_FINISHED)
 {
     //actions.append(createAction<LinearMovement>());
-    auto temp = _enivroment.createAction<LinearMovement>();
-    temp->setArg(ArgKey_t{'X'}, { 15.0});
-    temp->setArg(ArgKey_t{'Y'}, {8.0});
-    temp->setArg(ArgKey_t{'Z'}, {15.0});
-    temp->setArg(ArgKey_t{'A'}, {90.0});
-    temp->setArg(ArgKey_t{'G'}, {-90.0});
-    temp->setArg(ArgKey_t{'F'}, {0.5});
+
+    auto temp = _enivroment.createAction<actions::G1>();
+    temp->setArg(ArgKey_t{'X'}, {160.0});
+    temp->setArg(ArgKey_t{'Y'}, {0.0});
+    temp->setArg(ArgKey_t{'Z'}, {80.0});
+    temp->setArg(ArgKey_t{'B'}, {degToRad(180.0)});
+    temp->setArg(ArgKey_t{'F'}, {45});
+    _enivroment.program.append(temp);
+
+    temp = _enivroment.createAction<actions::G1>();
+    temp->setArg(ArgKey_t{'A'}, {degToRad(-90.0)});
+    temp->setArg(ArgKey_t{'G'}, {degToRad(-270.0)});
+    temp->setArg(ArgKey_t{'F'}, {0});
+    _enivroment.program.append(temp);
+
+    temp = _enivroment.createAction<actions::G1>();
+    temp->setArg(ArgKey_t{'Y'}, {-50});
+    temp->setArg(ArgKey_t{'B'}, {degToRad(225.0)});
+    temp->setArg(ArgKey_t{'F'}, {20});
+    _enivroment.program.append(temp);
+
+    temp = _enivroment.createAction<actions::G1>();
+    temp->setArg(ArgKey_t{'Z'}, {130});
+    temp->setArg(ArgKey_t{'B'}, {degToRad(180)});
+    temp->setArg(ArgKey_t{'F'}, {50});
+    _enivroment.program.append(temp);
+
+    temp = _enivroment.createAction<actions::G1>();
+    temp->setArg(ArgKey_t{'B'}, {degToRad(135.0)});
+    temp->setArg(ArgKey_t{'Z'}, {80.0});
+    temp->setArg(ArgKey_t{'Y'}, {0});
+    temp->setArg(ArgKey_t{'F'}, {60});
+    _enivroment.program.append(temp);
+
+    temp = _enivroment.createAction<actions::G1>();
+    temp->setArg(ArgKey_t{'B'}, {degToRad(180.0)});
+    temp->setArg(ArgKey_t{'F'}, {20});
+    _enivroment.program.append(temp);
+
+    temp = _enivroment.createAction<actions::G1>();
+    temp->setArg(ArgKey_t{'A'}, {degToRad(0.0)});
+    temp->setArg(ArgKey_t{'G'}, {degToRad(-180.0)});
+    temp->setArg(ArgKey_t{'F'}, {0});
+    _enivroment.program.append(temp);
+
+    temp = _enivroment.createAction<actions::G1>();
+    temp->setArg(ArgKey_t{'Z'}, {180.0});
+    temp->setArg(ArgKey_t{'A'}, {degToRad(0.0)});
+    temp->setArg(ArgKey_t{'B'}, {degToRad(90.0)});
+    temp->setArg(ArgKey_t{'G'}, {degToRad(-180.0)});
+    temp->setArg(ArgKey_t{'F'}, {30});
     _enivroment.program.append(temp);
 }
 
@@ -39,10 +84,16 @@ void ActionsController::startProgram()
     connect(_executor, &serialMan::ProgramExecutor::onFinished, _thread, &QThread::quit);
     connect(_thread, &QThread::finished, _executor, &serialMan::ProgramExecutor::deleteLater);
     connect(_thread, &QThread::finished, _thread, &QThread::deleteLater);
+    connect(_thread, &QThread::finished, this, &serialMan::ActionsController::threadFinished);
 
     _executor->moveToThread(_thread);
 
     _thread->start();
+}
+
+void ActionsController::threadFinished()
+{
+    qDebug() << "Finished";
 }
 
 SerializingError_t ActionsController::serializate(std::ostream&)

@@ -5,6 +5,7 @@
 #include "../serial6dofmanipulator.h"
 #include "../openGL/projectvisualizator.h"
 #include "../logic/manipulatorcontroller.h"
+#include "../openGL/editvisualizaionparamswidget.h"
 
 #include <QAction>
 #include <QHBoxLayout>
@@ -79,6 +80,11 @@ glCentralDock::glCentralDock(ManipulatorController& man, const QString& title,
     connect(_reverseDirection, &QAction::triggered, this, &glCentralDock::reverseDirecionSlot);
     _menu->addSeparator();
     _menu->addAction(_reverseDirection);
+
+    _openVisualizateSettings = new QAction(tr("Open visualization settings"));
+    connect(_openVisualizateSettings, &QAction::triggered, this, &glCentralDock::onOpenVisualizationSettings);
+    _menu->addAction(_openVisualizateSettings);
+
     _glWidget->setProjectionMode(ProjectionMode_t::PR_PERSPECTIVE);
     setWidget(_mainWidget);
 
@@ -140,6 +146,12 @@ void glCentralDock::onResetPos()
     _glWidget->setCameraX(0);
     _glWidget->setCameraY(0);
     _glWidget->setCameraZ(4);
+}
+
+void glCentralDock::onOpenVisualizationSettings()
+{
+    EditVisualizaionParamsWidget w(((Serial6DofManipulator*)projectsManager.getOpenedProject())->getVisualizator());
+    w.exec();
 }
 
 

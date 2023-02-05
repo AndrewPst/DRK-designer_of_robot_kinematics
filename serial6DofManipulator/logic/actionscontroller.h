@@ -117,6 +117,7 @@ signals:
 private slots:
 
     void stateChanged(serialMan::ProgramState_t);
+    void threadFinished();
 
 private:
 
