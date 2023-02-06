@@ -1,128 +1,128 @@
-#ifndef PROGRAMDOCK_H
-#define PROGRAMDOCK_H
+//#ifndef PROGRAMDOCK_H
+//#define PROGRAMDOCK_H
 
-#include "basedock.h"
-#include "../logic/actionscontroller.h"
-#include "../logic/models/iaction.h"
-//#include "../logic/models/Actions.h"
+//#include "basedock.h"
+//#include "../logic/actionscontroller.h"
+//#include "../logic/models/iaction.h"
+////#include "../logic/models/Actions.h"
 
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QFormLayout>
-#include <QDoubleSpinBox>
-#include <QLineEdit>
+//#include <QVBoxLayout>
+//#include <QPushButton>
+//#include <QFormLayout>
+//#include <QDoubleSpinBox>
+//#include <QLineEdit>
 
-#include <QLabel>
+//#include <QLabel>
 
-namespace serialMan
-{
+//namespace serialMan
+//{
 
-class SetupElementWidget : public QWidget
-{
-    Q_OBJECT;
-private:
+//class SetupElementWidget : public QWidget
+//{
+//    Q_OBJECT;
+//private:
 
-    ArgKey_t* _argKey;
+//    actions::ArgKey_t* _argKey;
 
-public:
+//public:
 
-    explicit SetupElementWidget(ArgKey_t& arg) : _argKey(&arg)
-    {
-        QFormLayout * _formL = new QFormLayout();
-        QWidget* _control;
-        if(arg.type == ActionArgumentType_t::ARGTYPE_DOUBLE)
-        {
-            _control = new QDoubleSpinBox();
-        } else if(arg.type == ActionArgumentType_t::ARGTYPE_STRING)
-        {
-            _control = new QLineEdit();
-        } else {
-            _control = new QWidget();
-        }
-        _formL->addRow(arg.name, _control);
-        setLayout(_formL);
-    }
+//    explicit SetupElementWidget(actions::ArgKey_t& arg) : _argKey(&arg)
+//    {
+//        QFormLayout * _formL = new QFormLayout();
+//        QWidget* _control;
+//        if(arg.type == actions::ActionArgumentType_t::ARGTYPE_DOUBLE)
+//        {
+//            _control = new QDoubleSpinBox();
+//        } else if(arg.type == actions::ActionArgumentType_t::ARGTYPE_STRING)
+//        {
+//            _control = new QLineEdit();
+//        } else {
+//            _control = new QWidget();
+//        }
+//        _formL->addRow(arg.name, _control);
+//        setLayout(_formL);
+//    }
 
-private:
+//private:
 
 
 
-};
+//};
 
-class SetupWidget : public QWidget
-{
-    Q_OBJECT
-public:
+//class SetupWidget : public QWidget
+//{
+//    Q_OBJECT
+//public:
 
-    explicit SetupWidget();
+//    explicit SetupWidget();
 
-    void setAction(IAction& act)
-    {
-        _action = &act;
-    }
+//    void setAction(actions::IAction& act)
+//    {
+//        _action = &act;
+//    }
 
-    IAction& action()
-    {
-        return *_action;
-    }
-private:
+//    actions::IAction& action()
+//    {
+//        return *_action;
+//    }
+//private:
 
-    void updateLayout()
-    {
-        if(_mainL)
-            delete _mainL;
-        _mainL = new QVBoxLayout();
+//    void updateLayout()
+//    {
+//        if(_mainL)
+//            delete _mainL;
+//        _mainL = new QVBoxLayout();
 
-        auto list = _action->argsKeys();
-        if(!list)
-            return;
+////        auto list = _action->argsKeys();
+////        if(!list)
+////            return;
 
-        for(int i = 0; i < list->size(); ++i)
-        {
+////        for(int i = 0; i < list->size(); ++i)
+////        {
 
-        }
+////        }
 
-    }
+//    }
 
-private:
+//private:
 
-    IAction* _action;
+//    actions::IAction* _action;
 
-    QVBoxLayout *_mainL;
-};
+//    QVBoxLayout *_mainL;
+//};
 
-class ProgramDock  : public BaseDock
-{
-    Q_OBJECT
-public:
+//class ProgramDock  : public BaseDock
+//{
+//    Q_OBJECT
+//public:
 
-    explicit ProgramDock(ActionsController& act, const QString& title = "Program",
-                             QWidget* parent = nullptr,
-                             Qt::WindowFlags flags = {});
+//    explicit ProgramDock(ActionsController& act, const QString& title = "Program",
+//                             QWidget* parent = nullptr,
+//                             Qt::WindowFlags flags = {});
 
-private slots:
+//private slots:
 
-    void onPauseClick();
-    void onResumeClick();
-    void onStartClick();
-    void onStopClick();
+//    void onPauseClick();
+//    void onResumeClick();
+//    void onStartClick();
+//    void onStopClick();
 
-    void stateChanged(serialMan::ProgramState_t);
+//    void stateChanged(serialMan::ProgramState_t);
 
-private:
+//private:
 
-    ActionsController& _act;
+//    ActionsController& _act;
 
-    QWidget *_mainW;
-    QVBoxLayout* _mainL;
+//    QWidget *_mainW;
+//    QVBoxLayout* _mainL;
 
-    QPushButton *_startBut, *_stop, *_pause, *_resume;
+//    QPushButton *_startBut, *_stop, *_pause, *_resume;
 
-    QPushButton *_startStopBut, *_pauseResumeBut;
+//    QPushButton *_startStopBut, *_pauseResumeBut;
 
-    QLabel* _label;
+//    QLabel* _label;
 
-};
+//};
 
-}
-#endif // PROGRAMDOCK_H
+//}
+//#endif // PROGRAMDOCK_H

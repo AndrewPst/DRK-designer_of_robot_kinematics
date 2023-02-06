@@ -211,7 +211,7 @@ void KinematicsDock::onPositionChanged()
         degToRad(_rotY->value()),
         degToRad(_rotZ->value()),
     };
-    _man.setEffector(eff);
+    _man.inverseKinematics(eff);
 }
 
 void KinematicsDock::onConfigChanged()

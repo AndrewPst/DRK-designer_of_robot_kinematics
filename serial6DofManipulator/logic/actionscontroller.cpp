@@ -14,57 +14,57 @@ ActionsController::ActionsController(ManipulatorController& man)
 {
     //actions.append(createAction<LinearMovement>());
 
-    auto temp = _enivroment.createAction<actions::G1>();
-    temp->setArg(ArgKey_t{'X'}, {160.0});
-    temp->setArg(ArgKey_t{'Y'}, {0.0});
-    temp->setArg(ArgKey_t{'Z'}, {80.0});
-    temp->setArg(ArgKey_t{'B'}, {degToRad(180.0)});
-    temp->setArg(ArgKey_t{'F'}, {45});
-    _enivroment.program.append(temp);
+//    auto temp = _enivroment.createAction<actions::G1>();
+//    temp->setArg(ArgKey_t{'X'}, {160.0});
+//    temp->setArg(ArgKey_t{'Y'}, {0.0});
+//    temp->setArg(ArgKey_t{'Z'}, {80.0});
+//    temp->setArg(ArgKey_t{'B'}, {degToRad(180.0)});
+//    temp->setArg(ArgKey_t{'F'}, {45});
+//    _enivroment.program.append(temp);
 
-    temp = _enivroment.createAction<actions::G1>();
-    temp->setArg(ArgKey_t{'A'}, {degToRad(-90.0)});
-    temp->setArg(ArgKey_t{'G'}, {degToRad(-270.0)});
-    temp->setArg(ArgKey_t{'F'}, {0});
-    _enivroment.program.append(temp);
+//    temp = _enivroment.createAction<actions::G1>();
+//    temp->setArg(ArgKey_t{'A'}, {degToRad(-90.0)});
+//    temp->setArg(ArgKey_t{'G'}, {degToRad(-270.0)});
+//    temp->setArg(ArgKey_t{'F'}, {0});
+//    _enivroment.program.append(temp);
 
-    temp = _enivroment.createAction<actions::G1>();
-    temp->setArg(ArgKey_t{'Y'}, {-50});
-    temp->setArg(ArgKey_t{'B'}, {degToRad(225.0)});
-    temp->setArg(ArgKey_t{'F'}, {20});
-    _enivroment.program.append(temp);
+//    temp = _enivroment.createAction<actions::G1>();
+//    temp->setArg(ArgKey_t{'Y'}, {-50});
+//    temp->setArg(ArgKey_t{'B'}, {degToRad(225.0)});
+//    temp->setArg(ArgKey_t{'F'}, {20});
+//    _enivroment.program.append(temp);
 
-    temp = _enivroment.createAction<actions::G1>();
-    temp->setArg(ArgKey_t{'Z'}, {130});
-    temp->setArg(ArgKey_t{'B'}, {degToRad(180)});
-    temp->setArg(ArgKey_t{'F'}, {50});
-    _enivroment.program.append(temp);
+//    temp = _enivroment.createAction<actions::G1>();
+//    temp->setArg(ArgKey_t{'Z'}, {130});
+//    temp->setArg(ArgKey_t{'B'}, {degToRad(180)});
+//    temp->setArg(ArgKey_t{'F'}, {50});
+//    _enivroment.program.append(temp);
 
-    temp = _enivroment.createAction<actions::G1>();
-    temp->setArg(ArgKey_t{'B'}, {degToRad(135.0)});
-    temp->setArg(ArgKey_t{'Z'}, {80.0});
-    temp->setArg(ArgKey_t{'Y'}, {0});
-    temp->setArg(ArgKey_t{'F'}, {60});
-    _enivroment.program.append(temp);
+//    temp = _enivroment.createAction<actions::G1>();
+//    temp->setArg(ArgKey_t{'B'}, {degToRad(135.0)});
+//    temp->setArg(ArgKey_t{'Z'}, {80.0});
+//    temp->setArg(ArgKey_t{'Y'}, {0});
+//    temp->setArg(ArgKey_t{'F'}, {60});
+//    _enivroment.program.append(temp);
 
-    temp = _enivroment.createAction<actions::G1>();
-    temp->setArg(ArgKey_t{'B'}, {degToRad(180.0)});
-    temp->setArg(ArgKey_t{'F'}, {20});
-    _enivroment.program.append(temp);
+//    temp = _enivroment.createAction<actions::G1>();
+//    temp->setArg(ArgKey_t{'B'}, {degToRad(180.0)});
+//    temp->setArg(ArgKey_t{'F'}, {20});
+//    _enivroment.program.append(temp);
 
-    temp = _enivroment.createAction<actions::G1>();
-    temp->setArg(ArgKey_t{'A'}, {degToRad(0.0)});
-    temp->setArg(ArgKey_t{'G'}, {degToRad(-180.0)});
-    temp->setArg(ArgKey_t{'F'}, {0});
-    _enivroment.program.append(temp);
+//    temp = _enivroment.createAction<actions::G1>();
+//    temp->setArg(ArgKey_t{'A'}, {degToRad(0.0)});
+//    temp->setArg(ArgKey_t{'G'}, {degToRad(-180.0)});
+//    temp->setArg(ArgKey_t{'F'}, {0});
+//    _enivroment.program.append(temp);
 
-    temp = _enivroment.createAction<actions::G1>();
-    temp->setArg(ArgKey_t{'Z'}, {180.0});
-    temp->setArg(ArgKey_t{'A'}, {degToRad(0.0)});
-    temp->setArg(ArgKey_t{'B'}, {degToRad(90.0)});
-    temp->setArg(ArgKey_t{'G'}, {degToRad(-180.0)});
-    temp->setArg(ArgKey_t{'F'}, {30});
-    _enivroment.program.append(temp);
+//    temp = _enivroment.createAction<actions::G1>();
+//    temp->setArg(ArgKey_t{'Z'}, {180.0});
+//    temp->setArg(ArgKey_t{'A'}, {degToRad(0.0)});
+//    temp->setArg(ArgKey_t{'B'}, {degToRad(90.0)});
+//    temp->setArg(ArgKey_t{'G'}, {degToRad(-180.0)});
+//    temp->setArg(ArgKey_t{'F'}, {30});
+//    _enivroment.program.append(temp);
 }
 
 void ActionsController::startProgram()
@@ -106,7 +106,7 @@ SerializingError_t ActionsController::deserializate(std::istream&)
     return SerializingError_t::ERROR_NONE;
 }
 
-void ActionsController::executeAction(IAction&){
+void ActionsController::executeAction(actions::IAction&){
     if(_state != ProgramState_t::STATE_FINISHED)
         return;
     //ManipulatorController* man = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController();
@@ -130,10 +130,10 @@ void ActionsController::resume()
 
 void ActionsController::setPosition(int i)
 {
-    IAction& action = _enivroment.program.at(i);
-    action.startExecution();
-    action.execute(0, ExecuteConfig_t::EXECUTE_INSTANTLY);
-    action.endExecution();
+//    actions::IAction& action = _enivroment.program.at(i);
+//    action.startExecution();
+//    action.execute(0, ExecuteConfig_t::EXECUTE_INSTANTLY);
+//    action.endExecution();
 }
 
 int ActionsController::position()
@@ -148,53 +148,53 @@ void ActionsController::stateChanged(serialMan::ProgramState_t state)
 
 //Program executor
 
-ProgramExecutor::ProgramExecutor(ActionsEnivroment& actions, ManipulatorController& man)
+ProgramExecutor::ProgramExecutor(ExecutionEnivroment& actions, ManipulatorController& man)
     : QObject(), _man(man), _actions(actions), _state(ProgramState_t::STATE_IS_RUNNING)
 {
 }
 
 void ProgramExecutor::start()
 {
-    emit onStateChanged(_state);
-    auto iter = _actions.program.begin();
-    bool exit = false;
-    _frameTime = QDateTime::currentMSecsSinceEpoch();
+//    emit onStateChanged(_state);
+//    auto iter = _actions.program.begin();
+//    bool exit = false;
+//    _frameTime = QDateTime::currentMSecsSinceEpoch();
 
-    for(;iter != _actions.program.end() && exit == false; iter++)
-    {
-        ActionResult_t result = ActionResult_t::RESULT_IN_PROCESS;
-        IAction* action = *iter;
-        action->startExecution();
-        while(result == ActionResult_t::RESULT_IN_PROCESS)
-        {
-            qint64 diff = QDateTime::currentMSecsSinceEpoch() - _frameTime;
-            if(diff < _frameDiff)
-            {
-                QThread::yieldCurrentThread();
-                continue;
-            }
-            _frameTime = QDateTime::currentMSecsSinceEpoch();
+//    for(;iter != _actions.program.end() && exit == false; iter++)
+//    {
+//        ActionResult_t result = ActionResult_t::RESULT_IN_PROCESS;
+//        IAction* action = *iter;
+//        action->startExecution();
+//        while(result == ActionResult_t::RESULT_IN_PROCESS)
+//        {
+//            qint64 diff = QDateTime::currentMSecsSinceEpoch() - _frameTime;
+//            if(diff < _frameDiff)
+//            {
+//                QThread::yieldCurrentThread();
+//                continue;
+//            }
+//            _frameTime = QDateTime::currentMSecsSinceEpoch();
 
-            if(_state == ProgramState_t::STATE_IS_RUNNING)
-            {
-                result = action->execute(diff, ExecuteConfig_t::EXECUTE_ANIMATION);
-            }
-            else if(_state == ProgramState_t::STATE_SUSPENDED)
-            {
-                QThread::yieldCurrentThread();
-            }
-            else
-            {
-                exit = true;
-                break;
-            }
-        }
-        action->endExecution();
-    }
+//            if(_state == ProgramState_t::STATE_IS_RUNNING)
+//            {
+//                result = action->execute(diff, ExecuteConfig_t::EXECUTE_ANIMATION);
+//            }
+//            else if(_state == ProgramState_t::STATE_SUSPENDED)
+//            {
+//                QThread::yieldCurrentThread();
+//            }
+//            else
+//            {
+//                exit = true;
+//                break;
+//            }
+//        }
+//        action->endExecution();
+//    }
 
-    _state = ProgramState_t::STATE_FINISHED;
-    emit onStateChanged(_state);
-    emit onFinished();
+//    _state = ProgramState_t::STATE_FINISHED;
+//    emit onStateChanged(_state);
+//    emit onFinished();
 }
 
 

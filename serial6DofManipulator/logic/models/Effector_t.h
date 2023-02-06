@@ -1,8 +1,6 @@
 #ifndef EFFECTOR_T_H
 #define EFFECTOR_T_H
 
-#include <QVector3D>
-
 namespace serialMan
 {
 

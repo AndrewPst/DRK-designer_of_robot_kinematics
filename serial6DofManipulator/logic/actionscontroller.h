@@ -2,7 +2,7 @@
 #define ACTIONSCONTROLLER_H
 
 #include "models/iaction.h"
-#include "models/actionsenivroment.h"
+#include "models/executionEnivroment.h"
 
 #include <QObject>
 #include <istream>
@@ -37,7 +37,7 @@ class ProgramExecutor : public QObject
 private:
 
     ManipulatorController& _man;
-    ActionsEnivroment& _actions;
+    ExecutionEnivroment& _actions;
 
     serialMan::ProgramState_t _state;
 
@@ -45,7 +45,7 @@ private:
     qint64 _frameDiff = 1000/_fps;
     qint64 _frameTime = 0;
 
-    ProgramExecutor(ActionsEnivroment&, ManipulatorController&);
+    ProgramExecutor(ExecutionEnivroment&, ManipulatorController&);
 
 public:
 
@@ -56,7 +56,7 @@ signals:
 
     void onFinished();
 
-    void executableActionChanged(serialMan::IAction*, size_t);
+    void executableActionChanged(serialMan::actions::IAction*, size_t);
 
 public slots:
 
@@ -80,11 +80,13 @@ private:
     ManipulatorController& _man;
 
     ProgramExecutor* _executor;
-    ActionsEnivroment _enivroment;
+    ExecutionEnivroment _enivroment;
 
     ProgramState_t _state;
 
-    QList<QSharedPointer<IAction>> _actionsBuf;
+    //QMap<const QString, IAction
+
+    //QList<QSharedPointer<IAction>> _actionsBuf;
 
 
 public:
@@ -94,9 +96,9 @@ public:
     SerializingError_t serializate(std::ostream&);
     SerializingError_t deserializate(std::istream&);
 
-    ActionsEnivroment const& enivroment() const;
+    ExecutionEnivroment const& enivroment() const;
 
-    void executeAction(IAction&);
+    void executeAction(actions::IAction&);
 
     void startProgram();
     void pause();

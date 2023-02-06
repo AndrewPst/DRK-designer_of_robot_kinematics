@@ -29,7 +29,7 @@ void Serial6DofManipulator::init()
     _avaiableCentralDocks << new glCentralDock(*_manipulatorController);
     //_avaiableDocks << new ManyButtonsDock(tr("Buttons"));
 
-    _avaiableDocks << new ProgramDock(*_actionsController);
+    //_avaiableDocks << new ProgramDock(*_actionsController);
     _avaiableDocks << new DhTableDock(*_manipulatorController);
     _avaiableDocks << new KinematicsDock(*_manipulatorController);
 }

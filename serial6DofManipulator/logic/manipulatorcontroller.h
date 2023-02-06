@@ -33,19 +33,19 @@ public:
     const static int DEFAULT_DOF = 6;
 
     const QVector<Joint_t*>& getJoints() const;
-    Effector_t getEffector() const;
+    const Effector_t& getEffector() const;
     const DHTable_t<DEFAULT_DOF>& getDHTable() const;
 
     void forwardKinematics(QVector<double>& joints);
-    CalculationResult_t inverseKinematics(const Effector_t& pos, char config);
+    CalculationResult_t inverseKinematics(const Effector_t& pos);
 
     void setInvConfig(char);
     char getInvConfig() const;
 
     void setDHTable(const DHTable_t<DEFAULT_DOF>&);
-    void setEffector(const Effector_t&);
 
     ~ManipulatorController();
+
 signals:
 
     void structureChanged();

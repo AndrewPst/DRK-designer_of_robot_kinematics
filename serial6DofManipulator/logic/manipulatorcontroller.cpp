@@ -43,7 +43,7 @@ void ManipulatorController::setDHTable(const DHTable_t<DEFAULT_DOF>& dh)
     emit structureChanged();
 }
 
-Effector_t ManipulatorController::getEffector() const
+const Effector_t& ManipulatorController::getEffector() const
 {
     QMutexLocker lock(&_mEffector);
 
@@ -77,24 +77,19 @@ void ManipulatorController::forwardKinematics(QVector<double>& joints)
     emit structureChanged();
 }
 
-CalculationResult_t ManipulatorController::inverseKinematics(const Effector_t& pos, char config)
+CalculationResult_t ManipulatorController::inverseKinematics(const Effector_t& pos)
 {
     QVector<double> out(DEFAULT_DOF);
 
+    QMutexLocker clock(&_mConfig);
     QMutexLocker klock(&_mKin);
-    auto result = _kin.inverse(pos, out, config);
+    auto result = _kin.inverse(pos, out, _kinConfig);
     klock.unlock();
+    clock.unlock();
 
     if(result == CalculationResult_t::CALC_SUCCESSFULL)
     {
-        QMutexLocker clock(&_mConfig);
-        _kinConfig = config;
         QMutexLocker jlock(&_mJoints);
-//        for(int i = 0; i < DEFAULT_DOF; i++)
-//        {
-//            if(out[i] < _joints[i]->getMinValue() || out[i] > _joints[i]->getMaxValue())
-//                return CalculationResult_t::CALC_ERROR;
-//        }
         for(int i = 0; i < DEFAULT_DOF; i++)
         {
             _joints[i]->blockSignals(true);
@@ -103,11 +98,6 @@ CalculationResult_t ManipulatorController::inverseKinematics(const Effector_t& p
         }
         QMutexLocker elock(&_mEffector);
         _effector = pos;
-
-//        _effector.wx = _effector.wx >= 2.0 * M_PI ? fmod(_effector.wx, 2.0 * M_PI) : _effector.wx < 0 ? 2.0 * M_PI - fmod(-_effector.wx, 2.0 * M_PI) : pos.wx;
-//        _effector.wy = _effector.wy >= 2.0 * M_PI ? fmod(_effector.wy, 2.0 * M_PI) : _effector.wy < 0 ? 2.0 * M_PI - fmod(-_effector.wy, 2.0 * M_PI) : pos.wy;
-//        _effector.wz = _effector.wz >= 2.0 * M_PI ? fmod(_effector.wz, 2.0 * M_PI) : _effector.wz < 0 ? 2.0 * M_PI - fmod(-_effector.wz, 2.0 * M_PI) : pos.wz;
-
     } else {
         qDebug() << "error!";
     }
@@ -118,26 +108,18 @@ CalculationResult_t ManipulatorController::inverseKinematics(const Effector_t& p
 void ManipulatorController::onJointsChanged()
 {
     QVector<double> values(DEFAULT_DOF);
-
     QMutexLocker jlock(&_mJoints);
     for(int i = 0; i < DEFAULT_DOF; i++)
         values[i] = _joints[i]->getValue();
     jlock.unlock();
-
     forwardKinematics(values);
-}
-
-void ManipulatorController::setEffector(const Effector_t& eff)
-{
-    QMutexLocker clock(&_mConfig);
-    inverseKinematics(eff, _kinConfig);
 }
 
 
 void ManipulatorController::setInvConfig(char c)
 {
     QMutexLocker lock(&_mConfig);
-    inverseKinematics(_effector, c);
+    _kinConfig = c;
 }
 
 char ManipulatorController::getInvConfig() const

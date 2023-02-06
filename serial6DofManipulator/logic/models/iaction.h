@@ -13,9 +13,13 @@ namespace serialMan
 {
 
 QT_FORWARD_DECLARE_CLASS(ManipulatorController)
-QT_FORWARD_DECLARE_CLASS(ActionsEnivroment)
+QT_FORWARD_DECLARE_STRUCT(ExecutionEnivroment)
 
-enum ActionResult_t
+namespace actions
+{
+
+
+enum ActionExectionResult_t
 {
     RESULT_UNKNOWN,
     RESULT_IN_PROCESS,
@@ -43,45 +47,30 @@ struct ArgKey_t
     char key {0};
     ActionArgumentType_t type {ActionArgumentType_t::ARGTYPE_DOUBLE};
     QString name;
-    bool operator == (const serialMan::ArgKey_t &) const;
-    bool operator < (const serialMan::ArgKey_t &) const;
-};
-
-//bool operator == (const serialMan::ArgKey_t &, const serialMan::ArgKey_t &);
-//bool operator < (const serialMan::ArgKey_t &, const serialMan::ArgKey_t &);
-
-struct Argument_t
-{
-    QVariant value;
+    bool operator == (const serialMan::actions::ArgKey_t &) const;
+    bool operator < (const serialMan::actions::ArgKey_t &) const;
 };
 
 struct IAction
 {
-    friend class ActionsEnivroment;
-
-private:
-
-    mutable QMap<ArgKey_t, Argument_t> _args;
-    mutable QMutex _argMut;
+    friend class ExecutionEnivroment;
 
 public:
 
-    //Args functions
-    void setArg(const ArgKey_t& key, const Argument_t& value);
-    bool getArg(const ArgKey_t& key, Argument_t& result) const;
-    virtual const QVector<ArgKey_t>* argsKeys() const;
-
-    virtual bool isActionKey(QString&) = 0;
+//    //Args functions
+//    void setArg(const ArgKey_t& key, const QVariant);
+//    bool getArg(const ArgKey_t& key, QVariant& result) const;
 
     virtual void serializate(std::ostream&) = 0;
-    virtual void deserializate(std::istream&) = 0;
+    //virtual void deserializate(std::istream&) = 0;
 
-    virtual void startExecution(const ActionsEnivroment&){}
-    virtual ActionResult_t execute(const ActionsEnivroment&, qint64, ExecuteConfig_t) = 0;
+    virtual void startExecution(const ExecutionEnivroment&){}
+    virtual ActionExectionResult_t execute(const ExecutionEnivroment&, qint64, ExecuteConfig_t) = 0;
     virtual void endExecution(){}
 
     virtual ~IAction() {};
 };
 
+}
 }
 #endif // IACTION_H

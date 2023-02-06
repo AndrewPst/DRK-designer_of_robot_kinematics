@@ -23,8 +23,8 @@ SOURCES += \
     serial6DofManipulator/logic/actionscontroller.cpp \
     serial6DofManipulator/logic/kinematics.cpp \
     serial6DofManipulator/logic/manipulatorcontroller.cpp \
-    serial6DofManipulator/logic/models/actionscontainer.cpp \
-    serial6DofManipulator/logic/models/actionsenivroment.cpp \
+    serial6DofManipulator/logic/models/actionsLibrary.cpp \
+    serial6DofManipulator/logic/models/executionEnivroment.cpp \
     serial6DofManipulator/logic/models/iaction.cpp \
     serial6DofManipulator/logic/models/joint_t.cpp \
     serial6DofManipulator/logic/models/unit_t.cpp \
@@ -57,8 +57,8 @@ HEADERS += \
     serial6DofManipulator/logic/models/Actions.h \
     serial6DofManipulator/logic/models/DHTable_t.h \
     serial6DofManipulator/logic/models/Effector_t.h \
-    serial6DofManipulator/logic/models/actionscontainer.h \
-    serial6DofManipulator/logic/models/actionsenivroment.h \
+    serial6DofManipulator/logic/models/actionsLibrary.h \
+    serial6DofManipulator/logic/models/executionEnivroment.h \
     serial6DofManipulator/logic/models/iaction.h \
     serial6DofManipulator/logic/models/joint_t.h \
     serial6DofManipulator/logic/models/matrix.h \

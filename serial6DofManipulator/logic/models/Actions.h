@@ -7,7 +7,7 @@
 #include <QCache>
 
 #include "../manipulatorcontroller.h"
-#include "actionsenivroment.h"
+#include "executionEnivroment.h"
 #include "../../logic/models/units_t.h"
 
 
@@ -16,21 +16,13 @@ namespace serialMan {
 namespace actions
 {
 
-struct G1 : public serialMan::IAction
+struct G1 : public serialMan::actions::IAction
 {
 
     constexpr static const char* _cmd1 = "G1";
     constexpr static const char _separator = ' ';
 
-    const QVector<ArgKey_t> _keys = {
-        ArgKey_t('X', ActionArgumentType_t::ARGTYPE_DOUBLE, "X coord"),
-        ArgKey_t('Y', ActionArgumentType_t::ARGTYPE_DOUBLE, "Y coord"),
-        ArgKey_t('Z', ActionArgumentType_t::ARGTYPE_DOUBLE, "Z coord"),
-        ArgKey_t('A', ActionArgumentType_t::ARGTYPE_DOUBLE, "Alfa degrees"),
-        ArgKey_t('B', ActionArgumentType_t::ARGTYPE_DOUBLE, "Beta degrees"),
-        ArgKey_t('G', ActionArgumentType_t::ARGTYPE_DOUBLE, "Gamma degrees"),
-        ArgKey_t('F', ActionArgumentType_t::ARGTYPE_DOUBLE, "Move speed"),
-    };
+    static const QVector<ArgKey_t> _keys;
 
     Effector_t endPos;
     Effector_t argsSpeed;
@@ -40,49 +32,31 @@ struct G1 : public serialMan::IAction
 
 public:
 
-    //interface methods
-    bool isActionKey(QString& cmd) override
-    {
-        return  cmd == _cmd1;
-    }
-
     void serializate(std::ostream& out)override
     {
         out << _cmd1 << _separator;
-        Argument_t res;
-        if(getArg(ArgKey_t{'X'}, res)) out << 'X' << res.value.toDouble() << _separator;
-        if(getArg(ArgKey_t{'Y'}, res)) out << 'Y' << res.value.toDouble() << _separator;
-        if(getArg(ArgKey_t{'Z'}, res)) out << 'Z' << res.value.toDouble() << _separator;
-        if(getArg(ArgKey_t{'A'}, res)) out << 'A' << res.value.toDouble() << _separator;
-        if(getArg(ArgKey_t{'B'}, res)) out << 'B' << res.value.toDouble() << _separator;
-        if(getArg(ArgKey_t{'G'}, res)) out << 'G' << res.value.toDouble() << _separator;
-        if(getArg(ArgKey_t{'F'}, res)) out << 'F' << res.value.toDouble() << _separator;
+        QVariant res;
+//        if(getArg(ArgKey_t{'X'}, res)) out << 'X' << res.toDouble() << _separator;
+//        if(getArg(ArgKey_t{'Y'}, res)) out << 'Y' << res.toDouble() << _separator;
+//        if(getArg(ArgKey_t{'Z'}, res)) out << 'Z' << res.toDouble() << _separator;
+//        if(getArg(ArgKey_t{'A'}, res)) out << 'A' << res.toDouble() << _separator;
+//        if(getArg(ArgKey_t{'B'}, res)) out << 'B' << res.toDouble() << _separator;
+//        if(getArg(ArgKey_t{'G'}, res)) out << 'G' << res.toDouble() << _separator;
+//        if(getArg(ArgKey_t{'F'}, res)) out << 'F' << res.toDouble() << _separator;
     }
 
-    void deserializate(std::istream& in) override
-    {
-        while(in.peek() != '\n' && in.peek() != '\0')
-        {
-            char key;
-            double param;
-            in >> key;
-            in >> param;
-            setArg(ArgKey_t{key}, {param});
-        }
-    }
-
-    void startExecution(const ActionsEnivroment& env) override
+    void startExecution(const ExecutionEnivroment& env) override
     {
         Effector_t eff = env.manipulator().getEffector();
         endPos = eff;
-        Argument_t res;
-        if(getArg(ArgKey_t{'X'}, res)) endPos.x = res.value.toDouble();
-        if(getArg(ArgKey_t{'Y'}, res)) endPos.y = res.value.toDouble();
-        if(getArg(ArgKey_t{'Z'}, res)) endPos.z = res.value.toDouble();
-        if(getArg(ArgKey_t{'A'}, res)) endPos.wx = res.value.toDouble();
-        if(getArg(ArgKey_t{'B'}, res)) endPos.wy = res.value.toDouble();
-        if(getArg(ArgKey_t{'G'}, res)) endPos.wz = res.value.toDouble();
-        if(getArg(ArgKey_t{'F'}, res)) _speed = res.value.toDouble();
+        QVariant res;
+//        if(getArg(ArgKey_t{'X'}, res)) endPos.x = res.toDouble();
+//        if(getArg(ArgKey_t{'Y'}, res)) endPos.y = res.toDouble();
+//        if(getArg(ArgKey_t{'Z'}, res)) endPos.z = res.toDouble();
+//        if(getArg(ArgKey_t{'A'}, res)) endPos.wx = res.toDouble();
+//        if(getArg(ArgKey_t{'B'}, res)) endPos.wy = res.toDouble();
+//        if(getArg(ArgKey_t{'G'}, res)) endPos.wz = res.toDouble();
+//        if(getArg(ArgKey_t{'F'}, res)) _speed = res.toDouble();
 
         _dist = sqrt(pow(endPos.x-eff.x, 2) + pow(endPos.y-eff.y, 2) + pow(endPos.z-eff.z, 2));
         if(_dist == 0)
@@ -101,7 +75,7 @@ public:
         argsSpeed.wz = (endPos.wz - eff.wz) / _time;
     }
 
-    ActionResult_t execute(const ActionsEnivroment& env, qint64 t, ExecuteConfig_t config) override
+    ActionExectionResult_t execute(const ExecutionEnivroment& env, qint64 t, ExecuteConfig_t config) override
     {
         Effector_t eff = env.manipulator().getEffector();
         bool end = false;
@@ -117,10 +91,10 @@ public:
             eff.wy += t*argsSpeed.wy;
             eff.wz += t*argsSpeed.wz;
         }
-        auto result = env.manipulator().inverseKinematics(eff, 0);
+        auto result = env.manipulator().inverseKinematics(eff);
         if(result == CalculationResult_t::CALC_ERROR)
-            return ActionResult_t::RESULT_ERROR;
-        return end ? ActionResult_t::RESULT_FINISH : ActionResult_t::RESULT_IN_PROCESS;
+            return ActionExectionResult_t::RESULT_ERROR;
+        return end ? ActionExectionResult_t::RESULT_FINISH : ActionExectionResult_t::RESULT_IN_PROCESS;
 
     }
 
@@ -128,10 +102,30 @@ public:
     {
     }
 
-    const QVector<ArgKey_t>* argsKeys() const override
+    static IAction* generate()
+    {
+        return new G1;
+    }
+
+    static constexpr const std::pair<char, uint16_t> key()
+    {
+        return {'G', 1};
+    }
+
+    const static QVector<ArgKey_t>* allowArgs()
     {
         return &_keys;
     }
+};
+
+const QVector<ArgKey_t> G1::_keys = {
+    ArgKey_t('X', ActionArgumentType_t::ARGTYPE_DOUBLE, "X coord"),
+    ArgKey_t('Y', ActionArgumentType_t::ARGTYPE_DOUBLE, "Y coord"),
+    ArgKey_t('Z', ActionArgumentType_t::ARGTYPE_DOUBLE, "Z coord"),
+    ArgKey_t('A', ActionArgumentType_t::ARGTYPE_DOUBLE, "Alfa degrees"),
+    ArgKey_t('B', ActionArgumentType_t::ARGTYPE_DOUBLE, "Beta degrees"),
+    ArgKey_t('G', ActionArgumentType_t::ARGTYPE_DOUBLE, "Gamma degrees"),
+    ArgKey_t('F', ActionArgumentType_t::ARGTYPE_DOUBLE, "Move speed"),
 };
 
 }
