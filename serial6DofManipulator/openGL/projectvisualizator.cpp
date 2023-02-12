@@ -4,7 +4,7 @@
 //#include "../logic/models/Effector_t.h"
 #include "../logic/manipulatorcontroller.h"
 #include "projectCore/projectsmanager.h"
-#include "../logic/models/units_t.h"
+#include "../logic/models/unitsConverter.h"
 
 #include <QGLWidget>
 #include <gl/glu.h>

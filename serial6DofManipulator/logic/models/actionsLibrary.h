@@ -14,9 +14,9 @@ struct ActionsLibrary
 {
 private:
 
-    friend class serialMan::ActionsController;
-
+    friend class serialMan::ActionsController
     ActionsLibrary();
+
 public:
 
     typedef std::pair<char, uint16_t> actionIdentificator_t;
@@ -26,7 +26,7 @@ public:
 
     const std::map<const actionIdentificator_t, std::tuple<ActionGenerator, allowArgs_t, const QString>> actions
     {
-        {actions::G1::key(), std::make_tuple(actions::G1::generate, actions::G1::allowArgs(), "Linear movement")}
+        {actions::G1::static_key(), std::make_tuple(actions::G1::generate, actions::G1::allowArgs(), "Linear movement")}
     };
 };
 

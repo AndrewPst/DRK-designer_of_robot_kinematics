@@ -1,31 +1,52 @@
 #ifndef EXECUTIONENIVROMENT_H
 #define EXECUTIONENIVROMENT_H
 
-//#include "iaction.h"
+
+#include "enivromentProgram.h"
 #include "../manipulatorcontroller.h"
+
+#include "executionState.h"
+
+#include "QMutex"
+#include "QMutexLocker"
 
 #include <QObject>
 #include <memory>
-#include "serial6DofManipulator/logic/models/iaction.h"
 
 namespace serialMan
 {
 
+class EnivromentProgramEditor;
+
 struct ExecutionEnivroment
 {
-    ManipulatorController& _man;
 
-    std::list<std::shared_ptr<serialMan::actions::IAction>> _prog;
+    friend class ActionsController;
+    friend class ProgramExecutor;
+
+private:
+
+    ManipulatorController& _man;
+    EnivromentProgram _program;
+
+    ExecutionState _state{ExecutionState::STATE_UNKNOWN};
+    mutable QMutex _stateMut;
+
+    void setState(ExecutionState state);
 
 public:
 
-    explicit ExecutionEnivroment(ManipulatorController& man) : _man(man)
-    {}
+    explicit ExecutionEnivroment(ManipulatorController& man);
 
-    ManipulatorController& manipulator() const
-    {
-        return _man;
-    }
+    ManipulatorController& manipulator() const;
+
+    ExecutionState state() const;
+
+    EnivromentProgram& program();
+
+signals:
+
+    void stateChanged(ExecutionState);
 
 };
 

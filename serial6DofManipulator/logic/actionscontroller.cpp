@@ -1,16 +1,13 @@
 #include "actionscontroller.h"
 #include "manipulatorcontroller.h"
-#include "models/units_t.h"
 
-#include "models/Actions.h"
-#include <QDateTime>
-
+#include <QTimer>
 #include <QDebug>
 
 using namespace serialMan;
 
 ActionsController::ActionsController(ManipulatorController& man)
-    : QObject(),  _man(man), _enivroment(man), _state(ProgramState_t::STATE_FINISHED)
+    : QObject(),  _man(man), _enivroment(man)
 {
     //actions.append(createAction<LinearMovement>());
 
@@ -70,91 +67,87 @@ ActionsController::ActionsController(ManipulatorController& man)
 void ActionsController::startProgram()
 {
 
-    if(_state != ProgramState_t::STATE_FINISHED)
+    if(_enivroment.state() != ExecutionState::STATE_FINISHED)
         return;
-    _executor = new ProgramExecutor(_enivroment, _man);
+    _executor = new ProgramExecutor(_enivroment);
     _thread = new QThread();
 
-    connect(this, &ActionsController::messageToThread, _executor, &serialMan::ProgramExecutor::setState, Qt::DirectConnection );
-    connect(_executor, &serialMan::ProgramExecutor::onStateChanged, this, &ActionsController::onStateChanged, Qt::DirectConnection );
-    connect(_executor, &serialMan::ProgramExecutor::onStateChanged, this, &ActionsController::stateChanged, Qt::DirectConnection );
+    //connect(this, &ActionsController::messageToThread, _executor, &serialMan::ProgramExecutor::setState, Qt::DirectConnection );
+    //connect(_executor, &serialMan::ProgramExecutor::onStateChanged, this, &ActionsController::onStateChanged, Qt::DirectConnection );
+    //connect(_executor, &serialMan::ProgramExecutor::onStateChanged, this, &ActionsController::stateChanged, Qt::DirectConnection );
 
-    connect(_thread, &QThread::started, _executor, &serialMan::ProgramExecutor::start);
+    //connect(_thread, &QThread::started, _executor, &serialMan::ProgramExecutor::start);
 
-    connect(_executor, &serialMan::ProgramExecutor::onFinished, _thread, &QThread::quit);
+    connect(_executor, &serialMan::ProgramExecutor::finished, _thread, &QThread::quit);
     connect(_thread, &QThread::finished, _executor, &serialMan::ProgramExecutor::deleteLater);
     connect(_thread, &QThread::finished, _thread, &QThread::deleteLater);
-    connect(_thread, &QThread::finished, this, &serialMan::ActionsController::threadFinished);
 
     _executor->moveToThread(_thread);
 
     _thread->start();
 }
 
-void ActionsController::threadFinished()
+ExecutionEnivroment const& ActionsController::enivroment() const
 {
-    qDebug() << "Finished";
-}
-
-SerializingError_t ActionsController::serializate(std::ostream&)
-{
-    return SerializingError_t::ERROR_NONE;
-}
-
-SerializingError_t ActionsController::deserializate(std::istream&)
-{
-    return SerializingError_t::ERROR_NONE;
-}
-
-void ActionsController::executeAction(actions::IAction&){
-    if(_state != ProgramState_t::STATE_FINISHED)
-        return;
-    //ManipulatorController* man = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController();
-    //action.execute(*man, 0);
+    return _enivroment;
 }
 
 void ActionsController::stop()
 {
-    emit messageToThread(serialMan::ProgramState_t::STATE_FINISHED);
+    _enivroment.setState(serialMan::ExecutionState::STATE_FINISHED);
 }
 
 void ActionsController::pause()
 {
-    emit messageToThread(serialMan::ProgramState_t::STATE_SUSPENDED);
+    _enivroment.setState(serialMan::ExecutionState::STATE_SUSPENDED);
 }
 
 void ActionsController::resume()
 {
-    emit messageToThread(serialMan::ProgramState_t::STATE_IS_RUNNING);
+    _enivroment.setState(serialMan::ExecutionState::STATE_IS_RUNNING);
 }
 
-void ActionsController::setPosition(int i)
+
+//-------------------Program executor------------------
+ProgramExecutor::ProgramExecutor(ExecutionEnivroment& env)
+    : QObject(), _env(env)
 {
-//    actions::IAction& action = _enivroment.program.at(i);
-//    action.startExecution();
-//    action.execute(0, ExecuteConfig_t::EXECUTE_INSTANTLY);
-//    action.endExecution();
+    //connect(&env, &serialMan::ExecutionEnivroment::stateChanged, this, &ProgramExecutor::onStateChanged);
 }
 
-int ActionsController::position()
+//void ProgramExecutor::onStateChanged(serialMan::ExecutionState state)
+//{
+
+//}
+
+
+void ProgramExecutor::onStarted()
 {
-    return 0;
+    _env.setState(ExecutionState::STATE_IS_RUNNING);
+    QTimer time;
+    actions::ActionExectionResult_t execRes{actions::ActionExectionResult_t::RESULT_UNKNOWN};
+    while (_env.state() != ExecutionState::STATE_FINISHED)
+    {
+        actions::IAction* action = _env.program().next().get();
+        if (!action)
+            break;
+        execRes = action->startExecution(_env);
+        time.start();
+        while (execRes == actions::ActionExectionResult_t::RESULT_IN_PROCESS)
+        {
+            execRes = action->execute(_env, time.remainingTimeAsDuration().count(), actions::ExecuteConfig_t::EXECUTE_ANIMATION);
+            if (execRes == actions::ActionExectionResult_t::RESULT_ERROR)
+            {
+                qDebug() << "Execution action error";
+            }
+
+        }
+
+    }
 }
 
-void ActionsController::stateChanged(serialMan::ProgramState_t state)
-{
-    _state = state;
-}
-
-//Program executor
-
-ProgramExecutor::ProgramExecutor(ExecutionEnivroment& actions, ManipulatorController& man)
-    : QObject(), _man(man), _actions(actions), _state(ProgramState_t::STATE_IS_RUNNING)
-{
-}
-
-void ProgramExecutor::start()
-{
+//void ProgramExecutor::onStarted()
+//{
 //    emit onStateChanged(_state);
 //    auto iter = _actions.program.begin();
 //    bool exit = false;
@@ -195,33 +188,9 @@ void ProgramExecutor::start()
 //    _state = ProgramState_t::STATE_FINISHED;
 //    emit onStateChanged(_state);
 //    emit onFinished();
-}
+//}
 
 
-void ProgramExecutor::suspend()
-{
-    _state = ProgramState_t::STATE_SUSPENDED;
-    emit onStateChanged(_state);
-}
 
-void ProgramExecutor::resume()
-{
-    _state = ProgramState_t::STATE_IS_RUNNING;
-    emit onStateChanged(_state);
-
-}
-
-void ProgramExecutor::stop()
-{
-    _state = ProgramState_t::STATE_FINISHED;
-    emit onStateChanged(_state);
-
-}
-
-void ProgramExecutor::setState(serialMan::ProgramState_t state)
-{
-    _state = state;
-    emit onStateChanged(_state);
-}
 
 

@@ -2,7 +2,7 @@
 #include "../logic/models/joint_t.h"
 #include "../logic/manipulatorcontroller.h"
 
-#include "../logic/models/units_t.h"
+#include "../logic/models/unitsConverter.h"
 
 #include <limits>
 #include <QDoubleSpinBox>

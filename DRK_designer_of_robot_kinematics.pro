@@ -23,11 +23,13 @@ SOURCES += \
     serial6DofManipulator/logic/actionscontroller.cpp \
     serial6DofManipulator/logic/kinematics.cpp \
     serial6DofManipulator/logic/manipulatorcontroller.cpp \
+    serial6DofManipulator/logic/models/actions.cpp \
     serial6DofManipulator/logic/models/actionsLibrary.cpp \
+    serial6DofManipulator/logic/models/enivromentProgram.cpp \
     serial6DofManipulator/logic/models/executionEnivroment.cpp \
     serial6DofManipulator/logic/models/iaction.cpp \
     serial6DofManipulator/logic/models/joint_t.cpp \
-    serial6DofManipulator/logic/models/unit_t.cpp \
+    serial6DofManipulator/logic/models/unitsConverter.cpp \
     serial6DofManipulator/openGL/editvisualizaionparamswidget.cpp \
     serial6DofManipulator/openGL/glvisualizatorwidget.cpp \
     serial6DofManipulator/openGL/projectvisualizator.cpp \
@@ -58,11 +60,13 @@ HEADERS += \
     serial6DofManipulator/logic/models/DHTable_t.h \
     serial6DofManipulator/logic/models/Effector_t.h \
     serial6DofManipulator/logic/models/actionsLibrary.h \
+    serial6DofManipulator/logic/models/enivromentProgram.h \
     serial6DofManipulator/logic/models/executionEnivroment.h \
+    serial6DofManipulator/logic/models/executionState.h \
     serial6DofManipulator/logic/models/iaction.h \
     serial6DofManipulator/logic/models/joint_t.h \
     serial6DofManipulator/logic/models/matrix.h \
-    serial6DofManipulator/logic/models/units_t.h \
+    serial6DofManipulator/logic/models/unitsConverter.h \
     serial6DofManipulator/openGL/editvisualizaionparamswidget.h \
     serial6DofManipulator/openGL/glvisualizatorwidget.h \
     serial6DofManipulator/openGL/projectvisualizator.h \

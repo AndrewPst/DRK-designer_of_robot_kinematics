@@ -1,6 +1,6 @@
 #include "dhtabledock.h"
 #include "../logic/manipulatorcontroller.h"
-#include "../logic/models/units_t.h"
+#include "../logic/models/unitsConverter.h"
 
 #include <math.h>
 #include <QVBoxLayout>

@@ -1,5 +1,5 @@
-#ifndef UNITS_T_H
-#define UNITS_T_H
+#ifndef UNITSCONVERTER_H
+#define UNITSCONVERTER_H
 
 #include "math.h"
 
@@ -19,4 +19,4 @@ inline double radToDeg(double v)
 
 }
 
-#endif // UNITS_T_H
+#endif // UNITSCONVERTER_H
