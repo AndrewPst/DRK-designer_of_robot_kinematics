@@ -7,8 +7,9 @@
 namespace serialMan
 {
 
-class EnivromentProgram
+class EnivromentProgram : public QObject
 {
+    Q_OBJECT
 public:
 
     typedef std::shared_ptr<serialMan::actions::IAction> actionType_t;
@@ -34,7 +35,7 @@ public:
     void insert(actionType_t, size_t);
     void remove(actionType_t);
 
-    actionType_t begin();
+    actionType_t reset();
     actionType_t next();
 
     uint8_t setPos(size_t);

@@ -13,6 +13,8 @@
 #include <QCheckBox>
 
 using namespace serialMan;
+using namespace docks;
+
 
 JointViewModelWidget::JointViewModelWidget(Joint_t* j, ManipulatorController& man)
     : QWidget(), _joint(j)

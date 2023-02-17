@@ -6,8 +6,12 @@
 namespace serialMan {
 
 QT_FORWARD_DECLARE_CLASS(ManipulatorController);
-QT_FORWARD_DECLARE_CLASS(ProjectVisualizator);
 QT_FORWARD_DECLARE_CLASS(ActionsController);
+
+namespace gl
+{
+QT_FORWARD_DECLARE_CLASS(ProjectVisualizator);
+}
 
 class Serial6DofManipulator : public BaseProjectController
 {
@@ -20,13 +24,13 @@ public:
     void init() override;
 
     ManipulatorController& getManipulatorController() const;
-    ProjectVisualizator& getVisualizator() const;
+    gl::ProjectVisualizator& getVisualizator() const;
     ActionsController& getActionsController() const;
 
 private:
 
     std::unique_ptr<ManipulatorController> _manipulatorController;
-    std::unique_ptr<ProjectVisualizator> _projectVisualizator;
+    std::unique_ptr<gl::ProjectVisualizator> _projectVisualizator;
     std::unique_ptr<ActionsController> _actionsController;
 };
 

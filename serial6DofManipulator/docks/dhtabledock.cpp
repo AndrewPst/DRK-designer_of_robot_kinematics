@@ -12,6 +12,7 @@
 
 using namespace serialMan;
 
+using namespace docks;
 
 DhTableDock::DhTableDock(ManipulatorController& man, const QString& title ,
                          QWidget* parent,

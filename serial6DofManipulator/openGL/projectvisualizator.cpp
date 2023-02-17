@@ -14,6 +14,7 @@
 
 
 using namespace serialMan;
+using namespace gl;
 
 void VisualizationParams::setFieldWidth(const int v)
 {
@@ -77,7 +78,7 @@ float VisualizationParams::testSize() const
 
 
 
-void serialMan::ProjectVisualizator::visualizate(serialMan::glVisualizatorWidget* glv)
+void ProjectVisualizator::visualizate(serialMan::gl::glVisualizatorWidget* glv)
 {
     glv->makeCurrent();
     _currentContext = glv;
@@ -88,7 +89,7 @@ void serialMan::ProjectVisualizator::visualizate(serialMan::glVisualizatorWidget
     drawCustomObjects();
 }
 
-void serialMan::ProjectVisualizator::drawField(VisualizationParams& curParams)
+void ProjectVisualizator::drawField(VisualizationParams& curParams)
 {
     //curParams.fieldStep() =  ((int)_currentContext->getDistance()) / 10;
 
@@ -248,7 +249,7 @@ void serialMan::ProjectVisualizator::drawField(VisualizationParams& curParams)
 }
 
 //----------draw Axis------------
-void serialMan::ProjectVisualizator::drawAxis()
+void ProjectVisualizator::drawAxis()
 {
     glPushMatrix();
     glLineWidth(2);
@@ -318,7 +319,7 @@ void drawCube(GLenum mode)
     glEnd();
 }
 
-void serialMan::ProjectVisualizator::drawManipulator(VisualizationParams& curParams)
+void ProjectVisualizator::drawManipulator(VisualizationParams& curParams)
 {
     auto& mc = ((Serial6DofManipulator*)projectsManager.getOpenedProject())->getManipulatorController();
     auto& joints = mc.getJoints();
@@ -409,7 +410,7 @@ void serialMan::ProjectVisualizator::drawManipulator(VisualizationParams& curPar
 
 }
 
-void serialMan::ProjectVisualizator::drawRotationJoint(VisualizationParams& curParams)
+void ProjectVisualizator::drawRotationJoint(VisualizationParams& curParams)
 {
     glPushMatrix();
     glTranslatef(0, 0, -1.f*curParams.jointSizeKoef());
@@ -439,7 +440,7 @@ void serialMan::ProjectVisualizator::drawRotationJoint(VisualizationParams& curP
 
 }
 
-void serialMan::ProjectVisualizator::drawLinearJoint(VisualizationParams& curParams)
+void ProjectVisualizator::drawLinearJoint(VisualizationParams& curParams)
 {
 
     const static int modes[] {GL_QUADS, GL_LINE_LOOP};
@@ -509,18 +510,18 @@ void serialMan::ProjectVisualizator::drawLinearJoint(VisualizationParams& curPar
     glPopMatrix();
 }
 
-const VisualizationParams& serialMan::ProjectVisualizator::visualizationParams() const
+const VisualizationParams& ProjectVisualizator::visualizationParams() const
 {
     return this->_params;
 }
 
-void serialMan::ProjectVisualizator::setVisualizationParams(const VisualizationParams& p)
+void ProjectVisualizator::setVisualizationParams(const VisualizationParams& p)
 {
     _params = p;
 }
 
 
-void serialMan::ProjectVisualizator::drawCustomObjects()
+void ProjectVisualizator::drawCustomObjects()
 {
 
 }

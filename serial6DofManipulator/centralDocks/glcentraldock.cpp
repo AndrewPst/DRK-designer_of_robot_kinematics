@@ -13,6 +13,7 @@
 #include <QPushButton>
 
 using namespace serialMan;
+using namespace centralDocks;
 
 glCentralDock::glCentralDock(ManipulatorController& man, const QString& title,
                              QMainWindow *parent,
@@ -26,7 +27,7 @@ glCentralDock::glCentralDock(ManipulatorController& man, const QString& title,
     QDockWidget::setMinimumSize(400, 400);
 
     _mainWidget = new QWidget();
-    _glWidget = new glVisualizatorWidget(((Serial6DofManipulator*)projectsManager.getOpenedProject())->getVisualizator(), this);
+    _glWidget = new gl::glVisualizatorWidget(((Serial6DofManipulator*)projectsManager.getOpenedProject())->getVisualizator(), this);
     QHBoxLayout *layout = new QHBoxLayout();
     layout->addWidget(_glWidget);
 
@@ -85,7 +86,7 @@ glCentralDock::glCentralDock(ManipulatorController& man, const QString& title,
     connect(_openVisualizateSettings, &QAction::triggered, this, &glCentralDock::onOpenVisualizationSettings);
     _menu->addAction(_openVisualizateSettings);
 
-    _glWidget->setProjectionMode(ProjectionMode_t::PR_PERSPECTIVE);
+    _glWidget->setProjectionMode(gl::ProjectionMode_t::PR_PERSPECTIVE);
     setWidget(_mainWidget);
 
     connect(&_man, &ManipulatorController::structureChanged, this, &glCentralDock::onUpdate);
@@ -99,9 +100,9 @@ void glCentralDock::onUpdate()
 void glCentralDock::setProjectionModeSlot(QAction* action)
 {
     if(action == _pModeOrtho)
-        _glWidget->setProjectionMode(ProjectionMode_t::PR_ORTHOGONAL);
+        _glWidget->setProjectionMode(gl::ProjectionMode_t::PR_ORTHOGONAL);
     else if(action == _pModePers)
-        _glWidget->setProjectionMode(ProjectionMode_t::PR_PERSPECTIVE);
+        _glWidget->setProjectionMode(gl::ProjectionMode_t::PR_PERSPECTIVE);
 }
 
 void glCentralDock::setLookDirectionSlot(QAction* action)
@@ -150,7 +151,7 @@ void glCentralDock::onResetPos()
 
 void glCentralDock::onOpenVisualizationSettings()
 {
-    EditVisualizaionParamsWidget w(((Serial6DofManipulator*)projectsManager.getOpenedProject())->getVisualizator());
+    gl::EditVisualizaionParamsWidget w(((serialMan::Serial6DofManipulator*)projectsManager.getOpenedProject())->getVisualizator());
     w.exec();
 }
 

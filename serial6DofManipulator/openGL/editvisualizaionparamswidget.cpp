@@ -8,6 +8,7 @@
 #include <QPushButton>
 
 using namespace serialMan;
+using namespace gl;
 
 EditVisualizaionParamsWidget::EditVisualizaionParamsWidget(ProjectVisualizator& vis) : QDialog()
 {
@@ -37,11 +38,11 @@ EditVisualizaionParamsWidget::EditVisualizaionParamsWidget(ProjectVisualizator& 
     fl->addRow("Step", spinStep);
 
     QPushButton *confirmBut = new QPushButton(tr("Confirm"));
-    connect(confirmBut, &QPushButton::clicked, this, &serialMan::EditVisualizaionParamsWidget::confirmValues);
+    connect(confirmBut, &QPushButton::clicked, this, &serialMan::gl::EditVisualizaionParamsWidget::confirmValues);
     QPushButton *resetBut = new QPushButton(tr("Reset"));
-    connect(resetBut, &QPushButton::clicked, this, &serialMan::EditVisualizaionParamsWidget::resetValues);
+    connect(resetBut, &QPushButton::clicked, this, &serialMan::gl::EditVisualizaionParamsWidget::resetValues);
     QPushButton *cancelBut = new QPushButton(tr("Cancel"));
-    connect(cancelBut, &QPushButton::clicked, this, &serialMan::EditVisualizaionParamsWidget::close);
+    connect(cancelBut, &QPushButton::clicked, this, &serialMan::gl::EditVisualizaionParamsWidget::close);
 
 
     QHBoxLayout* butl = new QHBoxLayout();

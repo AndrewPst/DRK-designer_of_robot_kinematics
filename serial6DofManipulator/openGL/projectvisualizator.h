@@ -7,8 +7,12 @@
 namespace serialMan
 {
 
-QT_FORWARD_DECLARE_CLASS(glVisualizatorWidget);
 
+
+namespace gl
+{
+
+QT_FORWARD_DECLARE_CLASS(glVisualizatorWidget);
 
 struct VisualizationParams
 {
@@ -50,7 +54,7 @@ public:
 
     ProjectVisualizator() = default;
 
-    void visualizate(serialMan::glVisualizatorWidget*);
+    void visualizate(serialMan::gl::glVisualizatorWidget*);
     const VisualizationParams& visualizationParams() const;
 
     void setVisualizationParams(const VisualizationParams&);
@@ -82,6 +86,8 @@ private:
     glVisualizatorWidget* _currentContext;
 
 };
+
+}
 
 }
 #endif // PROJECTVISUALIZATOR_H

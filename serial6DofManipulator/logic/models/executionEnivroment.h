@@ -18,8 +18,9 @@ namespace serialMan
 
 class EnivromentProgramEditor;
 
-struct ExecutionEnivroment
+struct ExecutionEnivroment : public QObject
 {
+    Q_OBJECT
 
     friend class ActionsController;
     friend class ProgramExecutor;
@@ -29,7 +30,7 @@ private:
     ManipulatorController& _man;
     EnivromentProgram _program;
 
-    ExecutionState _state{ExecutionState::STATE_UNKNOWN};
+    ExecutionState _state{ExecutionState::STATE_FINISHED};
     mutable QMutex _stateMut;
 
     void setState(ExecutionState state);
@@ -46,7 +47,7 @@ public:
 
 signals:
 
-    void stateChanged(ExecutionState);
+    void stateChanged(serialMan::ExecutionState);
 
 };
 

@@ -8,6 +8,9 @@ namespace serialMan {
 
 QT_FORWARD_DECLARE_CLASS(ManipulatorController)
 
+namespace centralDocks
+{
+
 class glCentralDock : public BaseCentralDock
 {
 public:
@@ -34,7 +37,7 @@ private slots:
 private:
 
     QWidget *_mainWidget;
-    glVisualizatorWidget* _glWidget;
+    gl::glVisualizatorWidget* _glWidget;
 
     QAction *_pModeOrtho, *_pModePers;
     QAction *_lookFromX, *_lookFromY, *_lookFromZ;
@@ -43,6 +46,8 @@ private:
 
     ManipulatorController& _man;
 };
+
+}
 
 }
 #endif // GLCENTRALDOCK_H

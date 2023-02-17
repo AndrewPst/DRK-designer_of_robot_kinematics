@@ -8,6 +8,8 @@
 
 namespace serialMan {
 
+namespace docks
+{
 
 class ManyButtonsDock : public BaseDock
 {
@@ -31,6 +33,8 @@ private:
 
     QList<QPushButton*> _buttons;
 };
+
+}
 
 }
 #endif // MANYBUTTONSDOCK_H

@@ -18,6 +18,9 @@ namespace serialMan
 QT_FORWARD_DECLARE_CLASS(ManipulatorController);
 QT_FORWARD_DECLARE_CLASS(Joint_t)
 
+namespace docks
+{
+
 class JointViewModelWidget : public QWidget
 {
     Q_OBJECT
@@ -91,6 +94,8 @@ private:
 
     QCheckBox* _v1, *_v2;
 };
+
+}
 
 }
 #endif // KINEMATICSDOCK_H

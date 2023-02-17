@@ -12,6 +12,9 @@ namespace serialMan {
 
 QT_FORWARD_DECLARE_CLASS(ManipulatorController)
 
+namespace docks
+{
+
 class DhTableDock : public BaseDock
 {
     Q_OBJECT
@@ -43,6 +46,8 @@ private:
 
     ManipulatorController& _man;
 };
+
+}
 
 }
 #endif // DHTABLEDOCK_H

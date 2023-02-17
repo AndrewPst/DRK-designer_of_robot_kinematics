@@ -1,7 +1,6 @@
 #ifndef ACTIONSLIBRARY_H
 #define ACTIONSLIBRARY_H
 
-#include "../actionscontroller.h"
 #include "iaction.h"
 #include "Actions.h"
 
@@ -26,7 +25,8 @@ public:
 
     const std::map<const actionIdentificator_t, std::tuple<ActionGenerator, allowArgs_t, const QString>> actions
     {
-        {actions::G1::static_key(), std::make_tuple(actions::G1::generate, actions::G1::allowArgs(), "Linear movement")}
+        {actions::G1::static_key(), std::make_tuple(actions::G1::generate, actions::G1::allowArgs(), "Linear movement")},
+        {actions::GTEST::static_key(), std::make_tuple(actions::GTEST::generate, actions::GTEST::allowArgs(), "Test")},
     };
 };
 

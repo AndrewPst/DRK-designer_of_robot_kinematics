@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
     qRegisterMetaType<serialMan::ExecutionState>("serialMan::ProgramState_t");
+    qRegisterMetaType<uint8_t>("uint8_t");
 
     QApplication a(argc, argv);
 

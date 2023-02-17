@@ -14,13 +14,13 @@ const QVector<ArgKey_t> G1::_keys = {
     ArgKey_t('A', ActionArgumentType_t::ARGTYPE_DOUBLE, "Alfa degrees"),
     ArgKey_t('B', ActionArgumentType_t::ARGTYPE_DOUBLE, "Beta degrees"),
     ArgKey_t('G', ActionArgumentType_t::ARGTYPE_DOUBLE, "Gamma degrees"),
-    ArgKey_t('F', ActionArgumentType_t::ARGTYPE_DOUBLE, "Move speed"),
+    ArgKey_t('F', ActionArgumentType_t::ARGTYPE_DOUBLE, "Move/rotation speed"),
 };
 
-void G1::serializate(std::ostream& out)
+void G1::serializate(std::ostream&)
 {
-    out << _cmd1 << _separator;
-    QVariant res;
+    //    out << _cmd1 << _separator;
+    //    QVariant res;
     //        if(getArg(ArgKey_t{'X'}, res)) out << 'X' << res.toDouble() << _separator;
     //        if(getArg(ArgKey_t{'Y'}, res)) out << 'Y' << res.toDouble() << _separator;
     //        if(getArg(ArgKey_t{'Z'}, res)) out << 'Z' << res.toDouble() << _separator;
@@ -30,18 +30,18 @@ void G1::serializate(std::ostream& out)
     //        if(getArg(ArgKey_t{'F'}, res)) out << 'F' << res.toDouble() << _separator;
 }
 
-void G1::startExecution(const ExecutionEnivroment& env)
+ActionExectionResult_t G1::startExecution(const ExecutionEnivroment& env)
 {
     Effector_t eff = env.manipulator().getEffector();
     endPos = eff;
     QVariant res;
-    //        if(getArg(ArgKey_t{'X'}, res)) endPos.x = res.toDouble();
-    //        if(getArg(ArgKey_t{'Y'}, res)) endPos.y = res.toDouble();
-    //        if(getArg(ArgKey_t{'Z'}, res)) endPos.z = res.toDouble();
-    //        if(getArg(ArgKey_t{'A'}, res)) endPos.wx = res.toDouble();
-    //        if(getArg(ArgKey_t{'B'}, res)) endPos.wy = res.toDouble();
-    //        if(getArg(ArgKey_t{'G'}, res)) endPos.wz = res.toDouble();
-    //        if(getArg(ArgKey_t{'F'}, res)) _speed = res.toDouble();
+    if(getArg(ArgKey_t{'X'}, res)) endPos.x = res.toDouble();
+    if(getArg(ArgKey_t{'Y'}, res)) endPos.y = res.toDouble();
+    if(getArg(ArgKey_t{'Z'}, res)) endPos.z = res.toDouble();
+    if(getArg(ArgKey_t{'A'}, res)) endPos.wx = res.toDouble();
+    if(getArg(ArgKey_t{'B'}, res)) endPos.wy = res.toDouble();
+    if(getArg(ArgKey_t{'G'}, res)) endPos.wz = res.toDouble();
+    if(getArg(ArgKey_t{'F'}, res)) _speed = res.toDouble();
 
     _dist = sqrt(pow(endPos.x-eff.x, 2) + pow(endPos.y-eff.y, 2) + pow(endPos.z-eff.z, 2));
     if(_dist == 0)
@@ -58,6 +58,7 @@ void G1::startExecution(const ExecutionEnivroment& env)
     argsSpeed.wx = (endPos.wx - eff.wx) / _time;
     argsSpeed.wy = (endPos.wy - eff.wy) / _time;
     argsSpeed.wz = (endPos.wz - eff.wz) / _time;
+    return ActionExectionResult_t::RESULT_IN_PROCESS;
 }
 
 ActionExectionResult_t G1::execute(const ExecutionEnivroment& env, qint64 t, ExecuteConfig_t config)
@@ -85,4 +86,51 @@ ActionExectionResult_t G1::execute(const ExecutionEnivroment& env, qint64 t, Exe
 
 void G1::endExecution()
 {
+}
+
+
+const QVector<ArgKey_t> GTEST::_keys = {
+    ArgKey_t('T', ActionArgumentType_t::ARGTYPE_DOUBLE, "test"),
+};
+
+void GTEST::serializate(std::ostream&)
+{
+}
+
+ActionExectionResult_t GTEST::startExecution(const ExecutionEnivroment& )
+{
+    qDebug() << "Started";
+    return ActionExectionResult_t::RESULT_IN_PROCESS;
+}
+
+ActionExectionResult_t GTEST::execute(const ExecutionEnivroment& , qint64 t, ExecuteConfig_t )
+{
+    qDebug()<<t;
+    if(t >=_param)
+    {
+        qDebug() << "Ended";
+        return ActionExectionResult_t::RESULT_FINISH;
+    }
+
+    return ActionExectionResult_t::RESULT_IN_PROCESS;
+}
+
+//void GTEST::setArg(const ArgKey_t& key, const QVariant value)
+//{
+//    if(key.key() == 'T')
+//        _param = value.toDouble();
+//}
+
+//bool GTEST::getArg(const ArgKey_t& key, QVariant& result) const
+//{
+//    if(key.key() == 'T')
+//        result = _param;
+//    else
+//        return false;
+//    return true;
+//}
+
+void GTEST::endExecution()
+{
+
 }

@@ -10,9 +10,9 @@
 #include <QContextMenuEvent>
 
 using namespace serialMan;
+using namespace gl;
 
-
-glVisualizatorWidget::glVisualizatorWidget(serialMan::ProjectVisualizator& visualizator, QWidget* parent) :
+glVisualizatorWidget::glVisualizatorWidget(serialMan::gl::ProjectVisualizator& visualizator, QWidget* parent) :
     QGLWidget(parent),
     _visualizator(visualizator)
 {

@@ -56,6 +56,8 @@ EnivromentProgram::actionType_t EnivromentProgram::reset()
 EnivromentProgram::actionType_t EnivromentProgram::next()
 {
     QMutexLocker lock(&_progMutex);
+    if(_executePos == _prog.end())
+        return nullptr;
     return *_executePos++;
 }
 

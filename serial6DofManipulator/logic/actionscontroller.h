@@ -3,7 +3,7 @@
 
 #include "models/iaction.h"
 #include "models/executionEnivroment.h"
-#include "models/executionState.h"
+#include "models/actionsLibrary.h"
 
 #include <QObject>
 #include <istream>
@@ -18,9 +18,12 @@ namespace serialMan
 QT_FORWARD_DECLARE_CLASS(ManipulatorController);
 
 
-enum SerializingError_t
+enum ExecutionExitCode : uint8_t
 {
-    ERROR_NONE
+    EXITCODE_SUCCESS = 0,
+    EXITCODE_INTERRUPTION,
+    EXITCODE_EXECUTION_ERROR,
+    EXITCODE_NO_EXIT=255,
 };
 
 
@@ -41,12 +44,12 @@ private:
 
 signals:
 
-    void onFinished();
+    void finished(uint8_t);
 
 private slots:
 
     void onStarted();
-    void onStateChanged(serialMan::ExecutionState);
+    //void onStateChanged(serialMan::ExecutionState);
 
 };
 
@@ -59,6 +62,7 @@ class ActionsController : public QObject
 private:
 
     ManipulatorController& _man;
+    actions::ActionsLibrary _lib;
 
     ProgramExecutor* _executor;
     ExecutionEnivroment _enivroment;
@@ -68,6 +72,7 @@ public:
     ActionsController(ManipulatorController& man);
 
     ExecutionEnivroment const& enivroment() const;
+    const actions::ActionsLibrary& library() const;
     //void executeAction(actions::IAction&);
 
     void startProgram();

@@ -16,7 +16,7 @@ using namespace serialMan;
 Serial6DofManipulator::Serial6DofManipulator()
     : BaseProjectController(),
       _manipulatorController(new ManipulatorController()),
-      _projectVisualizator(new ProjectVisualizator),
+      _projectVisualizator(new gl::ProjectVisualizator),
       _actionsController(new ActionsController(*_manipulatorController))
 
 {
@@ -26,12 +26,12 @@ void Serial6DofManipulator::init()
 {
 
     //Init widgets here!!
-    _avaiableCentralDocks << new glCentralDock(*_manipulatorController);
+    _avaiableCentralDocks << new centralDocks::glCentralDock(*_manipulatorController);
     //_avaiableDocks << new ManyButtonsDock(tr("Buttons"));
 
-    //_avaiableDocks << new ProgramDock(*_actionsController);
-    _avaiableDocks << new DhTableDock(*_manipulatorController);
-    _avaiableDocks << new KinematicsDock(*_manipulatorController);
+    _avaiableDocks << new docks::ProgramDock(*_actionsController);
+    _avaiableDocks << new docks::DhTableDock(*_manipulatorController);
+    _avaiableDocks << new docks::KinematicsDock(*_manipulatorController);
 }
 
 Serial6DofManipulator::~Serial6DofManipulator()
@@ -49,7 +49,7 @@ ActionsController& Serial6DofManipulator::getActionsController() const
     return *_actionsController;
 }
 
-ProjectVisualizator& Serial6DofManipulator::getVisualizator() const
+gl::ProjectVisualizator& Serial6DofManipulator::getVisualizator() const
 {
     return *_projectVisualizator;
 }

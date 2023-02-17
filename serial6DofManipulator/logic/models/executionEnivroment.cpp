@@ -19,6 +19,8 @@ void ExecutionEnivroment::setState(ExecutionState state)
 {
     QMutexLocker lock(&_stateMut);
     _state = state;
+    lock.unlock();
+    emit stateChanged(_state);
 }
 
 EnivromentProgram& ExecutionEnivroment::program()

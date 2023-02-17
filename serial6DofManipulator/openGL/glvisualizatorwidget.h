@@ -9,6 +9,10 @@
 namespace serialMan
 {
 
+
+namespace gl
+{
+
 QT_FORWARD_DECLARE_CLASS(ProjectVisualizator);
 
 enum class ProjectionMode_t : char
@@ -101,6 +105,8 @@ private:
     int _displayWidth = 1920;
     int _displayHeight = 1080;
 };
+
+}
 
 }
 #endif // GLVISUALIZATORWIDGET_H

@@ -2,6 +2,8 @@
 #include <QListWidget>
 
 using namespace serialMan;
+using namespace docks;
+
 
 ManyButtonsDock::ManyButtonsDock(const QString& title,
                                  QWidget* parent,

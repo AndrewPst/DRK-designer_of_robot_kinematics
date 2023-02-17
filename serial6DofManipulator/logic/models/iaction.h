@@ -41,12 +41,19 @@ enum ActionArgumentType_t
 
 struct ArgKey_t
 {
-    ArgKey_t();
+    //ArgKey_t();
     explicit ArgKey_t(char k, ActionArgumentType_t = ActionArgumentType_t::ARGTYPE_DOUBLE, const QString& = QString());
 
-    char key {0};
-    ActionArgumentType_t type {ActionArgumentType_t::ARGTYPE_DOUBLE};
-    QString name;
+private:
+    const char _key {0};
+    const ActionArgumentType_t _type {ActionArgumentType_t::ARGTYPE_DOUBLE};
+    const QString _name;
+public:
+
+    char key() const;
+    ActionArgumentType_t type() const;
+    const QString& name() const;
+
     bool operator == (const serialMan::actions::ArgKey_t &) const;
     bool operator < (const serialMan::actions::ArgKey_t &) const;
 };
@@ -58,15 +65,15 @@ struct IAction
 public:
 
 //    //Args functions
-//    void setArg(const ArgKey_t& key, const QVariant);
-//    bool getArg(const ArgKey_t& key, QVariant& result) const;
+    virtual void setArg(const ArgKey_t& , const QVariant){};
+    virtual bool getArg(const ArgKey_t& , QVariant& ) const{return false;};
 
     virtual const std::pair<char, uint16_t> key() = 0;
 
     virtual void serializate(std::ostream&) = 0;
     //virtual void deserializate(std::istream&) = 0;
 
-    virtual ActionExectionResult_t startExecution(const ExecutionEnivroment&){}
+    virtual ActionExectionResult_t startExecution(const ExecutionEnivroment&) = 0;
     virtual ActionExectionResult_t execute(const ExecutionEnivroment&, qint64, ExecuteConfig_t) = 0;
     virtual void endExecution(){}
 

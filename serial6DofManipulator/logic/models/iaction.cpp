@@ -3,21 +3,33 @@
 using namespace serialMan;
 using namespace actions;
 
-ArgKey_t::ArgKey_t()
-{}
-ArgKey_t::ArgKey_t(char k, ActionArgumentType_t t, const QString& n) : key(k), type(t), name(n)
+//ArgKey_t::ArgKey_t()
+//{}
+ArgKey_t::ArgKey_t(char k, ActionArgumentType_t t, const QString& n) : _key(k), _type(t), _name(n)
 {}
 
 bool ArgKey_t::operator == (const serialMan::actions::ArgKey_t &p1) const
 {
-    return key == p1.key;
+    return _key == p1._key;
 }
 
 bool ArgKey_t::operator < (const serialMan::actions::ArgKey_t &p1) const
 {
-    return key < p1.key;
+    return _key < p1._key;
 }
 
+char ArgKey_t::key() const
+{
+    return _key;
+}
+ActionArgumentType_t ArgKey_t::type() const
+{
+    return _type;
+}
+const QString& ArgKey_t::name() const
+{
+    return _name;
+}
 
 
 //void IAction::setArg(const ArgKey_t& key, const QVa& value)

@@ -17,6 +17,10 @@ namespace serialMan
 
 class ProjectVisualizator;
 
+namespace gl
+{
+
+
 class EditVisualizaionParamsWidget : public QDialog
 {
     Q_OBJECT
@@ -40,6 +44,8 @@ private:
     QDoubleSpinBox *spinTextSize;
     QDoubleSpinBox *spinStep;
 };
+
+}
 
 }
 #endif // EDITVISUALIZAIONPARAMSWIDGET_H

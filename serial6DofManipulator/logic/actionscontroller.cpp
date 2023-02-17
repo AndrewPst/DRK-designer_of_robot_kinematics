@@ -1,67 +1,24 @@
 #include "actionscontroller.h"
 #include "manipulatorcontroller.h"
+#include "models/executionState.h"
 
 #include <QTimer>
 #include <QDebug>
+#include <QVariant>
 
 using namespace serialMan;
 
 ActionsController::ActionsController(ManipulatorController& man)
     : QObject(),  _man(man), _enivroment(man)
 {
-    //actions.append(createAction<LinearMovement>());
-
-//    auto temp = _enivroment.createAction<actions::G1>();
-//    temp->setArg(ArgKey_t{'X'}, {160.0});
-//    temp->setArg(ArgKey_t{'Y'}, {0.0});
-//    temp->setArg(ArgKey_t{'Z'}, {80.0});
-//    temp->setArg(ArgKey_t{'B'}, {degToRad(180.0)});
-//    temp->setArg(ArgKey_t{'F'}, {45});
-//    _enivroment.program.append(temp);
-
-//    temp = _enivroment.createAction<actions::G1>();
-//    temp->setArg(ArgKey_t{'A'}, {degToRad(-90.0)});
-//    temp->setArg(ArgKey_t{'G'}, {degToRad(-270.0)});
-//    temp->setArg(ArgKey_t{'F'}, {0});
-//    _enivroment.program.append(temp);
-
-//    temp = _enivroment.createAction<actions::G1>();
-//    temp->setArg(ArgKey_t{'Y'}, {-50});
-//    temp->setArg(ArgKey_t{'B'}, {degToRad(225.0)});
-//    temp->setArg(ArgKey_t{'F'}, {20});
-//    _enivroment.program.append(temp);
-
-//    temp = _enivroment.createAction<actions::G1>();
-//    temp->setArg(ArgKey_t{'Z'}, {130});
-//    temp->setArg(ArgKey_t{'B'}, {degToRad(180)});
-//    temp->setArg(ArgKey_t{'F'}, {50});
-//    _enivroment.program.append(temp);
-
-//    temp = _enivroment.createAction<actions::G1>();
-//    temp->setArg(ArgKey_t{'B'}, {degToRad(135.0)});
-//    temp->setArg(ArgKey_t{'Z'}, {80.0});
-//    temp->setArg(ArgKey_t{'Y'}, {0});
-//    temp->setArg(ArgKey_t{'F'}, {60});
-//    _enivroment.program.append(temp);
-
-//    temp = _enivroment.createAction<actions::G1>();
-//    temp->setArg(ArgKey_t{'B'}, {degToRad(180.0)});
-//    temp->setArg(ArgKey_t{'F'}, {20});
-//    _enivroment.program.append(temp);
-
-//    temp = _enivroment.createAction<actions::G1>();
-//    temp->setArg(ArgKey_t{'A'}, {degToRad(0.0)});
-//    temp->setArg(ArgKey_t{'G'}, {degToRad(-180.0)});
-//    temp->setArg(ArgKey_t{'F'}, {0});
-//    _enivroment.program.append(temp);
-
-//    temp = _enivroment.createAction<actions::G1>();
-//    temp->setArg(ArgKey_t{'Z'}, {180.0});
-//    temp->setArg(ArgKey_t{'A'}, {degToRad(0.0)});
-//    temp->setArg(ArgKey_t{'B'}, {degToRad(90.0)});
-//    temp->setArg(ArgKey_t{'G'}, {degToRad(-180.0)});
-//    temp->setArg(ArgKey_t{'F'}, {30});
-//    _enivroment.program.append(temp);
+    qDebug() << "Created";
+    auto a = _lib.actions.at(actions::ActionsLibrary::actionIdentificator_t({'G', 255}));
+    EnivromentProgram::actionType_t newAction = EnivromentProgram::actionType_t(std::get<0>(a)());
+    newAction->setArg(actions::ArgKey_t('T'), 1500);
+    _enivroment.program().add(newAction);
+    newAction = EnivromentProgram::actionType_t(std::get<0>(a)());
+    newAction->setArg(actions::ArgKey_t('T'), 4500);
+    _enivroment.program().add(newAction);
 }
 
 void ActionsController::startProgram()
@@ -76,15 +33,21 @@ void ActionsController::startProgram()
     //connect(_executor, &serialMan::ProgramExecutor::onStateChanged, this, &ActionsController::onStateChanged, Qt::DirectConnection );
     //connect(_executor, &serialMan::ProgramExecutor::onStateChanged, this, &ActionsController::stateChanged, Qt::DirectConnection );
 
-    //connect(_thread, &QThread::started, _executor, &serialMan::ProgramExecutor::start);
+    connect(_thread, &QThread::started, _executor, &serialMan::ProgramExecutor::onStarted);
 
     connect(_executor, &serialMan::ProgramExecutor::finished, _thread, &QThread::quit);
     connect(_thread, &QThread::finished, _executor, &serialMan::ProgramExecutor::deleteLater);
     connect(_thread, &QThread::finished, _thread, &QThread::deleteLater);
 
-    _executor->moveToThread(_thread);
+    _enivroment.program().reset();
 
+    _executor->moveToThread(_thread);
     _thread->start();
+}
+
+const actions::ActionsLibrary& ActionsController::library() const
+{
+    return _lib;
 }
 
 ExecutionEnivroment const& ActionsController::enivroment() const
@@ -112,38 +75,70 @@ void ActionsController::resume()
 ProgramExecutor::ProgramExecutor(ExecutionEnivroment& env)
     : QObject(), _env(env)
 {
-    //connect(&env, &serialMan::ExecutionEnivroment::stateChanged, this, &ProgramExecutor::onStateChanged);
 }
-
-//void ProgramExecutor::onStateChanged(serialMan::ExecutionState state)
-//{
-
-//}
 
 
 void ProgramExecutor::onStarted()
 {
     _env.setState(ExecutionState::STATE_IS_RUNNING);
-    QTimer time;
+    ExecutionState lastState{ExecutionState::STATE_IS_RUNNING};
     actions::ActionExectionResult_t execRes{actions::ActionExectionResult_t::RESULT_UNKNOWN};
-    while (_env.state() != ExecutionState::STATE_FINISHED)
+    ExecutionExitCode exitCode{ExecutionExitCode::EXITCODE_NO_EXIT};
+    while (exitCode == ExecutionExitCode::EXITCODE_NO_EXIT)
     {
-        actions::IAction* action = _env.program().next().get();
-        if (!action)
+        if(_env.state() == ExecutionState::STATE_FINISHED)
+        {
+            exitCode = ExecutionExitCode::EXITCODE_INTERRUPTION;
             break;
+        }
+        auto action = _env.program().next();
+        if (action == nullptr)
+            break;
+        int64_t startTime{QDateTime::currentMSecsSinceEpoch()};
+        int64_t lastFrameTime{0};
+        int64_t pauseTime{0};
         execRes = action->startExecution(_env);
-        time.start();
         while (execRes == actions::ActionExectionResult_t::RESULT_IN_PROCESS)
         {
-            execRes = action->execute(_env, time.remainingTimeAsDuration().count(), actions::ExecuteConfig_t::EXECUTE_ANIMATION);
-            if (execRes == actions::ActionExectionResult_t::RESULT_ERROR)
+            if(QDateTime::currentMSecsSinceEpoch() - lastFrameTime < _frameDiff)
             {
-                qDebug() << "Execution action error";
+                QThread::yieldCurrentThread();
+                continue;
             }
-
+            lastFrameTime = QDateTime::currentMSecsSinceEpoch();
+            if(_env.state() == ExecutionState::STATE_IS_RUNNING)
+            {
+                if(_env.state() != lastState)
+                {
+                    startTime += QDateTime::currentMSecsSinceEpoch() - pauseTime;
+                    lastFrameTime = QDateTime::currentMSecsSinceEpoch();
+                    lastState = _env.state();
+                }
+                execRes = action->execute(_env, QDateTime::currentMSecsSinceEpoch() - startTime, actions::ExecuteConfig_t::EXECUTE_ANIMATION);
+                if (execRes == actions::ActionExectionResult_t::RESULT_ERROR)
+                {
+                    exitCode = ExecutionExitCode::EXITCODE_EXECUTION_ERROR;
+                    break;
+                }
+            } else if(_env.state() == ExecutionState::STATE_SUSPENDED)
+            {
+                if(_env.state() != lastState)
+                {
+                    pauseTime = QDateTime::currentMSecsSinceEpoch();
+                    lastState = _env.state();
+                }
+                QThread::yieldCurrentThread();
+                continue;
+            } else
+            {
+                exitCode = ExecutionExitCode::EXITCODE_INTERRUPTION;
+                break;
+            }
         }
-
+        action->endExecution();
     }
+    _env.setState(ExecutionState::STATE_FINISHED);
+    emit finished(exitCode);
 }
 
 //void ProgramExecutor::onStarted()
