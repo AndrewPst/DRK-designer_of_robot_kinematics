@@ -11,14 +11,15 @@ using namespace serialMan;
 ActionsController::ActionsController(ManipulatorController& man)
     : QObject(),  _man(man), _enivroment(man)
 {
-    qDebug() << "Created";
-    auto a = _lib.actions.at(actions::ActionsLibrary::actionIdentificator_t({'G', 255}));
-    EnivromentProgram::actionType_t newAction = EnivromentProgram::actionType_t(std::get<0>(a)());
-    newAction->setArg(actions::ArgKey_t('T'), 1500);
-    _enivroment.program().add(newAction);
-    newAction = EnivromentProgram::actionType_t(std::get<0>(a)());
-    newAction->setArg(actions::ArgKey_t('T'), 4500);
-    _enivroment.program().add(newAction);
+    //Generate first test action
+    auto actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 255})());
+    actParams->setValue('T', actions::Arg_t(5000.0));
+    _enivroment.program().add(EnivromentProgram::actionData_t({'G', 255}, actParams));
+
+    //Generate second test action
+    actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 255})());
+    actParams->setValue('T', actions::Arg_t(2000.0));
+    _enivroment.program().add(EnivromentProgram::actionData_t({'G', 255}, actParams));
 }
 
 void ActionsController::startProgram()
@@ -26,12 +27,8 @@ void ActionsController::startProgram()
 
     if(_enivroment.state() != ExecutionState::STATE_FINISHED)
         return;
-    _executor = new ProgramExecutor(_enivroment);
+    _executor = new ProgramExecutor(_enivroment, library());
     _thread = new QThread();
-
-    //connect(this, &ActionsController::messageToThread, _executor, &serialMan::ProgramExecutor::setState, Qt::DirectConnection );
-    //connect(_executor, &serialMan::ProgramExecutor::onStateChanged, this, &ActionsController::onStateChanged, Qt::DirectConnection );
-    //connect(_executor, &serialMan::ProgramExecutor::onStateChanged, this, &ActionsController::stateChanged, Qt::DirectConnection );
 
     connect(_thread, &QThread::started, _executor, &serialMan::ProgramExecutor::onStarted);
 
@@ -72,11 +69,13 @@ void ActionsController::resume()
 
 
 //-------------------Program executor------------------
-ProgramExecutor::ProgramExecutor(ExecutionEnivroment& env)
-    : QObject(), _env(env)
+ProgramExecutor::ProgramExecutor(ExecutionEnivroment& env, const actions::ActionsLibrary& lib)
+    : QObject(), _env(env), _lib(lib)
 {
 }
 
+
+static const actions::actionIdentificator_t _last_action{0, 0};
 
 void ProgramExecutor::onStarted()
 {
@@ -91,13 +90,14 @@ void ProgramExecutor::onStarted()
             exitCode = ExecutionExitCode::EXITCODE_INTERRUPTION;
             break;
         }
-        auto action = _env.program().next();
-        if (action == nullptr)
+        auto actionData = _env.program().next();
+        if (actionData.first == _last_action)
             break;
+        auto action = std::shared_ptr<actions::IAction>(_lib.actionGenerator(actionData.first)());
         int64_t startTime{QDateTime::currentMSecsSinceEpoch()};
         int64_t lastFrameTime{0};
         int64_t pauseTime{0};
-        execRes = action->startExecution(_env);
+        execRes = action->startExecution(*actionData.second, _env);
         while (execRes == actions::ActionExectionResult_t::RESULT_IN_PROCESS)
         {
             if(QDateTime::currentMSecsSinceEpoch() - lastFrameTime < _frameDiff)

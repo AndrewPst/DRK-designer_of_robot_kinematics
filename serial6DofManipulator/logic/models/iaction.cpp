@@ -5,28 +5,28 @@ using namespace actions;
 
 //ArgKey_t::ArgKey_t()
 //{}
-ArgKey_t::ArgKey_t(char k, ActionArgumentType_t t, const QString& n) : _key(k), _type(t), _name(n)
+ArgDescription_t::ArgDescription_t(char k, ActionArgumentType_t t, const QString& n) : _key(k), _type(t), _name(n)
 {}
 
-bool ArgKey_t::operator == (const serialMan::actions::ArgKey_t &p1) const
+bool ArgDescription_t::operator == (const serialMan::actions::ArgDescription_t &p1) const
 {
     return _key == p1._key;
 }
 
-bool ArgKey_t::operator < (const serialMan::actions::ArgKey_t &p1) const
+bool ArgDescription_t::operator < (const serialMan::actions::ArgDescription_t &p1) const
 {
     return _key < p1._key;
 }
 
-char ArgKey_t::key() const
+char ArgDescription_t::key() const
 {
     return _key;
 }
-ActionArgumentType_t ArgKey_t::type() const
+ActionArgumentType_t ArgDescription_t::type() const
 {
     return _type;
 }
-const QString& ArgKey_t::name() const
+const QString& ArgDescription_t::name() const
 {
     return _name;
 }

@@ -34,12 +34,13 @@ class ProgramExecutor : public QObject
 private:
 
     ExecutionEnivroment& _env;
+    const actions::ActionsLibrary& _lib;
 
     constexpr const static int _fps = 30;
     qint64 _frameDiff = 1000/_fps;
     qint64 _frameTime = 0;
 
-    ProgramExecutor(ExecutionEnivroment&);
+    ProgramExecutor(ExecutionEnivroment&, const actions::ActionsLibrary&);
 
 
 signals:

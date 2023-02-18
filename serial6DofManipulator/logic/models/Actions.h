@@ -58,15 +58,47 @@ namespace actions
 
 struct GTEST : public serialMan::actions::IAction
 {
+public:
+    struct GTESTArgsCollection : public IArgsCollection
+    {
+    private:
+        std::unordered_map<ArgKey_t, Arg_t> _args
+        {{'T', Arg_t(QVariant(0.0))}};
+    public:
 
-    static const QVector<ArgKey_t> _keys;
+        GTESTArgsCollection(){}
 
+        bool getValue(ArgKey_t key, Arg_t& out) const override
+        {
+            (void)out;
+            if(_args.find(key) == _args.end())
+                return false;
+            auto a = _args.at(key);
+//            Arg_t<double> t = a;
+            //auto t = static_cast<Arg_t<double&>>(a);
+            if(a.isUseble() == false)
+                return false;
+            out = a;
+            return true;
+
+        }
+        void setValue(ArgKey_t key, const Arg_t& value) override
+        {
+            if(_args.find(key) == _args.end())
+                return;
+            _args[key] = value;
+        }
+        ~GTESTArgsCollection(){}
+    };
+
+private:
+    static const QVector<ArgDescription_t> _keys;
     double _param{1000};
 
 public:
 
     void serializate(std::ostream& out)override;
-    ActionExectionResult_t startExecution(const ExecutionEnivroment& env) override;
+    ActionExectionResult_t startExecution(const IArgsCollection&, const ExecutionEnivroment& env) override;
     ActionExectionResult_t execute(const ExecutionEnivroment& env, qint64 t, ExecuteConfig_t config) override;
     void endExecution() override;
 
@@ -88,9 +120,14 @@ public:
         return GTEST::static_key();
     }
 
-    const static QVector<ArgKey_t>* allowArgs()
+    const static QVector<ArgDescription_t>* allowArgs()
     {
         return &_keys;
+    }
+
+    static IArgsCollection* generateArgsCollection()
+    {
+        return new GTESTArgsCollection;
     }
 };
 

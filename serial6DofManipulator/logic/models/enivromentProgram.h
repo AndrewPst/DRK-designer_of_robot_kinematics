@@ -12,8 +12,10 @@ class EnivromentProgram : public QObject
     Q_OBJECT
 public:
 
-    typedef std::shared_ptr<serialMan::actions::IAction> actionType_t;
-    typedef std::vector<actionType_t> actionsBuf_t;
+    //typedef std::shared_ptr<serialMan::actions::IAction> actionType_t;
+//    typedef std::vector<actionType_t> actionsBuf_t;
+    typedef std::pair<actions::actionIdentificator_t, std::shared_ptr<actions::IArgsCollection>> actionData_t;
+    typedef std::vector<actionData_t> actionsBuf_t;
 
 private:
 
@@ -30,16 +32,16 @@ public:
 
     size_t size() const;
 
-    actionType_t at(size_t);
-    void add(actionType_t);
-    void insert(actionType_t, size_t);
-    void remove(actionType_t);
+    actionData_t& at(size_t);
+    void add(const actionData_t&);
+    void insert(const actionData_t&, size_t);
+    void remove(const actionData_t&);
 
-    actionType_t reset();
-    actionType_t next();
+    const actionData_t& reset();
+    const actionData_t& next();
 
     uint8_t setPos(size_t);
-    uint8_t setPos(actionType_t);
+    uint8_t setPos(const actionData_t&);
 
 
 signals:
