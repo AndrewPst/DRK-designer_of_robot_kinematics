@@ -13,7 +13,7 @@ ActionsLibrary::ArgsCollectionsGenerator ActionsLibrary::argsCollectionGenerator
     return std::get<ActionsFunctions::FUNC_ARGS_COLLECTION_GENERATOR>(_actions.at(i));
 }
 
-const QVector<ArgDescription_t>* ActionsLibrary::allowArgs(const actionIdentificator_t& i) const
+const QVector<std::shared_ptr<ArgDescription_t>>* ActionsLibrary::allowArgs(const actionIdentificator_t& i) const
 {
     return std::get<ActionsFunctions::FUNC_ALLOW_ARGS_GETTER>(_actions.at(i));
 }

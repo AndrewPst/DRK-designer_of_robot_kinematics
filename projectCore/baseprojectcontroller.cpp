@@ -56,6 +56,10 @@ const QList<BaseCentralDock*>& BaseProjectController::getAviableCentralDocks() c
     return _avaiableCentralDocks;
 }
 
+void BaseProjectController::setMainWindow(QMainWindow* mw)
+{
+    _mainWindow = mw;
+}
 
 QMenu* BaseProjectController::getEditTitlebarMenu() const
 {

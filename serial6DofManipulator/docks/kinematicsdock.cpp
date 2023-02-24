@@ -87,8 +87,6 @@ void JointViewModelWidget::onSpinsChanged()
 }
 
 
-
-
 KinematicsDock::KinematicsDock(ManipulatorController& man,
                                const QString& title,
                                QWidget* parent,
@@ -177,6 +175,9 @@ KinematicsDock::KinematicsDock(ManipulatorController& man,
 
     onStructureChanged();
 
+    _resetJointsPos = new QPushButton("Reset joints");
+    connect(_resetJointsPos, SIGNAL(clicked(bool)), this, SLOT(onResetJoinsPosClicked()));
+
     QFormLayout *tempL = new QFormLayout();
     tempL->addRow("X", _posX);
     tempL->addRow("Y", _posY);
@@ -186,14 +187,13 @@ KinematicsDock::KinematicsDock(ManipulatorController& man,
     tempL->addRow("Rot Y", _rotY);
     tempL->addRow("Rot Z", _rotZ);
 
-
     gb->setLayout(tempL);
 
     _mainL->addWidget(_list);
+    _mainL->addWidget(_resetJointsPos);
     _mainL->addWidget(gb);
     _mainL->addWidget(paramsGroup);
     _mainL->addLayout(varsl);
-
 
     _mainW = new QWidget();
     _mainW->setLayout(_mainL);
@@ -237,6 +237,12 @@ void KinematicsDock::controlParamsChanged()
     emit stepChanged(jointStep->value());
     //_list->itemAt()
 }
+
+void KinematicsDock::onResetJoinsPosClicked()
+{
+    _man.resetJoints();
+}
+
 
 void KinematicsDock::onStructureChanged()
 {

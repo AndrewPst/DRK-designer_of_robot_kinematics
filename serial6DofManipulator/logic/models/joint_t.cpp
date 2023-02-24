@@ -54,3 +54,15 @@ void Joint_t::setMaxValue(double max)
     lock.unlock();
     emit maxValueChanged(max);
 }
+
+double Joint_t::getDefaultValue() const
+{
+    QMutexLocker lock(&_mDValue);
+    return _defaultValue;
+}
+
+void Joint_t::setDefaultValue(double value)
+{
+    QMutexLocker lock(&_mDValue);
+    _defaultValue = value;
+}

@@ -155,6 +155,8 @@ void MainWindow::onProjectOpened(BaseProjectController* const proj)
     _viewMenu = proj->getViewTitlebarMenu();
     _projectMenu = proj->getEditTitlebarMenu();
 
+    proj->setMainWindow(this);
+
     menuBar()->addMenu(_viewMenu);
     menuBar()->addMenu(_projectMenu);
 

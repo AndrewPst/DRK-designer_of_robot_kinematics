@@ -21,6 +21,7 @@ SOURCES += \
     serial6DofManipulator/docks/manybuttonsdock.cpp \
     serial6DofManipulator/docks/programdock.cpp \
     serial6DofManipulator/logic/actionscontroller.cpp \
+    serial6DofManipulator/logic/gcodeserializator.cpp \
     serial6DofManipulator/logic/kinematics.cpp \
     serial6DofManipulator/logic/manipulatorcontroller.cpp \
     serial6DofManipulator/logic/models/actions.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     serial6DofManipulator/docks/manybuttonsdock.h \
     serial6DofManipulator/docks/programdock.h \
     serial6DofManipulator/logic/actionscontroller.h \
+    serial6DofManipulator/logic/gcodeserializator.h \
     serial6DofManipulator/logic/kinematics.h \
     serial6DofManipulator/logic/manipulatorcontroller.h \
     serial6DofManipulator/logic/models/Actions.h \

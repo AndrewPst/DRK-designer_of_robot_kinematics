@@ -3,7 +3,8 @@
 
 #include "basedock.h"
 #include "../logic/actionscontroller.h"
-//#include "../logic/models/iaction.h"
+#include "../logic/models/enivromentProgram.h"
+#include "../logic/models/iaction.h"
 //#include "../logic/models/Actions.h"
 
 #include <QVBoxLayout>
@@ -11,8 +12,12 @@
 #include <QFormLayout>
 #include <QDoubleSpinBox>
 #include <QLineEdit>
-
+#include <QComboBox>
+#include <QListWidget>
+#include <QCheckBox>
 #include <QLabel>
+#include <QStringBuilder>
+#include <QGroupBox>
 
 namespace serialMan
 {
@@ -20,23 +25,80 @@ namespace serialMan
 namespace docks
 {
 
+class ActionInProgramVievModel : public QWidget
+{
+    Q_OBJECT
+
+private:
+
+    EnivromentProgram::actionData_t& _action;
+    ActionsController& _act;
+
+    QHBoxLayout *_hl;
+
+public:
+    ActionInProgramVievModel(EnivromentProgram::actionData_t&, ActionsController&);
+    EnivromentProgram::actionData_t& action();
+    void setActive(bool);
+    bool active() const;
+};
+
+class ActionArgsEditor : public QWidget
+{
+    Q_OBJECT
+private:
+
+    const actions::ActionsLibrary& _lib;
+
+    ActionsController& _act;
+
+    const QVector<std::shared_ptr<actions::ArgDescription_t>>* _allowArgs;
+    EnivromentProgram::actionData_t* _action;
+
+    struct ActionWidgets
+    {
+        const std::shared_ptr<actions::ArgDescription_t> descr;
+        QVariant* arg;
+        QWidget* w;
+    };
+
+    QVector<ActionWidgets> _aw;
+
+    QGroupBox *_mainV{nullptr};
+    QVBoxLayout *_mainL;
+    QPushButton *_saveBut;
+public:
+
+    ActionArgsEditor(ActionsController&);
+    void setAction(EnivromentProgram::actionData_t&);
+
+private slots:
+
+    void onSaveButClicked();
+
+};
+
+
 class ProgramDock  : public BaseDock
 {
     Q_OBJECT
 public:
 
     explicit ProgramDock(ActionsController& act, const QString& title = "Program",
-                             QWidget* parent = nullptr,
-                             Qt::WindowFlags flags = {});
+                         QWidget* parent = nullptr,
+                         Qt::WindowFlags flags = {});
 
 private slots:
 
-    void onPauseClick();
-    void onResumeClick();
-    void onStartClick();
-    void onStopClick();
+    void onPauseResumeClick();
+    void onStartStopClick();
+    void onCreateNewActionClick();
+    void onRemoveActionClick();
 
-    void stateChanged(serialMan::ExecutionState);
+    void onStateChanged(serialMan::ExecutionState);
+    void onProgramStructureChanged();
+    void onSelectedNewAction(QListWidgetItem*);
+    void onActionComboBoxActivated(int);
 
 private:
 
@@ -45,11 +107,21 @@ private:
     QWidget *_mainW;
     QVBoxLayout* _mainL;
 
-    QPushButton *_startBut, *_stop, *_pause, *_resume;
-
-    //QPushButton *_startStopBut, *_pauseResumeBut;
+    ActionArgsEditor* _actEditor;
+    QListWidget *_actionsCollection;
 
     QLabel* _label;
+    QPushButton *_startStopBut, *_pauseResumeBut;
+    QPushButton *_createNewActionBut;
+    QPushButton *_removeActionBut;
+    QCheckBox *_startWithSelectedActCBox;
+
+    QComboBox *_actionsComboBox;
+    QList<actions::actionIdentificator_t> _actionsList;
+
+
+    EnivromentProgram::actionData_t* _currentEditableAction;
+
 
 };
 

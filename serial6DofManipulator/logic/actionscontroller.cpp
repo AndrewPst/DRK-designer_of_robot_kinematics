@@ -1,6 +1,7 @@
 #include "actionscontroller.h"
 #include "manipulatorcontroller.h"
 #include "models/executionState.h"
+#include "models/unitsConverter.h"
 
 #include <QTimer>
 #include <QDebug>
@@ -12,14 +13,38 @@ ActionsController::ActionsController(ManipulatorController& man)
     : QObject(),  _man(man), _enivroment(man)
 {
     //Generate first test action
-    auto actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 255})());
-    actParams->setValue('T', actions::Arg_t(5000.0));
+    auto actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 1})());
+    actParams->setArg('Y', (-50.0));
+    actParams->setArg('Z', (180.0));
+    actParams->setArg('A', (degToRad(-15.0)));
+    actParams->setArg('F', (10.0));
+    _enivroment.program().add(EnivromentProgram::actionData_t({'G', 1}, actParams));
+
+    actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 1})());
+    actParams->setArg('X', (220.0));
+    actParams->setArg('F', (50.0));
+    actParams->setArg('A', (degToRad(0.0)));
+    _enivroment.program().add(EnivromentProgram::actionData_t({'G', 1}, actParams));
+
+    actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 255})());
+    actParams->setArg('T', (1500.0));
     _enivroment.program().add(EnivromentProgram::actionData_t({'G', 255}, actParams));
 
-    //Generate second test action
-    actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 255})());
-    actParams->setValue('T', actions::Arg_t(2000.0));
-    _enivroment.program().add(EnivromentProgram::actionData_t({'G', 255}, actParams));
+    actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 1})());
+    actParams->setArg('Y', (0.0));
+    actParams->setArg('X', (180.0));
+    actParams->setArg('Z', (150.0));
+    actParams->setArg('A', (degToRad(15.0)));
+    actParams->setArg('F', (50.0));
+    _enivroment.program().add(EnivromentProgram::actionData_t({'G', 1}, actParams));
+
+    actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 1})());
+    actParams->setArg('Y', (0.0));
+    actParams->setArg('X', (180.0));
+    actParams->setArg('Z', (150.0));
+    actParams->setArg('A', (degToRad(0.0)));
+    actParams->setArg('F', (50.0));
+    _enivroment.program().add(EnivromentProgram::actionData_t({'G', 1}, actParams));
 }
 
 void ActionsController::startProgram()
@@ -36,18 +61,29 @@ void ActionsController::startProgram()
     connect(_thread, &QThread::finished, _executor, &serialMan::ProgramExecutor::deleteLater);
     connect(_thread, &QThread::finished, _thread, &QThread::deleteLater);
 
-    _enivroment.program().reset();
-
     _executor->moveToThread(_thread);
     _thread->start();
 }
+
+bool ActionsController::executeMomently(EnivromentProgram::actionData_t& actionData)
+{
+    if(enivroment().state() != ExecutionState::STATE_FINISHED)
+        return false;
+
+    auto action = std::shared_ptr<actions::IAction>(_lib.actionGenerator(actionData.first)());
+    action->startExecution(*actionData.second, _enivroment);
+    action->execute(_enivroment, 0, actions::ExecuteConfig::EXECUTE_MOMENTLY);
+    action->endExecution();
+    return true;
+}
+
 
 const actions::ActionsLibrary& ActionsController::library() const
 {
     return _lib;
 }
 
-ExecutionEnivroment const& ActionsController::enivroment() const
+ExecutionEnivroment& ActionsController::enivroment()
 {
     return _enivroment;
 }
@@ -81,7 +117,7 @@ void ProgramExecutor::onStarted()
 {
     _env.setState(ExecutionState::STATE_IS_RUNNING);
     ExecutionState lastState{ExecutionState::STATE_IS_RUNNING};
-    actions::ActionExectionResult_t execRes{actions::ActionExectionResult_t::RESULT_UNKNOWN};
+    actions::ActionExectionResult execRes{actions::ActionExectionResult::RESULT_UNKNOWN};
     ExecutionExitCode exitCode{ExecutionExitCode::EXITCODE_NO_EXIT};
     while (exitCode == ExecutionExitCode::EXITCODE_NO_EXIT)
     {
@@ -98,7 +134,7 @@ void ProgramExecutor::onStarted()
         int64_t lastFrameTime{0};
         int64_t pauseTime{0};
         execRes = action->startExecution(*actionData.second, _env);
-        while (execRes == actions::ActionExectionResult_t::RESULT_IN_PROCESS)
+        while (execRes == actions::ActionExectionResult::RESULT_IN_PROCESS)
         {
             if(QDateTime::currentMSecsSinceEpoch() - lastFrameTime < _frameDiff)
             {
@@ -114,8 +150,8 @@ void ProgramExecutor::onStarted()
                     lastFrameTime = QDateTime::currentMSecsSinceEpoch();
                     lastState = _env.state();
                 }
-                execRes = action->execute(_env, QDateTime::currentMSecsSinceEpoch() - startTime, actions::ExecuteConfig_t::EXECUTE_ANIMATION);
-                if (execRes == actions::ActionExectionResult_t::RESULT_ERROR)
+                execRes = action->execute(_env, QDateTime::currentMSecsSinceEpoch() - startTime, actions::ExecuteConfig::EXECUTE_ANIMATION);
+                if (execRes == actions::ActionExectionResult::RESULT_ERROR)
                 {
                     exitCode = ExecutionExitCode::EXITCODE_EXECUTION_ERROR;
                     break;
@@ -138,54 +174,9 @@ void ProgramExecutor::onStarted()
         action->endExecution();
     }
     _env.setState(ExecutionState::STATE_FINISHED);
+    _env.program().reset();
     emit finished(exitCode);
 }
-
-//void ProgramExecutor::onStarted()
-//{
-//    emit onStateChanged(_state);
-//    auto iter = _actions.program.begin();
-//    bool exit = false;
-//    _frameTime = QDateTime::currentMSecsSinceEpoch();
-
-//    for(;iter != _actions.program.end() && exit == false; iter++)
-//    {
-//        ActionResult_t result = ActionResult_t::RESULT_IN_PROCESS;
-//        IAction* action = *iter;
-//        action->startExecution();
-//        while(result == ActionResult_t::RESULT_IN_PROCESS)
-//        {
-//            qint64 diff = QDateTime::currentMSecsSinceEpoch() - _frameTime;
-//            if(diff < _frameDiff)
-//            {
-//                QThread::yieldCurrentThread();
-//                continue;
-//            }
-//            _frameTime = QDateTime::currentMSecsSinceEpoch();
-
-//            if(_state == ProgramState_t::STATE_IS_RUNNING)
-//            {
-//                result = action->execute(diff, ExecuteConfig_t::EXECUTE_ANIMATION);
-//            }
-//            else if(_state == ProgramState_t::STATE_SUSPENDED)
-//            {
-//                QThread::yieldCurrentThread();
-//            }
-//            else
-//            {
-//                exit = true;
-//                break;
-//            }
-//        }
-//        action->endExecution();
-//    }
-
-//    _state = ProgramState_t::STATE_FINISHED;
-//    emit onStateChanged(_state);
-//    emit onFinished();
-//}
-
-
 
 
 

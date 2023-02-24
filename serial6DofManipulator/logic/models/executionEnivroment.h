@@ -1,7 +1,6 @@
 #ifndef EXECUTIONENIVROMENT_H
 #define EXECUTIONENIVROMENT_H
 
-
 #include "enivromentProgram.h"
 #include "../manipulatorcontroller.h"
 
@@ -24,6 +23,7 @@ struct ExecutionEnivroment : public QObject
 
     friend class ActionsController;
     friend class ProgramExecutor;
+
 
 private:
 

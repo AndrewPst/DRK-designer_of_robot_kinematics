@@ -27,6 +27,11 @@ public:
     gl::ProjectVisualizator& getVisualizator() const;
     ActionsController& getActionsController() const;
 
+public slots:
+
+    void onExportGCodeCall();
+    void onExportJsonConfigCall();
+
 private:
 
     std::unique_ptr<ManipulatorController> _manipulatorController;

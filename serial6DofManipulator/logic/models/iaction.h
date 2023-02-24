@@ -1,6 +1,8 @@
 #ifndef IACTION_H
 #define IACTION_H
 
+#include "../manipulatorcontroller.h"
+
 #include <QString>
 #include <istream>
 #include <ostream>
@@ -9,17 +11,17 @@
 #include <QMutexLocker>
 #include <QVariant>
 
+
 namespace serialMan
 {
 
-QT_FORWARD_DECLARE_CLASS(ManipulatorController)
 QT_FORWARD_DECLARE_STRUCT(ExecutionEnivroment)
 
 namespace actions
 {
 
 
-enum ActionExectionResult_t
+enum ActionExectionResult
 {
     RESULT_UNKNOWN,
     RESULT_IN_PROCESS,
@@ -27,37 +29,29 @@ enum ActionExectionResult_t
     RESULT_FINISH
 };
 
-enum ExecuteConfig_t
+enum ExecuteConfig
 {
     EXECUTE_ANIMATION,
-    EXECUTE_INSTANTLY,
+    EXECUTE_MOMENTLY,
 };
 
-enum ActionArgumentType_t
+enum ActionArgumentParameter : uint16_t
 {
-    ARGTYPE_DOUBLE,
-    ARGTYPE_STRING,
+    ARGPARAM_IS_ANGLE=1,
+    ARGPARAM_UNLIMITED=2,
+    ARGPARAM_NUM_POSITIVE_ONLY=4,
+    ARGPARAM_IS_REQUIRED=8
 };
 
 using ArgKey_t = char;
 
 struct ArgDescription_t
 {
-    //ArgKey_t();
-    explicit ArgDescription_t(ArgKey_t k, ActionArgumentType_t = ActionArgumentType_t::ARGTYPE_DOUBLE, const QString& = QString());
-
-private:
-    const ArgKey_t _key {0};
-    const ActionArgumentType_t _type {ActionArgumentType_t::ARGTYPE_DOUBLE};
-    const QString _name;
-
-public:
-    ArgKey_t key() const;
-    ActionArgumentType_t type() const;
-    const QString& name() const;
-
-    bool operator == (const serialMan::actions::ArgDescription_t &) const;
-    bool operator < (const serialMan::actions::ArgDescription_t &) const;
+    const ArgKey_t key{0};
+    const QVariant::Type type{QVariant::Type::Double};
+    const QString name{};
+    const uint16_t parameters{0};
+    const ManipulatorController::ManipulatorParameterKey manParameter{ManipulatorController::ManipulatorParameterKey::PARAMETER_NONE};
 };
 
 
@@ -68,8 +62,8 @@ private:
     QVariant _value;
 public:
 
-    Arg_t() : _isUsable(true), _value(QVariant()){}
-    Arg_t(const QVariant& v) : _isUsable(true), _value(v){}
+    Arg_t() : _isUsable(false), _value(QVariant()){}
+    Arg_t(const QVariant& v) : _isUsable(false), _value(v){}
     Arg_t(const Arg_t& arg) : _isUsable(arg.isUseble()), _value(arg.getValue()){}
     //explicit Arg_t(QVariant&& v) : _value(std::move(v)){}
 
@@ -77,7 +71,7 @@ public:
     void setUsable(bool v){_isUsable = v;}
 
     const QVariant& getValue() const{return _value;}
-    void setValue(const QVariant& val) {_value = val;}
+    void setValue(const QVariant& val) {_value = val; setUsable(true);}
 
     Arg_t& operator=(const Arg_t& v)
     {
@@ -85,16 +79,47 @@ public:
         setUsable(v.isUseble());
         return *this;
     }
-
 };
 
 
 struct IArgsCollection
 {
-public:
+protected:
 
-    virtual bool getValue(ArgKey_t, Arg_t&) const = 0;
-    virtual void setValue(ArgKey_t, const Arg_t&) = 0;
+    std::unordered_map<ArgKey_t, std::pair<QVariant, bool>> _args;
+
+public:
+    bool getArg(ArgKey_t key, QVariant*& out)
+    {
+        if(_args.find(key) == _args.end())
+            return false;
+        auto& a = _args.at(key);
+        out = &a.first;
+        return a.second;
+
+    }
+
+    void setArg(ArgKey_t key, const QVariant& value)
+    {
+        if(_args.find(key) == _args.end())
+            return;
+        _args[key].first = value;
+        _args[key].second = true;
+    }
+
+    void setArgUsable(ArgKey_t key, bool usable)
+    {
+        if(_args.find(key) == _args.end())
+            return;
+        _args[key].second = usable;
+    }
+
+    bool isArgUsable(ArgKey_t key) const
+    {
+        if(_args.find(key) == _args.end())
+            return false;
+        return _args.at(key).second;
+    }
 };
 
 typedef std::pair<char, uint16_t> actionIdentificator_t;
@@ -110,8 +135,8 @@ public:
     virtual void serializate(std::ostream&) = 0;
     //virtual void deserializate(std::istream&) = 0;
 
-    virtual ActionExectionResult_t startExecution(const IArgsCollection&, const ExecutionEnivroment&) = 0;
-    virtual ActionExectionResult_t execute(const ExecutionEnivroment&, qint64, ExecuteConfig_t) = 0;
+    virtual ActionExectionResult startExecution(IArgsCollection&, const ExecutionEnivroment&) = 0;
+    virtual ActionExectionResult execute(const ExecutionEnivroment&, qint64, ExecuteConfig) = 0;
     virtual void endExecution(){}
 
     virtual ~IAction() {};

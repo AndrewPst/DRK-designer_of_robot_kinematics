@@ -29,6 +29,9 @@ public:
     double getMaxValue() const;
     void setMaxValue(double);
 
+    double getDefaultValue() const;
+    void setDefaultValue(double);
+
 signals:
 
     void valueChanged(double);
@@ -41,7 +44,8 @@ private:
 
     double _minValue {-M_PI_2};
     double _maxValue {M_PI_2};
-    mutable QMutex _mValue, _mMinValue, _mMaxValue;
+    double _defaultValue{0};
+    mutable QMutex _mValue, _mMinValue, _mMaxValue, _mDValue;
 
 };
 

@@ -50,8 +50,6 @@ signals:
 private slots:
 
     void onStarted();
-    //void onStateChanged(serialMan::ExecutionState);
-
 };
 
 
@@ -72,9 +70,11 @@ public:
 
     ActionsController(ManipulatorController& man);
 
-    ExecutionEnivroment const& enivroment() const;
+    ExecutionEnivroment& enivroment();
     const actions::ActionsLibrary& library() const;
     //void executeAction(actions::IAction&);
+
+    bool executeMomently(EnivromentProgram::actionData_t&);
 
     void startProgram();
     void pause();

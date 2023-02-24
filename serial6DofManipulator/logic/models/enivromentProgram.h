@@ -2,7 +2,8 @@
 #define ENIVROMENTPROGRAM_H
 
 #include "iaction.h"
-#include "memory"
+
+#include <memory>
 
 namespace serialMan
 {
@@ -37,8 +38,8 @@ public:
     void insert(const actionData_t&, size_t);
     void remove(const actionData_t&);
 
-    const actionData_t& reset();
-    const actionData_t& next();
+    actionData_t& reset();
+    actionData_t& next();
 
     uint8_t setPos(size_t);
     uint8_t setPos(const actionData_t&);
@@ -47,7 +48,7 @@ public:
 signals:
 
     void structureChanged();
-    void executionPosChanged();
+    //void executionPosChanged();
 
 };
 }

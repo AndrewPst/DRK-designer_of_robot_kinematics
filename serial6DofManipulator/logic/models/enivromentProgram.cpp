@@ -32,31 +32,38 @@ void EnivromentProgram::add(const EnivromentProgram::actionData_t& act)
 {
     QMutexLocker lock(&_progMutex);
     _prog.push_back(act);
+    lock.unlock();
+    emit structureChanged();
 }
 
 void EnivromentProgram::insert(const EnivromentProgram::actionData_t& act, size_t i)
 {
     QMutexLocker lock(&_progMutex);
-    _prog.insert(_prog.begin()+i, act);
+    _prog.insert(_prog.begin()+i+1, act);
+    lock.unlock();
+    emit structureChanged();
 }
 
 void EnivromentProgram::remove(const EnivromentProgram::actionData_t& act)
 {
     QMutexLocker lock(&_progMutex);
     _prog.erase(std::find(_prog.begin(), _prog.end(), act));
+    lock.unlock();
+    emit structureChanged();
 }
 
-const EnivromentProgram::actionData_t& EnivromentProgram::reset()
+static EnivromentProgram::actionData_t _null_data = EnivromentProgram::actionData_t({0, 0}, nullptr);
+
+EnivromentProgram::actionData_t& EnivromentProgram::reset()
 {
     QMutexLocker lock(&_progMutex);
     _executePos = _prog.begin();
+    if(_executePos == _prog.end())
+        return _null_data;
     return *_executePos;
 }
 
-
-static const EnivromentProgram::actionData_t _null_data = EnivromentProgram::actionData_t({0, 0}, nullptr);
-
-const EnivromentProgram::actionData_t& EnivromentProgram::next()
+EnivromentProgram::actionData_t& EnivromentProgram::next()
 {
     QMutexLocker lock(&_progMutex);
     if(_executePos == _prog.end())

@@ -11,6 +11,7 @@ QT_FORWARD_DECLARE_CLASS(QListWidget);
 QT_FORWARD_DECLARE_CLASS(QGroupBox);
 QT_FORWARD_DECLARE_CLASS(QCheckBox);
 QT_FORWARD_DECLARE_CLASS(QPalette);
+QT_FORWARD_DECLARE_CLASS(QPushButton);
 
 namespace serialMan
 {
@@ -70,6 +71,7 @@ public slots:
     void onConfigChanged();
 
     void controlParamsChanged();
+    void onResetJoinsPosClicked();
 
 signals:
 
@@ -81,6 +83,7 @@ private:
     QVBoxLayout* _mainL;
 
     QListWidget* _list;
+    QPushButton* _resetJointsPos;
 
     QDoubleSpinBox *_posX, *_posY, *_posZ, *_rotX, *_rotY, *_rotZ;
 

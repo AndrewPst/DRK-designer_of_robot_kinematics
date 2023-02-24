@@ -62,6 +62,19 @@ const DHTable_t<ManipulatorController::DEFAULT_DOF>& ManipulatorController::getD
     return _kin.dhTable();
 }
 
+void ManipulatorController::resetJoints()
+{
+    QMutexLocker lock(&_mJoints);
+    for(auto it : qAsConst(_joints))
+    {
+        it->blockSignals(true);
+        it->setValue(it->getDefaultValue());
+        it->blockSignals(false);
+    }
+    lock.unlock();
+    onJointsChanged();
+}
+
 void ManipulatorController::forwardKinematics(QVector<double>& joints)
 {
     Effector_t result;

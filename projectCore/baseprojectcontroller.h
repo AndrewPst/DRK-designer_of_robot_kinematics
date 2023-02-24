@@ -6,7 +6,6 @@
 
 #include <QObject>
 
-
 QT_FORWARD_DECLARE_CLASS(BaseDock)
 QT_FORWARD_DECLARE_STRUCT(ProjectSource_t);
 
@@ -37,6 +36,9 @@ public:
 
     void deleteCentralDock(BaseCentralDock*);
 
+
+    void setMainWindow(QMainWindow*);
+
     //---Getters and setters---
 
     QString getName() const;
@@ -61,7 +63,6 @@ protected:
 
     ProjectSource_t* _projectSource;
 
-    //TEMP
     QString _projectName;
     Version_t _projectVersion;
 
@@ -69,6 +70,8 @@ protected:
     QList<BaseCentralDock*> _avaiableCentralDocks;
 
     QMenu *_viewMenu, *_editMenu;
+
+    QMainWindow* _mainWindow;
 
 };
 
