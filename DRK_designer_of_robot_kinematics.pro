@@ -38,6 +38,7 @@ SOURCES += \
     projectCore/baseprojectcontroller.cpp \
     projectCore/initAvailableControllers.cpp \
     projectCore/projectsmanager.cpp \
+    serial6DofManipulator/widgets/gcodeserializatorwidget.cpp \
     version_t.cpp
 
 HEADERS += \
@@ -75,6 +76,7 @@ HEADERS += \
     serial6DofManipulator/serial6dofmanipulator.h \
     projectCore/baseprojectcontroller.h \
     projectCore/projectsmanager.h \
+    serial6DofManipulator/widgets/gcodeserializatorwidget.h \
     version_t.h
 
 # Default rules for deployment.

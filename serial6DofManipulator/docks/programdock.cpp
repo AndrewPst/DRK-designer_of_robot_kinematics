@@ -128,7 +128,10 @@ void ActionArgsEditor::setAction(EnivromentProgram::actionData_t& data)
             _enabledCB->setEnabled(false);
         }
         else
+        {
             _enabledCB->setChecked(_action->second->isArgUsable(it->key));
+            v->setEnabled(_enabledCB->isChecked());
+        }
 
         _formL->addRow(QString(it->key) + " (" + it->name + ')', _hbl);
         _aw.push_back(ActionWidgets{it, arg, v});

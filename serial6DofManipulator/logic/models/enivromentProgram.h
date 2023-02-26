@@ -38,6 +38,8 @@ public:
     void insert(const actionData_t&, size_t);
     void remove(const actionData_t&);
 
+    void clear();
+
     actionData_t& reset();
     actionData_t& next();
 

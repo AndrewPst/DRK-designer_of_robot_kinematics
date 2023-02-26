@@ -71,6 +71,15 @@ EnivromentProgram::actionData_t& EnivromentProgram::next()
     return *_executePos++;
 }
 
+void EnivromentProgram::clear()
+{
+    QMutexLocker lock(&_progMutex);
+    _prog.clear();
+    _executePos = _prog.begin();
+    lock.unlock();
+    emit structureChanged();
+}
+
 uint8_t EnivromentProgram::setPos(size_t i)
 {
     QMutexLocker lock(&_progMutex);

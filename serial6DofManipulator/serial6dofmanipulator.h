@@ -32,6 +32,8 @@ public slots:
     void onExportGCodeCall();
     void onExportJsonConfigCall();
 
+    void onImportGcodeCall();
+
 private:
 
     std::unique_ptr<ManipulatorController> _manipulatorController;
