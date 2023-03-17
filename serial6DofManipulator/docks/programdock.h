@@ -35,12 +35,19 @@ private:
     ActionsController& _act;
 
     QHBoxLayout *_hl;
+    QLabel *_key;
+    bool _isActive{false};
 
 public:
     ActionInProgramVievModel(EnivromentProgram::actionData_t&, ActionsController&);
     EnivromentProgram::actionData_t& action();
     void setActive(bool);
     bool active() const;
+
+public slots:
+
+    void onExecutableActionChanged(EnivromentProgram::actionData_t*);
+
 };
 
 class ActionArgsEditor : public QWidget
@@ -52,12 +59,12 @@ private:
 
     ActionsController& _act;
 
-    const QVector<std::shared_ptr<actions::ArgDescription_t>>* _allowArgs;
+    const QVector<actions::ArgDescription_t*>* _allowArgs;
     EnivromentProgram::actionData_t* _action;
 
     struct ActionWidgets
     {
-        const std::shared_ptr<actions::ArgDescription_t> descr;
+        const actions::ArgDescription_t* descr;
         QVariant* arg;
         QWidget* w;
     };
@@ -99,10 +106,13 @@ private slots:
     void onProgramStructureChanged();
     void onSelectedNewAction(QListWidgetItem*);
     void onActionComboBoxActivated(int);
+    void onExecutionActionChanged(EnivromentProgram::actionData_t*, int);
 
 private:
 
     ActionsController& _act;
+
+    ActionInProgramVievModel* _currentExecutableAction;
 
     QWidget *_mainW;
     QVBoxLayout* _mainL;

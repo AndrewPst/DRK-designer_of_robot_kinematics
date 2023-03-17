@@ -40,7 +40,8 @@ enum ActionArgumentParameter : uint16_t
     ARGPARAM_IS_ANGLE=1,
     ARGPARAM_UNLIMITED=2,
     ARGPARAM_NUM_POSITIVE_ONLY=4,
-    ARGPARAM_IS_REQUIRED=8
+    ARGPARAM_IS_REQUIRED=8,
+    ARGPARAM_NO_VALUE=16
 };
 
 using ArgKey_t = char;
@@ -89,13 +90,20 @@ protected:
     std::unordered_map<ArgKey_t, std::pair<QVariant, bool>> _args;
 
 public:
-    bool getArg(ArgKey_t key, QVariant*& out)
+
+    IArgsCollection()
+    {}
+
+    IArgsCollection(const std::unordered_map<ArgKey_t, std::pair<QVariant, bool>>& args) : _args(args)
+    {
+    }
+
+    QVariant* getArg(ArgKey_t key)
     {
         if(_args.find(key) == _args.end())
-            return false;
+            return nullptr;
         auto& a = _args.at(key);
-        out = &a.first;
-        return a.second;
+        return &(a.first);
 
     }
 
@@ -131,9 +139,6 @@ struct IAction
 public:
 
     virtual const std::pair<char, uint16_t> key() = 0;
-
-    virtual void serializate(std::ostream&) = 0;
-    //virtual void deserializate(std::istream&) = 0;
 
     virtual ActionExectionResult startExecution(IArgsCollection&, const ExecutionEnivroment&) = 0;
     virtual ActionExectionResult execute(const ExecutionEnivroment&, qint64, ExecuteConfig) = 0;

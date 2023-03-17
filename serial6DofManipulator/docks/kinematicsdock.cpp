@@ -104,33 +104,39 @@ KinematicsDock::KinematicsDock(ManipulatorController& man,
 
     _posX = new QDoubleSpinBox();
     _posX->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-    _posX->setSingleStep(0.2);
+    _posX->setSingleStep(_stepMove);
     connect(_posX, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
 
     _posY = new QDoubleSpinBox();
     _posY->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-    _posY->setSingleStep(0.2);
+    _posY->setSingleStep(_stepMove);
     connect(_posY, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
 
     _posZ = new QDoubleSpinBox();
     _posZ->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
-    _posZ->setSingleStep(0.2);
+    _posZ->setSingleStep(_stepMove);
     connect(_posZ, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
 
     _rotX = new QDoubleSpinBox();
-    _rotX->setSingleStep(5);
+    _rotX->setSingleStep(_stepRot);
     _rotX->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
     connect(_rotX, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
 
     _rotY = new QDoubleSpinBox();
-    _rotY->setSingleStep(5);
+    _rotY->setSingleStep(_stepRot);
     _rotY->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
     connect(_rotY, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
 
     _rotZ = new QDoubleSpinBox();
-    _rotZ->setSingleStep(5);
+    _rotZ->setSingleStep(_stepRot);
     _rotZ->setRange(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max());
     connect(_rotZ, SIGNAL(valueChanged(double)), this, SLOT(onPositionChanged()));
+
+    _effectorValue = new QDoubleSpinBox();
+    _effectorValue->setSingleStep(_stepMove);
+    connect(&man.getEffector(), SIGNAL(valueChanged(double)), this, SLOT(onEffectorChanged()));
+    onEffectorChanged();
+    connect(_effectorValue, SIGNAL(valueChanged(double)), this, SLOT(onEffectorWidgetChanged()));
 
     QGroupBox *paramsGroup = new QGroupBox("Control parameters");
 
@@ -186,6 +192,7 @@ KinematicsDock::KinematicsDock(ManipulatorController& man,
     tempL->addRow("Rot X", _rotX);
     tempL->addRow("Rot Y", _rotY);
     tempL->addRow("Rot Z", _rotZ);
+    tempL->addRow("Effector", _effectorValue);
 
     gb->setLayout(tempL);
 
@@ -202,9 +209,22 @@ KinematicsDock::KinematicsDock(ManipulatorController& man,
     connect(&_man, SIGNAL(structureChanged()), this, SLOT(onStructureChanged()));
 }
 
+void KinematicsDock::onEffectorChanged()
+{
+    _effectorValue->blockSignals(true);
+    _effectorValue->setRange(_man.getEffector().min(), _man.getEffector().max());
+    _effectorValue->setValue(_man.getEffector().value());
+    _effectorValue->blockSignals(false);
+}
+
+void KinematicsDock::onEffectorWidgetChanged()
+{
+    _man.getEffector().setValue(_effectorValue->value());
+}
+
 void KinematicsDock::onPositionChanged()
 {
-    Effector_t eff  =
+    Position_t eff  =
     {
         _posX->value(),
         _posY->value(),
@@ -241,33 +261,34 @@ void KinematicsDock::controlParamsChanged()
 void KinematicsDock::onResetJoinsPosClicked()
 {
     _man.resetJoints();
+    _man.getEffector().setValue(_man.getEffector().min());
 }
 
 
 void KinematicsDock::onStructureChanged()
 {
     _posX->blockSignals(true);
-    _posX->setValue(_man.getEffector().x);
+    _posX->setValue(_man.getEffectorPosition().x);
     _posX->blockSignals(false);
 
     _posY->blockSignals(true);
-    _posY->setValue(_man.getEffector().y);
+    _posY->setValue(_man.getEffectorPosition().y);
     _posY->blockSignals(false);
 
     _posZ->blockSignals(true);
-    _posZ->setValue(_man.getEffector().z);
+    _posZ->setValue(_man.getEffectorPosition().z);
     _posZ->blockSignals(false);
 
     _rotX->blockSignals(true);
-    _rotX->setValue(radToDeg(_man.getEffector().wx));
+    _rotX->setValue(radToDeg(_man.getEffectorPosition().wx));
     _rotX->blockSignals(false);
 
     _rotY->blockSignals(true);
-    _rotY->setValue(radToDeg(_man.getEffector().wy));
+    _rotY->setValue(radToDeg(_man.getEffectorPosition().wy));
     _rotY->blockSignals(false);
 
     _rotZ->blockSignals(true);
-    _rotZ->setValue(radToDeg(_man.getEffector().wz));
+    _rotZ->setValue(radToDeg(_man.getEffectorPosition().wz));
     _rotZ->blockSignals(false);
 
     _v1->blockSignals(true);

@@ -1,5 +1,6 @@
 #include "gcodeserializatorwidget.h"
 #include "../logic/gcodeserializator.h"
+#include "QMessageBox"
 
 using namespace serialMan;
 using namespace widgets;
@@ -64,30 +65,36 @@ void gcodeSerializatorWidget::onBrowsePathButtonClicked()
 
 void gcodeSerializatorWidget::onExportButClicked()
 {
+    QMessageBox message(this);
+    message.addButton("Close", QMessageBox::ButtonRole::AcceptRole);
     QFile file(_pathLine->text());
     if(file.open(QIODevice::WriteOnly | QIODevice::Text) == false)
     {
+        message.setText("Serialization error! (File not found)");
         qDebug() << "error opening file";
-        return;
     }
-    QTextStream out(&file);
-
-    QString gcode = _startGCodeText->toPlainText();
-    if(gcode.isEmpty() == false)
+    else
     {
-        out << gcode;
-        if(gcode.endsWith('\n') == false)
-            out << '\n';
+        QTextStream out(&file);
+        QString gcode = _startGCodeText->toPlainText();
+        if(gcode.isEmpty() == false)
+        {
+            out << gcode;
+            if(gcode.endsWith('\n') == false)
+                out << '\n';
+        }
+
+        gCodeSerializator ser(*_act);
+        ser.serializate(out, _restoreLostArgCheckB->isChecked());
+
+        gcode = _endGCodeText->toPlainText();
+        if(gcode.isEmpty() == false)
+            out << gcode;
+        message.setText("Serialization successfully");
     }
-
-    gCodeSerializator ser(*_act);
-    ser.serializate(out, _restoreLostArgCheckB->isChecked());
-
-    gcode = _endGCodeText->toPlainText();
-    if(gcode.isEmpty() == false)
-        out << gcode;
-
     file.close();
+    message.show();
+    message.exec();
 }
 
 

@@ -1,7 +1,7 @@
 #include "actionscontroller.h"
 #include "manipulatorcontroller.h"
 #include "models/executionState.h"
-#include "models/unitsConverter.h"
+//#include "models/unitsConverter.h"
 
 #include <QTimer>
 #include <QDebug>
@@ -16,15 +16,18 @@ ActionsController::ActionsController(ManipulatorController& man)
     auto actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 1})());
     actParams->setArg('Y', (-50.0));
     actParams->setArg('Z', (180.0));
-    actParams->setArg('A', (degToRad(-15.0)));
-    actParams->setArg('F', (10.0));
+    actParams->setArg('A', (-15.0));
+    actParams->setArg('F', (40.0));
+    actParams->setArg('E', (50.0));
     _enivroment.program().add(EnivromentProgram::actionData_t({'G', 1}, actParams));
 
     actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 1})());
     actParams->setArg('X', (220.0));
     actParams->setArg('F', (50.0));
-    actParams->setArg('A', (degToRad(0.0)));
+    actParams->setArg('A', (0.0));
+    actParams->setArg('E', (100.0));
     _enivroment.program().add(EnivromentProgram::actionData_t({'G', 1}, actParams));
+
 
     actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 255})());
     actParams->setArg('T', (1500.0));
@@ -34,15 +37,16 @@ ActionsController::ActionsController(ManipulatorController& man)
     actParams->setArg('Y', (0.0));
     actParams->setArg('X', (180.0));
     actParams->setArg('Z', (150.0));
-    actParams->setArg('A', (degToRad(15.0)));
+    actParams->setArg('A', (15.0));
     actParams->setArg('F', (50.0));
+    actParams->setArg('E', (0.0));
     _enivroment.program().add(EnivromentProgram::actionData_t({'G', 1}, actParams));
 
     actParams = std::shared_ptr<actions::IArgsCollection>(_lib.argsCollectionGenerator({'G', 1})());
     actParams->setArg('Y', (0.0));
     actParams->setArg('X', (180.0));
     actParams->setArg('Z', (150.0));
-    actParams->setArg('A', (degToRad(0.0)));
+    actParams->setArg('A', (0.0));
     actParams->setArg('F', (50.0));
     _enivroment.program().add(EnivromentProgram::actionData_t({'G', 1}, actParams));
 }
@@ -119,6 +123,7 @@ void ProgramExecutor::onStarted()
     ExecutionState lastState{ExecutionState::STATE_IS_RUNNING};
     actions::ActionExectionResult execRes{actions::ActionExectionResult::RESULT_UNKNOWN};
     ExecutionExitCode exitCode{ExecutionExitCode::EXITCODE_NO_EXIT};
+    int _actIndex{0};
     while (exitCode == ExecutionExitCode::EXITCODE_NO_EXIT)
     {
         if(_env.state() == ExecutionState::STATE_FINISHED)
@@ -129,6 +134,7 @@ void ProgramExecutor::onStarted()
         auto actionData = _env.program().next();
         if (actionData.first == _last_action)
             break;
+        _env.setExecutableAction(&actionData, _actIndex);
         auto action = std::shared_ptr<actions::IAction>(_lib.actionGenerator(actionData.first)());
         int64_t startTime{QDateTime::currentMSecsSinceEpoch()};
         int64_t lastFrameTime{0};
@@ -172,6 +178,7 @@ void ProgramExecutor::onStarted()
             }
         }
         action->endExecution();
+        ++_actIndex;
     }
     _env.setState(ExecutionState::STATE_FINISHED);
     _env.program().reset();

@@ -15,6 +15,7 @@ SOURCES += \
     mainwindow.cpp \
     messageWindows/ConfirmActionDialog.cpp \
     messageWindows/newprojectconstructorwidget.cpp \
+    messageWindows/operationresultdialog.cpp \
     serial6DofManipulator/centralDocks/glcentraldock.cpp \
     serial6DofManipulator/docks/dhtabledock.cpp \
     serial6DofManipulator/docks/kinematicsdock.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
     serial6DofManipulator/logic/gcodeserializator.cpp \
     serial6DofManipulator/logic/kinematics.cpp \
     serial6DofManipulator/logic/manipulatorcontroller.cpp \
+    serial6DofManipulator/logic/models/Effector_t.cpp \
     serial6DofManipulator/logic/models/actions.cpp \
     serial6DofManipulator/logic/models/actionsLibrary.cpp \
     serial6DofManipulator/logic/models/enivromentProgram.cpp \
@@ -38,6 +40,7 @@ SOURCES += \
     projectCore/baseprojectcontroller.cpp \
     projectCore/initAvailableControllers.cpp \
     projectCore/projectsmanager.cpp \
+    serial6DofManipulator/widgets/gcodedeserializatiorwidget.cpp \
     serial6DofManipulator/widgets/gcodeserializatorwidget.cpp \
     version_t.cpp
 
@@ -48,6 +51,7 @@ HEADERS += \
     mainwindow.h \
     messageWindows/ConfirmActionDialog.h \
     messageWindows/newprojectconstructorwidget.h \
+    messageWindows/operationresultdialog.h \
     projectCore/projectGenerator.h \
     projectCore/projectMetadata.h \
     serial6DofManipulator/centralDocks/glcentraldock.h \
@@ -62,6 +66,7 @@ HEADERS += \
     serial6DofManipulator/logic/models/Actions.h \
     serial6DofManipulator/logic/models/DHTable_t.h \
     serial6DofManipulator/logic/models/Effector_t.h \
+    serial6DofManipulator/logic/models/Position_t.h \
     serial6DofManipulator/logic/models/actionsLibrary.h \
     serial6DofManipulator/logic/models/enivromentProgram.h \
     serial6DofManipulator/logic/models/executionEnivroment.h \
@@ -76,6 +81,7 @@ HEADERS += \
     serial6DofManipulator/serial6dofmanipulator.h \
     projectCore/baseprojectcontroller.h \
     projectCore/projectsmanager.h \
+    serial6DofManipulator/widgets/gcodedeserializatiorwidget.h \
     serial6DofManipulator/widgets/gcodeserializatorwidget.h \
     version_t.h
 

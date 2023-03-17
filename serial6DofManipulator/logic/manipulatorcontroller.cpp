@@ -7,7 +7,7 @@ using namespace serialMan;
 
 
 ManipulatorController::ManipulatorController():
-    _joints(DEFAULT_DOF), _effector()
+    _joints(DEFAULT_DOF), _effectorPos()
 {
     initJoints();
 
@@ -15,25 +15,37 @@ ManipulatorController::ManipulatorController():
     //Setup default parameters
     _dhTable.theta = {0, degToRad(-90), 0, 0, 0, 0};
     _dhTable.alfa = {degToRad(-90), 0,degToRad(-90), degToRad(90), degToRad(-90), 0};
-    _dhTable.d = {83.5, 0, 0, 100, 0, 60};
+    _dhTable.d = {83.5, 0, 0, 105, 0, 100};
     _dhTable.r = {0, 133,10, 0, 0, 0};
 
     _kin.setDHTable(_dhTable);
     onJointsChanged();
+    //TEMP
+    _effector.setMin(0);
+    _effector.setMax(100);
+
+    connect(&_effector, &Effector_t::valueChanged, this, &ManipulatorController::structureChanged);
+
 }
 
 
 void ManipulatorController::initJoints()
 {
     //TODO: make deserialization joints from config json file
-    QMutexLocker lock(&_mJoints);
+    QMutexLocker _mEffectorPos(&_mJoints);
     for(auto& j : _joints)
     {
         j = new Joint_t();
-        connect(j, &Joint_t::valueChanged, this, &ManipulatorController::structureChanged);
+        //connect(j, &Joint_t::valueChanged, this, &ManipulatorController::structureChanged);
         connect(j, &Joint_t::valueChanged, this, &ManipulatorController::onJointsChanged);
     }
 }
+
+Kinematics<ManipulatorController::DEFAULT_DOF>& ManipulatorController::kinematics()
+{
+    return _kin;
+}
+
 
 void ManipulatorController::setDHTable(const DHTable_t<DEFAULT_DOF>& dh)
 {
@@ -43,11 +55,11 @@ void ManipulatorController::setDHTable(const DHTable_t<DEFAULT_DOF>& dh)
     emit structureChanged();
 }
 
-const Effector_t& ManipulatorController::getEffector() const
+const Position_t& ManipulatorController::getEffectorPosition() const
 {
-    QMutexLocker lock(&_mEffector);
+    QMutexLocker _mEffectorPos(&_mEffector);
 
-    return _effector;
+    return _effectorPos;
 }
 
 const QVector<Joint_t*>& ManipulatorController::getJoints()const
@@ -58,8 +70,13 @@ const QVector<Joint_t*>& ManipulatorController::getJoints()const
 
 const DHTable_t<ManipulatorController::DEFAULT_DOF>& ManipulatorController::getDHTable() const
 {
-    QMutexLocker lock(&_mKin);
+    QMutexLocker _mEffectorPos(&_mKin);
     return _kin.dhTable();
+}
+
+Effector_t& ManipulatorController::getEffector()
+{
+    return _effector;
 }
 
 void ManipulatorController::resetJoints()
@@ -77,20 +94,29 @@ void ManipulatorController::resetJoints()
 
 void ManipulatorController::forwardKinematics(QVector<double>& joints)
 {
-    Effector_t result;
+    Position_t result;
 
     QMutexLocker klock(&_mKin);
     _kin.forward(joints, result);
     klock.unlock();
 
     QMutexLocker lock(&_mEffector);
-    _effector = result;
+    _effectorPos = result;
     lock.unlock();
+
+    QMutexLocker jlock(&_mJoints);
+    for(size_t i = 0; i < DEFAULT_DOF; i++)
+    {
+        _joints[i]->blockSignals(true);
+        _joints[i]->setValue(joints[i]);
+        _joints[i]->blockSignals(false);
+    }
+    jlock.unlock();
 
     emit structureChanged();
 }
 
-CalculationResult_t ManipulatorController::inverseKinematics(const Effector_t& pos)
+CalculationResult_t ManipulatorController::inverseKinematics(const Position_t& pos)
 {
     QVector<double> out(DEFAULT_DOF);
 
@@ -110,7 +136,7 @@ CalculationResult_t ManipulatorController::inverseKinematics(const Effector_t& p
             _joints[i]->blockSignals(false);
         }
         QMutexLocker elock(&_mEffector);
-        _effector = pos;
+        _effectorPos = pos;
     } else {
         qDebug() << "error!";
     }
@@ -131,19 +157,42 @@ void ManipulatorController::onJointsChanged()
 
 void ManipulatorController::setInvConfig(char c)
 {
-    QMutexLocker lock(&_mConfig);
+    QMutexLocker _mEffectorPos(&_mConfig);
     _kinConfig = c;
 }
 
 char ManipulatorController::getInvConfig() const
 {
-    QMutexLocker lock(&_mConfig);
+    QMutexLocker _mEffectorPos(&_mConfig);
     return _kinConfig;
 }
 
+
+Position_t ManipulatorController::getDefaultHomePos() const
+{
+    QMutexLocker lock(&_mHomePos);
+    return _defaultHomePos;
+}
+
+Position_t ManipulatorController::homePos() const
+{
+    QMutexLocker lock(&_mHomePos);
+    return _homePos;
+}
+
+void ManipulatorController::setHomePos(const Position_t& pos)
+{
+    QMutexLocker lock(&_mHomePos);
+    _homePos = pos;
+}
+
+
+Position_t homePos();
+void setHomePos();
+
 ManipulatorController::~ManipulatorController()
 {
-    QMutexLocker lock(&_mJoints);
+    QMutexLocker _mEffectorPos(&_mJoints);
     for(auto& j : _joints)
     {
         delete j;

@@ -23,7 +23,7 @@ public:
 
     typedef serialMan::actions::IAction*(*ActionGenerator)();
     typedef serialMan::actions::IArgsCollection*(*ArgsCollectionsGenerator)();
-    typedef const QVector<std::shared_ptr<ArgDescription_t>>* allowArgs_t;
+    typedef const QVector<ArgDescription_t*>* allowArgs_t;
 
     typedef std::tuple<ActionGenerator, ArgsCollectionsGenerator, allowArgs_t> ActionsFuncs_t;
 
@@ -40,7 +40,10 @@ private:
 
     const std::unordered_map<const actionIdentificator_t, ActionsFuncs_t, pair_hash> _actions
     {
+        {actions::G0::static_key(), std::make_tuple(actions::G0::generate, actions::G0::generateArgsCollection, actions::G0::allowArgs())},
         {actions::G1::static_key(), std::make_tuple(actions::G1::generate, actions::G1::generateArgsCollection, actions::G1::allowArgs())},
+        {actions::G5::static_key(), std::make_tuple(actions::G5::generate, actions::G5::generateArgsCollection, actions::G5::allowArgs())},
+        {actions::G6::static_key(), std::make_tuple(actions::G6::generate, actions::G6::generateArgsCollection, actions::G6::allowArgs())},
         {actions::GTEST::static_key(), std::make_tuple(actions::GTEST::generate, actions::GTEST::generateArgsCollection, actions::GTEST::allowArgs())},
     };
 
@@ -48,8 +51,9 @@ public:
 
     ActionGenerator actionGenerator(const actionIdentificator_t&) const;
     ArgsCollectionsGenerator argsCollectionGenerator(const actionIdentificator_t&) const;
-    const QVector<std::shared_ptr<ArgDescription_t>>* allowArgs(const actionIdentificator_t&) const;
+    const QVector<ArgDescription_t*>* allowArgs(const actionIdentificator_t&) const;
     const ActionsFuncs_t& allActionsFuncs(const actionIdentificator_t&) const;
+    bool hasAction(const actionIdentificator_t&) const;
 
     template <typename _Conteiner>
     size_t allowActions(_Conteiner& out) const

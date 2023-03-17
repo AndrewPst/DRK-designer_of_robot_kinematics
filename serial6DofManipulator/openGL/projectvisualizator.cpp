@@ -356,8 +356,10 @@ void ProjectVisualizator::drawManipulator(VisualizationParams& curParams)
             //            glBegin(GL_POINTS);
             //            glVertex3f(0, 0, 0);
             //            glEnd();
+            auto& effector = mc.getEffector();
+            double color = (effector.value() - effector.min()) / (effector.max() - effector.min());
             GLUquadricObj *q = gluNewQuadric();
-            glColor3f(0, 0, 1);
+            glColor3f(1.0 - color, color, 0);
             gluSphere(q, curParams.jointSizeKoef()/4,curParams.jointResolution(),curParams.jointResolution());
         }
         else

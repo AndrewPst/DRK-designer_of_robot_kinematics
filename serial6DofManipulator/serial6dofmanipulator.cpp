@@ -11,6 +11,7 @@
 #include "logic/actionscontroller.h"
 
 #include "widgets/gcodeserializatorwidget.h"
+#include "widgets/gcodedeserializatiorwidget.h"
 
 using namespace serialMan;
 
@@ -33,7 +34,7 @@ void Serial6DofManipulator::init()
     auto exportGCode = new QAction("Export GCODE file");
     connect(exportGCode, SIGNAL(triggered(bool)), this, SLOT(onExportGCodeCall()));
 
-    auto importGcode = new QAction("Inport GCODE file");
+    auto importGcode = new QAction("Import GCODE file");
     connect(importGcode, SIGNAL(triggered(bool)), this, SLOT(onImportGcodeCall()));
 
     auto configJSON = new QAction("Export JSON config file");
@@ -78,7 +79,10 @@ void Serial6DofManipulator::onExportGCodeCall()
 
 void Serial6DofManipulator::onImportGcodeCall()
 {
-    qDebug() << "Import gcode";
+    widgets::gcodeDeserializatiorWidget gcodeW(_mainWindow);
+    gcodeW.setProgram(*_actionsController);
+    gcodeW.show();
+    gcodeW.exec();
 }
 
 

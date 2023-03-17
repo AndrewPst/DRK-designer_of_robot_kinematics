@@ -73,6 +73,9 @@ public slots:
     void controlParamsChanged();
     void onResetJoinsPosClicked();
 
+    void onEffectorChanged();
+    void onEffectorWidgetChanged();
+
 signals:
 
     void stepChanged(double);
@@ -85,13 +88,13 @@ private:
     QListWidget* _list;
     QPushButton* _resetJointsPos;
 
-    QDoubleSpinBox *_posX, *_posY, *_posZ, *_rotX, *_rotY, *_rotZ;
+    QDoubleSpinBox *_posX, *_posY, *_posZ, *_rotX, *_rotY, *_rotZ, *_effectorValue;
 
     QDoubleSpinBox *posStep;
     QDoubleSpinBox *rotStep;
     QDoubleSpinBox *jointStep;
 
-    double _stepMove{1}, _stepRot{1}, _stepJointMove{1};
+    double _stepMove{1}, _stepRot{5}, _stepJointMove{1};
 
     ManipulatorController& _man;
 

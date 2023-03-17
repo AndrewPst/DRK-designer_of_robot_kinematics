@@ -8,14 +8,14 @@ using namespace serialMan;
 #define IS_V2(x)((x) & 0b00000010)
 
 template<>
-CalculationResult_t Kinematics<6>::forward(const QVector<double>& joints, Effector_t& out)
+CalculationResult_t Kinematics<6>::forward(const QVector<double>& joints, Position_t& out)
 {
 
     Matrix<calc_t> baseT(4, 4);  // Zero position of the base frame
     Matrix<calc_t> workT(4, 4);  // The resulting homogeneous transformation matrix
     Matrix<calc_t> transT(4, 4); // Transformation matrix from N-1 to N frame
 
-    positionToTransformMatrix(Effector_t(), baseT); // Get base matrix
+    positionToTransformMatrix(Position_t(), baseT); // Get base matrix
     workT = baseT;
 
     // Calculation the transformation matrix - T06 = T01 * T12 * T23 * T34 * T45 * T56
@@ -33,10 +33,10 @@ CalculationResult_t Kinematics<6>::forward(const QVector<double>& joints, Effect
 }
 
 template<>
-CalculationResult_t Kinematics<6>::inverse(const Effector_t& pos, QVector<double>& out, config_t conf)
+CalculationResult_t Kinematics<6>::inverse(const Position_t& pos, QVector<double>& out, config_t conf)
 {    
     Matrix<calc_t> Twf(4, 4); // work frame matrix;
-    positionToTransformMatrix(Effector_t(), Twf);
+    positionToTransformMatrix(Position_t(), Twf);
     Matrix<calc_t> Ttf(Twf); // tool frame transform matrix;
 
     Matrix<calc_t> Twt(4, 4); // total transform matrix

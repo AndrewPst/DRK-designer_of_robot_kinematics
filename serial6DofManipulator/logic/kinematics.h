@@ -3,7 +3,7 @@
 
 #include "models/DHTable_t.h"
 #include "models/matrix.h"
-#include "models/Effector_t.h"
+#include "models/Position_t.h"
 
 #include <math.h>
 
@@ -45,9 +45,9 @@ public:
         return _dh;
     }
 
-    CalculationResult_t forward(const QVector<calc_t>& joints, Effector_t& out);
+    CalculationResult_t forward(const QVector<calc_t>& joints, Position_t& out);
 
-    CalculationResult_t inverse(const Effector_t& pos, QVector<calc_t>& out, config_t conf);
+    CalculationResult_t inverse(const Position_t& pos, QVector<calc_t>& out, config_t conf);
 
 private:
     void inverseTransformMatrix(Matrix<calc_t> &m, Matrix<calc_t> &out)
@@ -74,7 +74,7 @@ private:
     }
 
 
-    void transformMatrixToPosition(Matrix<calc_t> &m, Effector_t &out)
+    void transformMatrixToPosition(Matrix<calc_t> &m, Position_t &out)
     {
         out.x = m.at(0, 3);
         out.y = m.at(1, 3);
@@ -91,7 +91,7 @@ private:
 
     }
 
-    void positionToTransformMatrix(const Effector_t &pos, Matrix<calc_t> &out)
+    void positionToTransformMatrix(const Position_t &pos, Matrix<calc_t> &out)
     {
         out.at(0, 0) = cos((pos.wx)) * cos((pos.wy)) * cos((pos.wz)) - sin((pos.wx)) * sin((pos.wz));
         out.at(0, 1) = -cos((pos.wx)) * cos((pos.wy)) * sin((pos.wz)) - sin((pos.wx)) * cos((pos.wz));

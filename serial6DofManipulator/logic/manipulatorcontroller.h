@@ -3,9 +3,10 @@
 
 #include "../serial6dofmanipulator.h"
 #include "kinematics.h"
-#include "models/Effector_t.h"
+#include "models/Position_t.h"
 #include "models/joint_t.h"
 #include "models/DHTable_t.h"
+#include "models/Effector_t.h"
 
 #include <QObject>
 #include <QVector>
@@ -56,39 +57,41 @@ public:
             return _pT();
         if(key == PARAMETER_X_EFF_POS)
         {
-            QMutexLocker lock(&_mEffector);
-            return _effector.x;
+            QMutexLocker _mEffectorPos(&_mEffector);
+            return _effectorPos.x;
         }
         if(key == PARAMETER_Y_EFF_POS)
         {
-            QMutexLocker lock(&_mEffector);
-            return _effector.y;
+            QMutexLocker _mEffectorPos(&_mEffector);
+            return _effectorPos.y;
         }
         if(key == PARAMETER_Z_EFF_POS)
         {
-            QMutexLocker lock(&_mEffector);
-            return _effector.z;
+            QMutexLocker _mEffectorPos(&_mEffector);
+            return _effectorPos.z;
         }
         if(key == PARAMETER_A_EFF_POS)
         {
-            QMutexLocker lock(&_mEffector);
-            return _effector.wx;
+            QMutexLocker _mEffectorPos(&_mEffector);
+            return _effectorPos.wx;
         }
         if(key == PARAMETER_B_EFF_POS)
         {
-            QMutexLocker lock(&_mEffector);
-            return _effector.wy;
+            QMutexLocker _mEffectorPos(&_mEffector);
+            return _effectorPos.wy;
         }
         if(key == PARAMETER_G_EFF_POS)
         {
-            QMutexLocker lock(&_mEffector);
-            return _effector.wz;
+            QMutexLocker _mEffectorPos(&_mEffector);
+            return _effectorPos.wz;
         }
         if(key == PARAMETER_EFFECTOR_VALUE)
-            return _pT();
+        {
+            return _effector.value();
+        }
         if(key >= PARAMETER_JOINT_A_VALUE && key <= PARAMETER_JOINT_F_VALUE)
         {
-            QMutexLocker lock(&_mJoints);
+            QMutexLocker _mEffectorPos(&_mJoints);
             return _joints[key - PARAMETER_JOINT_A_VALUE]->getValue();
         }
         return _pT();
@@ -97,18 +100,28 @@ public:
     const static int DEFAULT_DOF = 6;
 
     const QVector<Joint_t*>& getJoints() const;
-    const Effector_t& getEffector() const;
+    const Position_t& getEffectorPosition() const;
     const DHTable_t<DEFAULT_DOF>& getDHTable() const;
+
+    Effector_t& getEffector();
 
     void resetJoints();
 
     void forwardKinematics(QVector<double>& joints);
-    CalculationResult_t inverseKinematics(const Effector_t& pos);
+    CalculationResult_t inverseKinematics(const Position_t& pos);
 
     void setInvConfig(char);
     char getInvConfig() const;
 
+
+    Position_t getDefaultHomePos() const;
+
+    Position_t homePos() const;
+    void setHomePos(const Position_t&);
+
     void setDHTable(const DHTable_t<DEFAULT_DOF>&);
+
+    Kinematics<DEFAULT_DOF>& kinematics();
 
     ~ManipulatorController();
 
@@ -126,10 +139,16 @@ private:
 
     Effector_t _effector;
 
+    Position_t _effectorPos;
+
+    Position_t _defaultHomePos;
+    Position_t _homePos;
+
     char _kinConfig {0};
 
     Kinematics<DEFAULT_DOF> _kin;
 
+    mutable QMutex _mHomePos;
     mutable QRecursiveMutex _mKin, _mEffector, _mJoints, _mConfig;
 };
 

@@ -27,3 +27,8 @@ EnivromentProgram& ExecutionEnivroment::program()
 {
     return _program;
 }
+
+void ExecutionEnivroment::setExecutableAction(EnivromentProgram::actionData_t* act, int i)
+{
+    emit executableActionChanged(act, i);
+}

@@ -1,15 +1,42 @@
 #ifndef EFFECTOR_T_H
 #define EFFECTOR_T_H
 
+#include <QObject>
+#include <QMutex>
+#include <QMutexLocker>
+
 namespace serialMan
 {
 
-struct Effector_t
+
+
+class Effector_t : public QObject
 {
-    double x {0}, y{0}, z{0};
-    double wx{0}, wy{0}, wz{0};
+    Q_OBJECT
+private:
+
+    mutable QMutex _valueMut, _minMut, _maxMut;
+    double _value{0};
+    double _min, _max;
+
+public:
+    Effector_t();
+    Effector_t(double, double);
+
+    void setValue(double);
+    double value() const;
+
+    void setMin(double);
+    void setMax(double);
+
+    double min() const;
+    double max() const;
+
+signals:
+
+    void valueChanged(double);
+
 };
 
 }
-
 #endif // EFFECTOR_T_H

@@ -13,7 +13,7 @@ ActionsLibrary::ArgsCollectionsGenerator ActionsLibrary::argsCollectionGenerator
     return std::get<ActionsFunctions::FUNC_ARGS_COLLECTION_GENERATOR>(_actions.at(i));
 }
 
-const QVector<std::shared_ptr<ArgDescription_t>>* ActionsLibrary::allowArgs(const actionIdentificator_t& i) const
+const QVector<ArgDescription_t*>* ActionsLibrary::allowArgs(const actionIdentificator_t& i) const
 {
     return std::get<ActionsFunctions::FUNC_ALLOW_ARGS_GETTER>(_actions.at(i));
 }
@@ -22,3 +22,9 @@ const ActionsLibrary::ActionsFuncs_t& ActionsLibrary::allActionsFuncs(const acti
 {
     return _actions.at(i);
 }
+
+bool ActionsLibrary::hasAction(const actionIdentificator_t& i) const
+{
+    return _actions.find(i) != _actions.end();
+}
+

@@ -16,13 +16,13 @@ private:
     ActionsController& _act;
 
     struct ptr_hash {
-        std::size_t operator () (const std::shared_ptr<actions::ArgDescription_t>& ptr) const {
-            std::size_t h = (size_t)ptr.get();
+        std::size_t operator () (const actions::ArgDescription_t* ptr) const {
+            std::size_t h = (size_t)ptr;
             return h;
         }
     };
 
-    typedef std::unordered_map<std::shared_ptr<actions::ArgDescription_t>, QVariant, ptr_hash> argsbuf_t;
+    typedef std::unordered_map<actions::ArgDescription_t*, QVariant, ptr_hash> argsbuf_t;
 
 public:
 

@@ -33,15 +33,38 @@ ActionInProgramVievModel::ActionInProgramVievModel(EnivromentProgram::actionData
     : _action(action), _act(act)
 {
     _hl = new QHBoxLayout();
-    QLabel *key = new QLabel(QString(action.first.first) + QString::number(action.first.second));
-    _hl->addWidget(key);
+    _key = new QLabel(QString(action.first.first) + QString::number(action.first.second));
+    _hl->addWidget(_key);
     setLayout(_hl);
 }
 
-void ActionInProgramVievModel::setActive(bool){}
+void ActionInProgramVievModel::setActive(bool isActive)
+{
+   if(_isActive == isActive)
+       return;
+   QPalette palette = _key->palette();
+   palette.setColor(_key->foregroundRole(), isActive ? Qt::green : Qt::black);
+   _key->setPalette(palette);
+   _isActive = isActive;
+}
+
 bool ActionInProgramVievModel::active() const{return true;}
 EnivromentProgram::actionData_t& ActionInProgramVievModel::action(){return _action;}
 
+void ActionInProgramVievModel::onExecutableActionChanged(EnivromentProgram::actionData_t*)
+{
+//    if(_action == *action)
+//    {
+//        QPalette palette = _key->palette();
+//        palette.setColor(_key->foregroundRole(), Qt::green);
+//        _key->setPalette(palette);
+//    } else
+//    {
+//        QPalette palette = _key->palette();
+//        palette.setColor(_key->foregroundRole(), Qt::black);
+//        _key->setPalette(palette);
+//    }
+}
 
 
 //----------Args editor------------
@@ -75,8 +98,7 @@ void ActionArgsEditor::setAction(EnivromentProgram::actionData_t& data)
     auto _formL = new QFormLayout();
     for(const auto &it : *_allowArgs)
     {
-        QVariant *arg{nullptr}; //get arguments value
-        _action->second->getArg(it->key, arg);
+        QVariant *arg = _action->second->getArg(it->key);  //get arguments value
         if(!arg)
             continue;
 
@@ -93,13 +115,7 @@ void ActionArgsEditor::setAction(EnivromentProgram::actionData_t& data)
             {
                 ds->setMinimum(0);
             }
-            if(it->parameters & actions::ActionArgumentParameter::ARGPARAM_IS_ANGLE)
-            {
-                ds->setValue(radToDeg(arg->toDouble()));
-            } else
-            {
-                ds->setValue(arg->toDouble());
-            }
+            ds->setValue(arg->toDouble());
             v = ds;
         }
         else if(it->type == QVariant::Type::String)
@@ -151,14 +167,12 @@ void ActionArgsEditor::onSaveButClicked()
         }
         if(it.descr->type == QVariant::Type::Double)
         {
-            if(it.descr->parameters & actions::ActionArgumentParameter::ARGPARAM_IS_ANGLE)
-                _action->second->setArg(it.descr->key, degToRad(((QDoubleSpinBox*)it.w)->value()));
-            else
-                _action->second->setArg(it.descr->key, (((QDoubleSpinBox*)it.w)->value()));
+
+            _action->second->setArg(it.descr->key, ((QDoubleSpinBox*)it.w)->value());
         }
         else if(it.descr->type == QVariant::Type::String)
         {
-            _action->second->setArg(it.descr->key, (((QLineEdit*)it.w)->text()));
+            _action->second->setArg(it.descr->key, ((QLineEdit*)it.w)->text());
         }
     }
     _act.executeMomently(*_action);
@@ -257,6 +271,9 @@ ProgramDock::ProgramDock(ActionsController& act,
     setWidget(_mainW);
 
     onStateChanged(ExecutionState::STATE_FINISHED);
+
+    connect(&_act.enivroment(), SIGNAL(executableActionChanged(EnivromentProgram::actionData_t*,int)),
+            this, SLOT(onExecutionActionChanged(EnivromentProgram::actionData_t*,int)));
 }
 
 void ProgramDock::onStartStopClick()
@@ -280,6 +297,7 @@ void ProgramDock::onStartStopClick()
 
 void ProgramDock::onProgramStructureChanged()
 {
+    _currentExecutableAction = nullptr;
     _actionsCollection->blockSignals(true);
     _actionsCollection->clear();
     auto& prog =_act.enivroment().program();
@@ -289,6 +307,7 @@ void ProgramDock::onProgramStructureChanged()
     {
         auto& action = prog.next();
         ActionInProgramVievModel* actvm = new ActionInProgramVievModel(action, _act);
+        //connect(&_act.enivroment(), SIGNAL(executableActionChanged(EnivromentProgram::actionData_t*)), actvm, SLOT(onExecutableActionChanged(EnivromentProgram::actionData_t*)));
         item = new QListWidgetItem(_actionsCollection);
         item->setSizeHint( actvm->sizeHint() );
         _actionsCollection->setItemWidget(item, actvm);
@@ -296,11 +315,24 @@ void ProgramDock::onProgramStructureChanged()
     _actionsCollection->blockSignals(false);
     if(item)
         _actionsCollection->setCurrentItem(item);
-    if(prog.size() ==0)
+    if(prog.size() == 0)
         _actEditor->setEnabled(false);
     else
         _actEditor->setEnabled(true);
 }
+
+void ProgramDock::onExecutionActionChanged(EnivromentProgram::actionData_t*, int i)
+{
+    if(_currentExecutableAction)
+        _currentExecutableAction->setActive(false);
+    if(i >= _actionsCollection->count())
+        return;
+    auto itemW = _actionsCollection->item(i);
+    _currentExecutableAction = qobject_cast<ActionInProgramVievModel*>(_actionsCollection->itemWidget(itemW));
+    _currentExecutableAction->setActive(true);
+
+}
+
 
 void ProgramDock::onSelectedNewAction(QListWidgetItem* item)
 {
@@ -336,6 +368,8 @@ void ProgramDock::onCreateNewActionClick()
         if(it->manParameter == ManipulatorController::PARAMETER_NONE)
             continue;
         double v = _act.enivroment().manipulator().getParameter<double>(it->manParameter);
+        if(it->parameters & actions::ActionArgumentParameter::ARGPARAM_IS_ANGLE)
+            v=radToDeg(v);
         actParams->setArg(it->key, v);
     }
     if(_act.enivroment().program().size() == 0)
@@ -351,6 +385,8 @@ void ProgramDock::onCreateNewActionClick()
 
 void ProgramDock::onRemoveActionClick()
 {
+    if(_act.enivroment().program().size() == 0)
+        return;
     auto cItem = _actionsCollection->currentItem();
     auto actionW = (qobject_cast<ActionInProgramVievModel*>(_actionsCollection->itemWidget(cItem)))->action();
     _act.enivroment().program().remove(actionW);

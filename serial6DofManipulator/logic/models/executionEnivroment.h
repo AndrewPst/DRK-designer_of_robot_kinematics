@@ -34,6 +34,7 @@ private:
     mutable QMutex _stateMut;
 
     void setState(ExecutionState state);
+    void setExecutableAction(EnivromentProgram::actionData_t*, int i);
 
 public:
 
@@ -48,6 +49,7 @@ public:
 signals:
 
     void stateChanged(serialMan::ExecutionState);
+    void executableActionChanged(EnivromentProgram::actionData_t*, int i);
 
 };
 
