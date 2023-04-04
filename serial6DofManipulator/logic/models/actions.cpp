@@ -103,7 +103,7 @@ ActionExectionResult G0::startExecution(IArgsCollection& args, const ExecutionEn
     {
         _startJointsPos[i++] = j->getValue();
     }
-    Position_t _endPos = env.manipulator().getEffectorPosition();
+    _endPos = env.manipulator().getEffectorPosition();
     if(args.isArgUsable('X')) _endPos.x = args.getArg('X')->toDouble();
     if(args.isArgUsable('Y')) _endPos.y = args.getArg('Y')->toDouble();
     if(args.isArgUsable('Z')) _endPos.z = args.getArg('Z')->toDouble();
@@ -125,19 +125,22 @@ ActionExectionResult G0::execute(const ExecutionEnivroment& env, qint64 t, Execu
     bool end{false};
     if(t >= _time || config == ExecuteConfig::EXECUTE_MOMENTLY)
     {
-        jBuffer = _endJointsPos;
         end = true;
+        env.manipulator().blockSignals(true);
+        env.manipulator().getEffector().setValue(_endJointsPos[ManipulatorController::DEFAULT_DOF]);
+        env.manipulator().blockSignals(false);
+        env.manipulator().inverseKinematics(_endPos);
     }else
     {
         for(size_t i = 0; i < ManipulatorController::DEFAULT_DOF+1; i++)
         {
             jBuffer[i] = _startJointsPos[i] + (_endJointsPos[i] - _startJointsPos[i]) * (double)t / _time;
         }
+        env.manipulator().blockSignals(true);
+        env.manipulator().getEffector().setValue(jBuffer[ManipulatorController::DEFAULT_DOF]);
+        env.manipulator().blockSignals(false);
+        env.manipulator().forwardKinematics(jBuffer);
     }
-    env.manipulator().blockSignals(true);
-    env.manipulator().getEffector().setValue(jBuffer[ManipulatorController::DEFAULT_DOF]);
-    env.manipulator().blockSignals(false);
-    env.manipulator().forwardKinematics(jBuffer);
     return end ? ActionExectionResult::RESULT_FINISH : ActionExectionResult::RESULT_IN_PROCESS;
 }
 

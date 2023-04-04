@@ -23,6 +23,7 @@ struct G0 : public serialMan::actions::IAction
 
     QVector<double> _startJointsPos;
     QVector<double> _endJointsPos;
+    Position_t _endPos;
 
 public:
 

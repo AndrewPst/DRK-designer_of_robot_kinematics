@@ -76,17 +76,30 @@ public slots:
     void onEffectorChanged();
     void onEffectorWidgetChanged();
 
+    void onAxisMovingXUpClicked();
+    void onAxisMovingYUpClicked();
+    void onAxisMovingZUpClicked();
+    void onAxisMovingXDownClicked();
+    void onAxisMovingYDownClicked();
+    void onAxisMovingZDownClicked();
+
+
 signals:
 
     void stepChanged(double);
 
 private:
 
+    void calcPositionAxisMoving(double x, double y, double z);
+
     QWidget *_mainW;
     QVBoxLayout* _mainL;
 
     QListWidget* _list;
     QPushButton* _resetJointsPos;
+
+    QPushButton *_axisUpMovingX, *_axisUpMovingY, *_axisUpMovingZ;
+    QPushButton *_axisDownMovingX, *_axisDownMovingY, *_axisDownMovingZ;
 
     QDoubleSpinBox *_posX, *_posY, *_posZ, *_rotX, *_rotY, *_rotZ, *_effectorValue;
 

@@ -34,6 +34,8 @@ public slots:
 
     void onImportGcodeCall();
 
+    void onNewProgramCall();
+
 private:
 
     std::unique_ptr<ManipulatorController> _manipulatorController;

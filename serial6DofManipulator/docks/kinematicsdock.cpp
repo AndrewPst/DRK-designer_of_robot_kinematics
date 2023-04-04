@@ -3,6 +3,7 @@
 #include "../logic/manipulatorcontroller.h"
 
 #include "../logic/models/unitsConverter.h"
+#include "../logic/models/matrix.h"
 
 #include <limits>
 #include <QDoubleSpinBox>
@@ -196,10 +197,34 @@ KinematicsDock::KinematicsDock(ManipulatorController& man,
 
     gb->setLayout(tempL);
 
+    QGroupBox *moving = new QGroupBox("Axis moving");
+    QGridLayout *axisMoveL = new QGridLayout();
+    _axisUpMovingX = new QPushButton("X up");
+    connect(_axisUpMovingX, SIGNAL(clicked(bool)), this, SLOT(onAxisMovingXUpClicked()));
+    _axisUpMovingY = new QPushButton("Y up");
+    connect(_axisUpMovingY, SIGNAL(clicked(bool)), this, SLOT(onAxisMovingYUpClicked()));
+    _axisUpMovingZ = new QPushButton("Z up");
+    connect(_axisUpMovingZ, SIGNAL(clicked(bool)), this, SLOT(onAxisMovingZUpClicked()));
+    _axisDownMovingX = new QPushButton("X down");
+    connect(_axisDownMovingX, SIGNAL(clicked(bool)), this, SLOT(onAxisMovingXDownClicked()));
+    _axisDownMovingY = new QPushButton("Y down");
+    connect(_axisDownMovingY, SIGNAL(clicked(bool)), this, SLOT(onAxisMovingYDownClicked()));
+    _axisDownMovingZ = new QPushButton("Z down");
+    connect(_axisDownMovingZ, SIGNAL(clicked(bool)), this, SLOT(onAxisMovingZDownClicked()));
+
+    axisMoveL->addWidget(_axisUpMovingX, 0, 0);
+    axisMoveL->addWidget(_axisUpMovingY, 0, 1);
+    axisMoveL->addWidget(_axisUpMovingZ, 0, 2);
+    axisMoveL->addWidget(_axisDownMovingX, 1, 0);
+    axisMoveL->addWidget(_axisDownMovingY, 1, 1);
+    axisMoveL->addWidget(_axisDownMovingZ, 1, 2);
+    moving->setLayout(axisMoveL);
+
     _mainL->addWidget(_list);
     _mainL->addWidget(_resetJointsPos);
     _mainL->addWidget(gb);
     _mainL->addWidget(paramsGroup);
+    _mainL->addWidget(moving);
     _mainL->addLayout(varsl);
 
     _mainW = new QWidget();
@@ -318,5 +343,55 @@ Qt::DockWidgetArea KinematicsDock::getDefaultArea() const
     return Qt::DockWidgetArea::LeftDockWidgetArea;
 }
 
+void KinematicsDock::calcPositionAxisMoving(double x, double y, double z)
+{
 
+    Matrix<double> m (4, 4);
+    m.set({1, 0, 0, 0,
+           0, 1, 0, 0,
+           0, 0, 1, 0,
+           0, 0, 0, 1});
+    Matrix<double> rxm (4, 4);
+    rxm.set({1, 0, 0, 0,
+             0, cos(_man.getEffectorPosition().wx), sin(_man.getEffectorPosition().wx),0,
+             0, -sin(_man.getEffectorPosition().wx), cos(_man.getEffectorPosition().wx), 0,
+             0, 0, 0, 1});
+    Matrix<double> rym (4, 4);
+    rym.set({cos(_man.getEffectorPosition().wy ), 0, sin(_man.getEffectorPosition().wy ),0,
+             0, 1, 0,0,
+             -sin(_man.getEffectorPosition().wy ), 0, cos(_man.getEffectorPosition().wy ),0,
+             0, 0, 0, 1});
+    Matrix<double> rzm (4, 4);
+    rzm.set({cos(_man.getEffectorPosition().wz ), -sin(_man.getEffectorPosition().wz), 0, 0,
+             sin(_man.getEffectorPosition().wz ), cos(_man.getEffectorPosition().wz), 0, 0,
+             0, 0, 1, 0,
+             0, 0, 0, 1});
+    Matrix<double> res = m * rxm * rym * rzm;
+    Position_t newPos = _man.getEffectorPosition();
+    if(x != 0)
+    {
+        newPos.x += res.at(0, 0) * x;
+        newPos.y += res.at(0, 1) * x;
+        newPos.z += res.at(0, 2) * x;
+    } else if (y != 0)
+    {
+        newPos.x += res.at(1, 0) * y;
+        newPos.y += res.at(1, 1) * y;
+        newPos.z += res.at(1, 2) * y;
+    } else if(z != 0)
+    {
+        newPos.x += res.at(2, 0) * z;
+        newPos.y += res.at(2, 1) * z;
+        newPos.z += res.at(2, 2) * z;
+    }
+    _man.inverseKinematics(newPos);
+}
+
+
+void KinematicsDock::onAxisMovingXUpClicked(){calcPositionAxisMoving(posStep->value(), 0, 0);}
+void KinematicsDock::onAxisMovingYUpClicked(){calcPositionAxisMoving(0, posStep->value(), 0);}
+void KinematicsDock::onAxisMovingZUpClicked(){calcPositionAxisMoving(0, 0, posStep->value());}
+void KinematicsDock::onAxisMovingXDownClicked(){calcPositionAxisMoving(-posStep->value(), 0, 0);}
+void KinematicsDock::onAxisMovingYDownClicked(){calcPositionAxisMoving(0, -posStep->value(), 0);}
+void KinematicsDock::onAxisMovingZDownClicked(){calcPositionAxisMoving(0, 0, -posStep->value());}
 

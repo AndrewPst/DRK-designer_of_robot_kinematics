@@ -4,6 +4,7 @@
 #include "models/DHTable_t.h"
 #include "models/matrix.h"
 #include "models/Position_t.h"
+#include "serial6DofManipulator/logic/models/unitsConverter.h"
 
 #include <math.h>
 
@@ -81,13 +82,9 @@ private:
         out.z = m.at(2, 3);
 
         out.wy = (atan2(sqrt(m.at(2, 0) * m.at(2, 0) + m.at(2, 1) * m.at(2, 1)), m.at(2, 2)));
-        //out.wy = out.wy < 0 ? out.wy + M_PI : out.wy;
 
-        out.wx = (atan2(m.at(1, 2) / sin(out.wy), m.at(0, 2) / sin(out.wy)));
-        //out.wx = out.wx < 0 ? out.wx + M_PI: out.wx;
-
-        out.wz = (atan2(m.at(2, 1) / sin(out.wy), -m.at(2, 0) / sin(out.wy)));
-        //out.wz = out.wz < 0 ? out.wz + M_PI : out.wz;
+        out.wx = (atan2((m.at(1, 2) / sin(out.wy)), (m.at(0, 2) / sin(out.wy))));
+        out.wz = (atan2((m.at(2, 1) / sin(out.wy)), (-m.at(2, 0) / sin(out.wy))));
 
     }
 

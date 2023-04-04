@@ -6,6 +6,7 @@
 #include "docks/kinematicsdock.h"
 #include "docks/programdock.h"
 
+#include "messageWindows/ConfirmActionDialog.h"
 #include "openGL/projectvisualizator.h"
 #include "logic/manipulatorcontroller.h"
 #include "logic/actionscontroller.h"
@@ -40,9 +41,14 @@ void Serial6DofManipulator::init()
     auto configJSON = new QAction("Export JSON config file");
     connect(configJSON, SIGNAL(triggered(bool)), this, SLOT(onExportJsonConfigCall()));
 
+    auto newProgram = new QAction("New program");
+    connect(newProgram, SIGNAL(triggered(bool)), this, SLOT(onNewProgramCall()));
+
     _editMenu->addSeparator();
     _editMenu->addAction(exportGCode);
     _editMenu->addAction(importGcode);
+    _editMenu->addSeparator();
+    _editMenu->addAction(newProgram);
     _editMenu->addSeparator();
     _editMenu->addAction(configJSON);
 }
@@ -85,7 +91,20 @@ void Serial6DofManipulator::onImportGcodeCall()
     gcodeW.exec();
 }
 
-
+void Serial6DofManipulator::onNewProgramCall()
+{
+    if(_actionsController->enivroment().program().size() == 0)
+        return;
+    ConfirmActionDialog closeProjDialog;
+    closeProjDialog.setMessage(tr("Remove current program?"));
+    closeProjDialog.setYesButtonText(tr("Yes"));
+    closeProjDialog.setNoButtonText(tr("No"));
+    closeProjDialog.show();
+    if(closeProjDialog.exec() == true)
+    {
+        _actionsController->enivroment().program().clear();
+    }
+}
 
 void Serial6DofManipulator::onExportJsonConfigCall()
 {
